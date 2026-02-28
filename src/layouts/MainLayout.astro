@@ -1,0 +1,18 @@
+---
+import Navbar from "../components/Navbar.astro";
+import Footer from "../components/Footer.astro";
+---
+
+<html lang="id">
+  <head>
+    <title>CDC STT-NF</title>
+    <meta name="description" content="Career Development Center STT Terpadu Nurul Fikri" />
+  </head>
+  <body class="bg-gray-100">
+    <Navbar />
+    <main class="max-w-5xl mx-auto p-6">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
