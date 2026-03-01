@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 ---
@@ -13,10 +14,18 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
     <button type="submit">Login</button>
   </form>
 
-  <script type="module">
+  <script
+    type="module"
+    define:vars={{ supabaseUrl, supabaseAnonKey }}
+  >
     import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-    const supabase = createClient("{supabaseUrl}", "{supabaseAnonKey}");
+    console.log("ENV URL:", supabaseUrl);
+
+    const supabase = createClient(
+      supabaseUrl,
+      supabaseAnonKey
+    );
 
     const form = document.getElementById("loginForm");
 
@@ -36,9 +45,8 @@ const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
         return;
       }
 
-      // Redirect manual langsung setelah sukses
       if (data.session) {
-        window.location.href = "/admin";
+        window.location.replace("/admin");
       }
     });
   </script>
