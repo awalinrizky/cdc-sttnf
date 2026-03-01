@@ -19,11 +19,12 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       import.meta.env.PUBLIC_SUPABASE_ANON_KEY,
     );
 
-    // AUTO REDIRECT kalau sudah login
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
-      window.location.replace("/admin");
-    }
+    // LISTEN perubahan login state
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN") {
+        window.location.replace("/admin");
+      }
+    });
 
     const form = document.getElementById("loginForm");
 
@@ -40,10 +41,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
       if (error) {
         alert(error.message);
-        return;
       }
-
-      window.location.replace("/admin");
     });
   </script>
 </BaseLayout>
