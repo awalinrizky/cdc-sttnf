@@ -16,26 +16,24 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   const form = document.getElementById("loginForm");
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
-      password
+      password,
     });
 
     if (error) {
-      alert("Login gagal: " + error.message);
+      alert(error.message);
       return;
     }
 
-    console.log("Login sukses:", data);
-
-    // Redirect pakai cara paling aman
-    window.location.href = "/admin";
+    // PAKAI FULL URL (lebih stabil di production)
+    window.location.assign("/admin/");
   });
 </script>
 
