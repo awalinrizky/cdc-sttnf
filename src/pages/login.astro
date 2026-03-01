@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+<h2 class="text-2xl font-bold">Login CMS Admin</h2>
+
+<form id="loginForm" class="space-y-4 mt-6">
+  <input type="email" id="email" placeholder="Email" class="border p-2 w-full"/>
+  <input type="password" id="password" placeholder="Password" class="border p-2 w-full"/>
+  <button class="bg-blue-600 text-white px-4 py-2">Login</button>
+</form>
+
+<script type="module">
+import { supabase } from "/src/lib/supabase.js";
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value
+  });
+
+  if (!error) window.location.href = "/admin";
+  else alert(error.message);
+});
+</script>
+
+</BaseLayout>
