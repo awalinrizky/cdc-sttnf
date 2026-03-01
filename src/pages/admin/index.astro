@@ -1,0 +1,45 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { supabase } from "../../lib/supabase";
+
+const { data: jobs } = await supabase.from("jobs").select("*");
+const { data: posts } = await supabase.from("posts").select("*");
+---
+
+<BaseLayout>
+<h1 class="text-3xl font-bold">CMS Admin CDC</h1>
+
+<h2 class="text-xl font-bold mt-8">Tambah Lowongan</h2>
+
+<form id="jobForm" class="space-y-2">
+  <input id="title" placeholder="Judul" class="border p-2 w-full"/>
+  <input id="location" placeholder="Lokasi" class="border p-2 w-full"/>
+  <textarea id="description" placeholder="Deskripsi" class="border p-2 w-full"></textarea>
+  <button class="bg-green-600 text-white px-4 py-2">Tambah</button>
+</form>
+
+<h2 class="text-xl font-bold mt-10">Daftar Lowongan</h2>
+
+{jobs?.map(job => (
+  <div class="bg-white p-4 mt-4 rounded shadow">
+    <h3 class="font-bold">{job.title}</h3>
+    <p>{job.location}</p>
+  </div>
+))}
+
+<script type="module">
+import { supabase } from "/src/lib/supabase.js";
+
+jobForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  await supabase.from("jobs").insert({
+    title: title.value,
+    location: location.value,
+    description: description.value
+  });
+  alert("Berhasil ditambahkan");
+  location.reload();
+});
+</script>
+
+</BaseLayout>

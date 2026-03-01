@@ -12,18 +12,31 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 </form>
 
 <script type="module">
-import { supabase } from "/src/lib/supabase.js";
+  import { supabase } from "/src/lib/supabase.js";
 
-loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const { error } = await supabase.auth.signInWithPassword({
-    email: email.value,
-    password: password.value
+  const form = document.getElementById("loginForm");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      alert("Login gagal: " + error.message);
+      return;
+    }
+
+    console.log("Login sukses:", data);
+
+    // Redirect pakai cara paling aman
+    window.location.href = "/admin";
   });
-
-  if (!error) window.location.href = "/admin";
-  else alert(error.message);
-});
 </script>
 
 </BaseLayout>
