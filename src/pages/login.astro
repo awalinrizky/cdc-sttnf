@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { supabase } from "../lib/supabase.js";
 ---
 
 <BaseLayout>
@@ -21,36 +22,28 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <button class="bg-blue-600 text-white px-4 py-2">Login</button>
   </form>
 
-  <script type="module">
-    import { supabase } from "/src/lib/supabase.js";
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("loginForm");
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("loginForm");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      if (!form) {
-        console.log("Form tidak ditemukan");
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        alert(error.message);
         return;
       }
 
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
-
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) {
-          alert(error.message);
-          return;
-        }
-
-        console.log("Login sukses (online)");
-        window.location.href = window.location.origin + "/admin/";
-      });
+      window.location.href = "/admin/";
     });
-  </script>
+  });
+</script>
 </BaseLayout>
