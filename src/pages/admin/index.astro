@@ -1,75 +1,220 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 ---
 
-<BaseLayout>
-  <h1 class="text-3xl font-bold">CMS Admin CDC</h1>
+<BaseLayout title="CDC STT-NF | Dashboard Admin">
+  <section class="admin-page">
+    <div class="container">
+      <div class="admin-header">
+        <div>
+          <p class="eyebrow">Admin Panel</p>
+          <h1>Dashboard Admin</h1>
+          <p class="subtext">
+            Kelola lowongan kerja dan magang CDC STT-NF.
+          </p>
+        </div>
 
-  <h2 class="text-xl font-bold mt-8">Tambah Lowongan</h2>
+        <div class="header-actions">
+          <span id="roleBadge" class="role-badge">Memuat role...</span>
+          <button id="logoutBtn" class="btn btn-danger">Logout</button>
+        </div>
+      </div>
 
-  <form id="jobForm" class="space-y-2">
-    <input id="title" placeholder="Judul" class="border p-2 w-full" />
-    <input id="locationInput" placeholder="Lokasi" class="border p-2 w-full" />
-    <textarea id="description" placeholder="Deskripsi" class="border p-2 w-full"></textarea>
-    <button class="bg-green-600 text-white px-4 py-2">Tambah</button>
-  </form>
+      <div class="grid">
+        <div class="card">
+          <h3>Total Lowongan</h3>
+          <p id="jobCount" class="stat-value">-</p>
+          <small>Jumlah semua data lowongan di sistem</small>
+        </div>
 
-  <h2 class="text-xl font-bold mt-10">Daftar Lowongan</h2>
-  <div id="jobList"></div>
+        <div class="card">
+          <h3>Lowongan Aktif</h3>
+          <p id="activeCount" class="stat-value">-</p>
+          <small>Hanya lowongan yang tampil di publik</small>
+        </div>
 
-  <script type="module" define:vars={{ supabaseUrl, supabaseAnonKey }}>
-    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+        <div class="card">
+          <h3>Manajemen</h3>
+          <p class="card-copy">Masuk ke halaman kelola lowongan untuk tambah, edit, atau hapus data.</p>
+          <a href="/admin/job" class="btn btn-primary">Kelola Lowongan</a>
+        </div>
+      </div>
 
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      <div class="card user-card">
+        <h3>Informasi Akun</h3>
+        <p><strong>Email:</strong> <span id="userEmail">-</span></p>
+        <p><strong>Role:</strong> <span id="userRole">-</span></p>
+      </div>
+    </div>
+  </section>
 
-    // 🔐 CEK SESSION
-    const { data: sessionData } = await supabase.auth.getSession();
-
-    if (!sessionData.session) {
-      window.location.replace("/login");
+  <style>
+    .container {
+      width: min(100% - 32px, 1120px);
+      margin-inline: auto;
     }
 
-    // 🔄 LOAD DATA
-    async function loadJobs() {
-      const { data } = await supabase.from("jobs").select("*");
-
-      const container = document.getElementById("jobList");
-      container.innerHTML = "";
-
-      data?.forEach((job) => {
-        container.innerHTML += `
-          <div class="bg-white p-4 mt-4 rounded shadow">
-            <h3 class="font-bold">${job.title}</h3>
-            <p>${job.location}</p>
-          </div>
-        `;
-      });
+    .admin-page {
+      padding: 40px 0 64px;
     }
 
-    loadJobs();
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
 
-    // ➕ TAMBAH DATA
-    const jobForm = document.getElementById("jobForm");
+    .eyebrow {
+      color: #16a34a;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
 
-    jobForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    h1 {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
 
-      const title = document.getElementById("title").value;
-      const locationValue = document.getElementById("locationInput").value;
-      const description = document.getElementById("description").value;
+    .subtext {
+      color: #64748b;
+      line-height: 1.8;
+    }
 
-      await supabase.from("jobs").insert({
-        title,
-        location: locationValue,
-        description
-      });
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-      alert("Berhasil ditambahkan");
-      jobForm.reset();
-      loadJobs();
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      background: #dcfce7;
+      color: #166534;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+
+    .stat-value {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+
+    .card small,
+    .card-copy,
+    .user-card p {
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .user-card p {
+      margin-top: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script type="module">
+    import { supabase } from "../../lib/supabase.js";
+
+    const roleBadge = document.getElementById("roleBadge");
+    const userEmail = document.getElementById("userEmail");
+    const userRole = document.getElementById("userRole");
+    const jobCount = document.getElementById("jobCount");
+    const activeCount = document.getElementById("activeCount");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    async function guardAdmin() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        window.location.href = "/login";
+        return null;
+      }
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error || !profile) {
+        await supabase.auth.signOut();
+        window.location.href = "/login";
+        return null;
+      }
+
+      if (profile.role !== "admin" && profile.role !== "superadmin") {
+        window.location.href = "/403";
+        return null;
+      }
+
+      userEmail.textContent = session.user.email || "-";
+      userRole.textContent = profile.role;
+      roleBadge.textContent = profile.role.toUpperCase();
+
+      return { session, profile };
+    }
+
+    async function loadStats() {
+      const { count: totalJobs } = await supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true });
+
+      const { count: activeJobs } = await supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .eq("is_active", true);
+
+      jobCount.textContent = totalJobs ?? 0;
+      activeCount.textContent = activeJobs ?? 0;
+    }
+
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.href = "/login";
     });
+
+    const authResult = await guardAdmin();
+    if (authResult) {
+      await loadStats();
+    }
   </script>
 </BaseLayout>

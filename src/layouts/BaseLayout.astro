@@ -1,42 +1,172 @@
 ---
-import BaseHead from "../components/BaseHead.astro";
-import Header from "../components/Header.astro";
-import Footer from "../components/Footer.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../consts";
-
-const { title } = Astro.props;
+const { title = "CDC STT-NF" } = Astro.props;
+const year = new Date().getFullYear();
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
-    <BaseHead title={title || SITE_TITLE} description={SITE_DESCRIPTION} />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content="Career Development Center STT-NF" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f8fafc;
+        --white: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --primary: #0f172a;
+        --accent: #22c55e;
+        --border: #e2e8f0;
+        --danger: #ef4444;
+        --container: 1120px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .container {
+        width: min(100% - 32px, var(--container));
+        margin-inline: auto;
+      }
+
+      nav {
+        background: var(--primary);
+        color: white;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .nav-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 72px;
+      }
+
+      .logo {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        font-size: 14px;
+        color: #e2e8f0;
+      }
+
+      .nav-links a:hover {
+        color: white;
+      }
+
+      main {
+        min-height: 80vh;
+      }
+
+      footer {
+        margin-top: 64px;
+        background: var(--primary);
+        color: #cbd5e1;
+        padding: 32px 0;
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 10px;
+        padding: 12px 18px;
+        cursor: pointer;
+        font-weight: 600;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        opacity: 0.92;
+      }
+
+      .btn-danger {
+        background: var(--danger);
+        color: white;
+      }
+
+      .btn-outline {
+        background: white;
+        color: var(--text);
+        border: 1px solid var(--border);
+      }
+
+      @media (max-width: 720px) {
+        .nav-wrap {
+          flex-direction: column;
+          gap: 12px;
+          padding: 16px 0;
+        }
+
+        .nav-links {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+      }
+    </style>
   </head>
   <body>
-    <Header />
+    <nav>
+      <div class="container nav-wrap">
+        <a href="/" class="logo">CDC STT-NF</a>
+        <div class="nav-links">
+          <a href="/">Beranda</a>
+          <a href="/lowongan">Lowongan</a>
+          <a href="/login">Admin</a>
+        </div>
+      </div>
+    </nav>
 
-    <main class="container">
+    <main>
       <slot />
     </main>
 
-    <Footer />
+    <footer>
+      <div class="container">
+        Career Development Center (CDC) <br />
+        Sekolah Tinggi Teknologi Terpadu Nurul Fikri <br />
+        © {year} All rights reserved
+      </div>
+    </footer>
   </body>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f8fafc;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: auto;
-      padding: 40px 20px;
-    }
-
-    h1 {
-      color: #0f172a;
-    }
-  </style>
 </html>

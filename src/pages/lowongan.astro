@@ -1,152 +1,239 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+export const prerender = false;
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { supabase } from "../lib/supabase.js";
+
+const { data: jobs, error } = await supabase
+  .from("jobs")
+  .select("id, title, location, description, company_name, apply_url, is_active, created_at")
+  .eq("is_active", true)
+  .order("created_at", { ascending: false });
 ---
 
-<BaseLayout>
+<BaseLayout title="CDC STT-NF | Lowongan">
   <section class="hero">
-    <h1>Lowongan & Magang CDC STT-NF</h1>
-    <p>Temukan peluang karier terbaik untuk mahasiswa & alumni</p>
+    <div class="container">
+      <span class="badge">Lowongan & Magang</span>
+      <h1>Temukan peluang karier terbaik untuk mahasiswa dan alumni</h1>
+      <p>Cari lowongan berdasarkan posisi, perusahaan, atau lokasi.</p>
+    </div>
   </section>
 
-  <section class="filter-section">
-    <input type="text" id="searchInput" placeholder="Cari lowongan..." />
-  </section>
+  <section class="section">
+    <div class="container">
+      <div class="toolbar">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Cari judul, perusahaan, atau lokasi..."
+        />
+      </div>
 
-  <section id="jobContainer" class="job-grid"></section>
+      {
+        error ? (
+          <div class="empty-state">
+            <p>Gagal memuat lowongan. Silakan coba lagi nanti.</p>
+          </div>
+        ) : jobs && jobs.length > 0 ? (
+          <div id="jobGrid" class="job-grid">
+            {jobs.map((job) => (
+              <article
+                class="job-card"
+                data-search={`${job.title ?? ""} ${job.company_name ?? ""} ${job.location ?? ""}`.toLowerCase()}
+              >
+                <div class="job-head">
+                  <div>
+                    <h3>{job.title}</h3>
+                    <p class="company">{job.company_name || "Perusahaan belum diisi"}</p>
+                  </div>
+                  <span class="status">Aktif</span>
+                </div>
+
+                <p class="location">{job.location}</p>
+                <p class="description">{job.description || "Belum ada deskripsi."}</p>
+
+                <div class="actions">
+                  <a href={`/lowongan/${job.id}`} class="btn btn-outline">Detail</a>
+                  {job.apply_url ? (
+                    <a href={job.apply_url} class="btn btn-primary" target="_blank" rel="noreferrer">
+                      Apply
+                    </a>
+                  ) : (
+                    <button class="btn btn-primary" disabled>Tidak ada link</button>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div class="empty-state">
+            <p>Belum ada lowongan tersedia.</p>
+          </div>
+        )
+      }
+    </div>
+  </section>
 
   <style>
-    body {
-      background: #f4f6f9;
-      font-family: 'Inter', sans-serif;
+    .container {
+      width: min(100% - 32px, 1120px);
+      margin-inline: auto;
     }
 
     .hero {
-      text-align: center;
-      padding: 60px 20px;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: white;
+      padding: 72px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      margin-bottom: 16px;
     }
 
     .hero h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.08;
+      margin-bottom: 12px;
+      max-width: 760px;
     }
 
     .hero p {
-      opacity: 0.8;
+      color: #cbd5e1;
+      line-height: 1.8;
+      max-width: 620px;
     }
 
-    .filter-section {
-      text-align: center;
-      margin: 30px 0;
+    .section {
+      padding: 48px 0 64px;
     }
 
-    #searchInput {
-      padding: 12px 16px;
-      width: 300px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+    .toolbar {
+      margin-bottom: 24px;
+    }
+
+    .toolbar input {
+      width: 100%;
+      max-width: 520px;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 13px 15px;
       font-size: 14px;
+      outline: none;
+      background: white;
+    }
+
+    .toolbar input:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
     }
 
     .job-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 20px;
-      padding: 20px 40px 60px;
     }
 
     .job-card {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      transition: all 0.2s ease;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+      display: grid;
+      gap: 14px;
     }
 
-    .job-card:hover {
-      transform: translateY(-4px);
+    .job-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
     }
 
     .job-card h3 {
+      font-size: 20px;
       margin-bottom: 6px;
-      font-size: 18px;
-      color: #0f172a;
     }
 
-    .job-card .location {
-      font-size: 13px;
-      color: #64748b;
-      margin-bottom: 10px;
-    }
-
-    .job-card p {
+    .company {
+      color: #475569;
       font-size: 14px;
-      color: #334155;
+    }
+
+    .status {
+      background: #dcfce7;
+      color: #166534;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .location {
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .description {
+      color: #475569;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 6px;
     }
 
     .empty-state {
       text-align: center;
-      margin-top: 40px;
       color: #64748b;
+      padding: 50px 0;
+      font-size: 15px;
+    }
+
+    @media (max-width: 980px) {
+      .job-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .job-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 
-  <script type="module" define:vars={{ supabaseUrl, supabaseAnonKey }}>
-    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-    const container = document.getElementById("jobContainer");
+  <script>
     const searchInput = document.getElementById("searchInput");
+    const jobGrid = document.getElementById("jobGrid");
 
-    let jobs = [];
+    if (searchInput instanceof HTMLInputElement && jobGrid instanceof HTMLElement) {
+      const cards = Array.from(jobGrid.querySelectorAll(".job-card"));
 
-    async function loadJobs() {
-      const { data } = await supabase
-        .from("jobs")
-        .select("*")
-        .order("id", { ascending: false });
+      searchInput.addEventListener("input", () => {
+        const keyword = searchInput.value.toLowerCase().trim();
 
-      jobs = data || [];
-      renderJobs(jobs);
-    }
+        cards.forEach((card) => {
+          if (!(card instanceof HTMLElement)) return;
 
-    function renderJobs(data) {
-      container.innerHTML = "";
-
-      if (data.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <p>Belum ada lowongan tersedia.</p>
-          </div>
-        `;
-        return;
-      }
-
-      data.forEach(job => {
-        container.innerHTML += `
-          <div class="job-card">
-            <h3>${job.title}</h3>
-            <div class="location">${job.location}</div>
-            <p>${job.description || ""}</p>
-          </div>
-        `;
+          const haystack = card.getAttribute("data-search") || "";
+          const visible = haystack.includes(keyword);
+          card.style.display = visible ? "grid" : "none";
+        });
       });
     }
-
-    searchInput.addEventListener("input", () => {
-      const keyword = searchInput.value.toLowerCase();
-      const filtered = jobs.filter(job =>
-        job.title.toLowerCase().includes(keyword) ||
-        job.location.toLowerCase().includes(keyword)
-      );
-      renderJobs(filtered);
-    });
-
-    loadJobs();
   </script>
 </BaseLayout>

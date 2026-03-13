@@ -153,3 +153,23 @@ hr {
 	/* added line to stop words getting smushed together (as they go onto separate lines and some screen readers do not understand line feeds as a space */
 	white-space: nowrap;
 }
+
+.badge {
+  display:inline-block;
+  background:#22c55e;
+  color:white;
+  font-size:11px;
+  padding:4px 8px;
+  border-radius:6px;
+  margin-bottom:8px;
+}
+
+.apply-btn {
+  margin-top:12px;
+  padding:8px 14px;
+  background:#0f172a;
+  color:white;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
