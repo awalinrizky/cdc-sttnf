@@ -1,0 +1,41 @@
+---
+const { job } = Astro.props
+---
+
+<div class="job-card">
+
+<h3>{job.title}</h3>
+
+<p class="company">
+{job.company_name}
+</p>
+
+<p class="location">
+{job.location}
+</p>
+
+<a href={`/lowongan/${job.id}`}>
+Lihat Detail →
+</a>
+
+</div>
+
+<style>
+
+.job-card{
+padding:20px;
+border:1px solid #e2e8f0;
+border-radius:14px;
+background:white;
+}
+
+.company{
+color:#64748b;
+}
+
+.location{
+font-size:14px;
+margin-bottom:10px;
+}
+
+</style>

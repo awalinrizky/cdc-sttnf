@@ -3,13 +3,15 @@ const { title = "CDC STT-NF" } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <meta name="description" content="Career Development Center STT-NF" />
+    <meta property="og:title" content="CDC STT‑NF" />
+    <meta property="og:description" content="Career Development Center" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
@@ -33,7 +35,8 @@ const year = new Date().getFullYear();
         box-sizing: border-box;
       }
 
-      html, body {
+      html,
+      body {
         font-family: "Inter", sans-serif;
         background: var(--bg);
         color: var(--text);
@@ -55,7 +58,7 @@ const year = new Date().getFullYear();
         position: sticky;
         top: 0;
         z-index: 50;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       .nav-wrap {
@@ -150,9 +153,12 @@ const year = new Date().getFullYear();
       <div class="container nav-wrap">
         <a href="/" class="logo">CDC STT-NF</a>
         <div class="nav-links">
-          <a href="/">Beranda</a>
-          <a href="/lowongan">Lowongan</a>
-          <a href="/login">Admin</a>
+          <a href="/">Home</a>
+          <a href="/lowongan">Jobs</a>
+          <a href="/workshop">Workshops</a>
+          <a href="/roadmap">Roadmap</a>
+          <a href="/blog">Blog</a>
+          <a href="/login" class="btn btn-outline"> Admin </a>
         </div>
       </div>
     </nav>

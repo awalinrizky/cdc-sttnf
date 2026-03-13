@@ -1,0 +1,575 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="CDC STT-NF | Kelola Lowongan">
+  <section class="admin-job-page">
+    <div class="container">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Admin Panel</p>
+          <h1>Kelola Lowongan</h1>
+          <p class="subtext">Tambah, edit, hapus, dan atur status lowongan kerja.</p>
+        </div>
+
+        <div class="page-actions">
+          <a href="/admin" class="btn btn-outline">Kembali ke Dashboard</a>
+          <button id="logoutBtn" class="btn btn-danger">Logout</button>
+        </div>
+      </div>
+
+      <div class="layout-grid">
+        <div class="form-card">
+          <h2 id="formTitle">Tambah Lowongan</h2>
+
+          <form id="jobForm" class="job-form">
+            <div class="form-group">
+              <label for="title">Judul Lowongan</label>
+              <input type="text" id="title" required />
+            </div>
+
+            <div class="form-group">
+              <label for="companyName">Nama Perusahaan</label>
+              <input type="text" id="companyName" />
+            </div>
+
+            <div class="form-group">
+              <label for="jobLocation">Lokasi</label>
+              <input type="text" id="jobLocation" required />
+            </div>
+
+            <div class="form-group">
+              <label for="applyUrl">Link Apply</label>
+              <input type="url" id="applyUrl" placeholder="https://..." />
+            </div>
+
+            <div class="form-group">
+              <label for="description">Deskripsi</label>
+              <textarea id="description" rows="6"></textarea>
+            </div>
+
+            <div class="checkbox-group">
+              <input type="checkbox" id="isActive" checked />
+              <label for="isActive">Tampilkan di publik</label>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="submitBtn" class="btn btn-primary">
+                Simpan Lowongan
+              </button>
+              <button type="button" id="cancelEditBtn" class="btn btn-outline" hidden>
+                Batal Edit
+              </button>
+            </div>
+
+            <p id="formMessage" class="message"></p>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <div class="list-head">
+            <h2>Daftar Lowongan</h2>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Cari judul / perusahaan / lokasi..."
+            />
+          </div>
+
+          <div id="jobList" class="job-list">
+            <p class="empty">Memuat data lowongan...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .container {
+      width: min(100% - 32px, 1200px);
+      margin-inline: auto;
+    }
+
+    .admin-job-page {
+      padding: 40px 0 64px;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      color: #16a34a;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+    }
+
+    h1 {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
+
+    .subtext {
+      color: #64748b;
+      line-height: 1.8;
+    }
+
+    .page-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+    }
+
+    .form-card,
+    .list-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .form-card h2,
+    .list-card h2 {
+      margin-bottom: 18px;
+      font-size: 24px;
+    }
+
+    .job-form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 8px;
+    }
+
+    .form-group label,
+    .checkbox-group label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .list-head input {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .list-head input:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .checkbox-group input {
+      width: 16px;
+      height: 16px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .message {
+      min-height: 20px;
+      color: #ef4444;
+      font-size: 14px;
+    }
+
+    .message.success {
+      color: #16a34a;
+    }
+
+    .list-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .list-head input {
+      max-width: 340px;
+    }
+
+    .job-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .job-item {
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .job-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+    }
+
+    .job-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .job-meta {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-active {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .status-inactive {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .job-description {
+      color: #475569;
+      line-height: 1.8;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+
+    .job-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .empty {
+      color: #64748b;
+      text-align: center;
+      padding: 24px 0;
+    }
+
+    @media (max-width: 980px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script type="module">
+    import { supabase } from "../../lib/supabase.js";
+
+    const jobForm = document.getElementById("jobForm");
+    const formTitle = document.getElementById("formTitle");
+    const submitBtn = document.getElementById("submitBtn");
+    const cancelEditBtn = document.getElementById("cancelEditBtn");
+    const formMessage = document.getElementById("formMessage");
+    const jobList = document.getElementById("jobList");
+    const searchInput = document.getElementById("searchInput");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const titleInput = document.getElementById("title");
+    const companyNameInput = document.getElementById("companyName");
+    const jobLocationInput = document.getElementById("jobLocation");
+    const applyUrlInput = document.getElementById("applyUrl");
+    const descriptionInput = document.getElementById("description");
+    const isActiveInput = document.getElementById("isActive");
+
+    let editingId = null;
+    let jobs = [];
+
+    function setMessage(text, type = "error") {
+      formMessage.textContent = text;
+      formMessage.className = `message ${type === "success" ? "success" : ""}`;
+    }
+
+    function resetForm() {
+      editingId = null;
+      formTitle.textContent = "Tambah Lowongan";
+      submitBtn.textContent = "Simpan Lowongan";
+      cancelEditBtn.hidden = true;
+      jobForm.reset();
+      isActiveInput.checked = true;
+      setMessage("");
+    }
+
+    function fillForm(job) {
+      editingId = job.id;
+      formTitle.textContent = "Edit Lowongan";
+      submitBtn.textContent = "Update Lowongan";
+      cancelEditBtn.hidden = false;
+
+      titleInput.value = job.title || "";
+      companyNameInput.value = job.company_name || "";
+      jobLocationInput.value = job.location || "";
+      applyUrlInput.value = job.apply_url || "";
+      descriptionInput.value = job.description || "";
+      isActiveInput.checked = !!job.is_active;
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function renderJobs(data) {
+      jobList.innerHTML = "";
+
+      if (!data.length) {
+        jobList.innerHTML = `<p class="empty">Belum ada lowongan.</p>`;
+        return;
+      }
+
+      data.forEach((job) => {
+        const item = document.createElement("div");
+        item.className = "job-item";
+
+        const top = document.createElement("div");
+        top.className = "job-top";
+
+        const info = document.createElement("div");
+
+        const title = document.createElement("div");
+        title.className = "job-title";
+        title.textContent = job.title;
+
+        const meta = document.createElement("div");
+        meta.className = "job-meta";
+        meta.textContent = `${job.company_name || "Perusahaan belum diisi"} • ${job.location}`;
+
+        info.appendChild(title);
+        info.appendChild(meta);
+
+        const badge = document.createElement("span");
+        badge.className = `status-badge ${job.is_active ? "status-active" : "status-inactive"}`;
+        badge.textContent = job.is_active ? "Aktif" : "Nonaktif";
+
+        top.appendChild(info);
+        top.appendChild(badge);
+
+        const desc = document.createElement("div");
+        desc.className = "job-description";
+        desc.textContent = job.description || "Belum ada deskripsi.";
+
+        const actions = document.createElement("div");
+        actions.className = "job-actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "btn btn-outline";
+        editBtn.textContent = "Edit";
+        editBtn.addEventListener("click", () => fillForm(job));
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "btn btn-danger";
+        deleteBtn.textContent = "Hapus";
+        deleteBtn.addEventListener("click", () => deleteJob(job.id));
+
+        actions.appendChild(editBtn);
+        actions.appendChild(deleteBtn);
+
+        item.appendChild(top);
+        item.appendChild(desc);
+        item.appendChild(actions);
+
+        jobList.appendChild(item);
+      });
+    }
+
+    async function guardAdmin() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        window.location.href = "/login";
+        return false;
+      }
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error || !profile) {
+        await supabase.auth.signOut();
+        window.location.href = "/login";
+        return false;
+      }
+
+      if (profile.role !== "admin" && profile.role !== "superadmin") {
+        window.location.href = "/403";
+        return false;
+      }
+
+      return true;
+    }
+
+    async function loadJobs() {
+      jobList.innerHTML = `<p class="empty">Memuat data lowongan...</p>`;
+
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        jobList.innerHTML = `<p class="empty">Gagal memuat lowongan.</p>`;
+        return;
+      }
+
+      jobs = data || [];
+      renderJobs(jobs);
+    }
+
+    async function createJob(payload) {
+      const { error } = await supabase.from("jobs").insert(payload);
+      return error;
+    }
+
+    async function updateJob(id, payload) {
+      const { error } = await supabase.from("jobs").update(payload).eq("id", id);
+      return error;
+    }
+
+    async function deleteJob(id) {
+      const confirmed = confirm("Yakin ingin menghapus lowongan ini?");
+      if (!confirmed) return;
+
+      const { error } = await supabase.from("jobs").delete().eq("id", id);
+
+      if (error) {
+        alert("Gagal menghapus lowongan: " + error.message);
+        return;
+      }
+
+      if (editingId === id) resetForm();
+      await loadJobs();
+    }
+
+    function getPayload() {
+      return {
+        title: titleInput.value.trim(),
+        company_name: companyNameInput.value.trim(),
+        location: jobLocationInput.value.trim(),
+        apply_url: applyUrlInput.value.trim(),
+        description: descriptionInput.value.trim(),
+        is_active: isActiveInput.checked,
+      };
+    }
+
+    jobForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const payload = getPayload();
+
+      if (!payload.title || !payload.location) {
+        setMessage("Judul lowongan dan lokasi wajib diisi.");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = editingId ? "Mengupdate..." : "Menyimpan...";
+      setMessage("");
+
+      let error = null;
+
+      if (editingId) {
+        error = await updateJob(editingId, payload);
+      } else {
+        error = await createJob(payload);
+      }
+
+      if (error) {
+        setMessage("Gagal menyimpan data: " + error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = editingId ? "Update Lowongan" : "Simpan Lowongan";
+        return;
+      }
+
+      setMessage(
+        editingId ? "Lowongan berhasil diperbarui." : "Lowongan berhasil ditambahkan.",
+        "success"
+      );
+
+      resetForm();
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Simpan Lowongan";
+      await loadJobs();
+    });
+
+    cancelEditBtn.addEventListener("click", resetForm);
+
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.toLowerCase().trim();
+
+      if (!keyword) {
+        renderJobs(jobs);
+        return;
+      }
+
+      const filtered = jobs.filter((job) => {
+        return (
+          (job.title || "").toLowerCase().includes(keyword) ||
+          (job.company_name || "").toLowerCase().includes(keyword) ||
+          (job.location || "").toLowerCase().includes(keyword)
+        );
+      });
+
+      renderJobs(filtered);
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      window.location.href = "/login";
+    });
+
+    const allowed = await guardAdmin();
+    if (allowed) {
+      resetForm();
+      await loadJobs();
+    }
+  </script>
+</BaseLayout>

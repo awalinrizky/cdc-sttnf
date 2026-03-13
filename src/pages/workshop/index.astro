@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { supabase } from "../../lib/supabase.js";
+
+const { data: events } = await supabase
+.from("events")
+.select("*")
+.eq("is_active",true)
+---
+
+<BaseLayout title="Workshop">
+
+<section class="section">
+
+<div class="container">
+
+<h1>Workshop & Seminar</h1>
+
+{
+events?.map(event => (
+
+<div class="event">
+
+<h3>{event.title}</h3>
+
+<p>{event.description}</p>
+
+<a href={event.register_url} class="btn btn-primary">
+Daftar
+</a>
+
+</div>
+
+))
+}
+
+</div>
+
+</section>
+
+</BaseLayout>

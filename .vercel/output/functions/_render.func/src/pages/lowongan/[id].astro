@@ -1,0 +1,159 @@
+---
+export const prerender = false;
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { supabase } from "../../lib/supabase.js";
+
+const { id } = Astro.params;
+
+const { data: job, error } = await supabase
+  .from("jobs")
+  .select("id, title, company_name, location, description, apply_url, is_active, created_at")
+  .eq("id", id)
+  .eq("is_active", true)
+  .single();
+
+if (!job || error) {
+  return Astro.redirect("/lowongan");
+}
+---
+
+<BaseLayout title={`CDC STT-NF | ${job.title}`}>
+  <section class="detail-hero">
+    <div class="container">
+      <a href="/lowongan" class="back-link">← Kembali ke Lowongan</a>
+      <h1>{job.title}</h1>
+      <p class="company">{job.company_name || "Perusahaan belum diisi"}</p>
+      <p class="location">{job.location}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container detail-layout">
+      <article class="content-card">
+        <h2>Deskripsi Lowongan</h2>
+        <div class="description">
+          {job.description || "Belum ada deskripsi lowongan."}
+        </div>
+      </article>
+
+      <aside class="sidebar-card">
+        <h3>Ringkasan</h3>
+        <div class="info-row">
+          <span>Perusahaan</span>
+          <strong>{job.company_name || "-"}</strong>
+        </div>
+        <div class="info-row">
+          <span>Lokasi</span>
+          <strong>{job.location || "-"}</strong>
+        </div>
+
+        {
+          job.apply_url ? (
+            <a href={job.apply_url} class="btn btn-primary full" target="_blank" rel="noreferrer">
+              Apply Sekarang
+            </a>
+          ) : (
+            <button class="btn btn-primary full" disabled>Link Apply Belum Tersedia</button>
+          )
+        }
+      </aside>
+    </div>
+  </section>
+
+  <style>
+    .container {
+      width: min(100% - 32px, 1120px);
+      margin-inline: auto;
+    }
+
+    .detail-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 56px 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #cbd5e1;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      color: white;
+    }
+
+    .detail-hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.08;
+      margin-bottom: 10px;
+    }
+
+    .company {
+      font-size: 18px;
+      margin-bottom: 6px;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .location {
+      color: #cbd5e1;
+    }
+
+    .section {
+      padding: 48px 0 64px;
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1.5fr 0.8fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .content-card,
+    .sidebar-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .content-card h2,
+    .sidebar-card h3 {
+      margin-bottom: 18px;
+    }
+
+    .description {
+      color: #475569;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+
+    .info-row span {
+      color: #64748b;
+    }
+
+    .full {
+      width: 100%;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .detail-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</BaseLayout>

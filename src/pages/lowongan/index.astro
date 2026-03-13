@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import JobCard from "../../components/JobCard.astro";
+import { supabase } from "../../lib/supabase.js";
+
+const { data: jobs } = await supabase
+.from("jobs")
+.select("*")
+.eq("is_active",true)
+.order("created_at",{ascending:false})
+
+---
+<input
+type="text"
+id="search"
+placeholder="Cari lowongan..."
+>
+<BaseLayout title="Lowongan Kerja">
+
+<section class="section">
+
+<div class="container">
+
+<h1>Lowongan Kerja</h1>
+
+<div class="job-grid">
+
+{
+jobs?.map(job => (
+<JobCard job={job}/>
+))
+}
+
+</div>
+
+</div>
+
+</section>
+
+</BaseLayout>

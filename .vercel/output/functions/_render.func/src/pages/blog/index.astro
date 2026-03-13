@@ -1,0 +1,37 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { supabase } from "../../lib/supabase.js";
+
+const { data: posts } = await supabase
+.from("posts")
+.select("*")
+.eq("published",true)
+---
+
+<BaseLayout title="Blog">
+
+<section class="section">
+
+<div class="container">
+
+<h1>Artikel Karier</h1>
+
+{
+posts?.map(post => (
+
+<div>
+
+<h3>{post.title}</h3>
+
+<a href={`/blog/${post.slug}`}>Baca</a>
+
+</div>
+
+))
+}
+
+</div>
+
+</section>
+
+</BaseLayout>
