@@ -63,10 +63,6 @@
 			"dest": "_render"
 		},
 		{
-			"src": "^/lowongan/?$",
-			"dest": "_render"
-		},
-		{
 			"src": "^/roadmap/?$",
 			"dest": "_render"
 		},
