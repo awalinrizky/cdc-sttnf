@@ -3,34 +3,48 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import JobCard from "../../components/JobCard.astro";
 import { supabase } from "../../lib/supabase.js";
 
-const { data: jobs } = await supabase
-.from("jobs")
-.select("*")
-.eq("is_active",true)
-.order("created_at",{ascending:false})
-
+const { data: jobs, error } = await supabase
+  .from("jobs")
+  .select("*")
+  .eq("is_active", true)
+  .order("created_at", { ascending: false });
 ---
 
-<BaseLayout title="Lowongan Kerja">
+<BaseLayout title="Lowongan Kerja | CDC STT-NF">
+  <section class="section">
+    <div class="container">
+      <h1>Lowongan Kerja</h1>
 
-<section class="section">
+      {
+        error ? (
+          <p>Gagal memuat data: {error.message}</p>
+        ) : jobs?.length ? (
+          <div class="job-grid">
+            {jobs.map((job) => <JobCard job={job} />)}
+          </div>
+        ) : (
+          <p class="empty-state">Belum ada lowongan tersedia saat ini.</p>
+        )
+      }
+    </div>
+  </section>
 
-<div class="container">
+  <style>
+    .section {
+      padding: 60px 0;
+    }
 
-<h1>Lowongan Kerja</h1>
+    .job-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+    }
 
-<div class="job-grid">
-
-{
-jobs?.map(job => (
-<JobCard job={job}/>
-))
-}
-
-</div>
-
-</div>
-
-</section>
-
+    @media (max-width: 900px) {
+      .job-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </BaseLayout>

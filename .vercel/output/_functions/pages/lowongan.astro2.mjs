@@ -1,7 +1,7 @@
 import { f as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead, h as addAttribute, l as renderScript } from '../chunks/astro/server_s_qG7lfK.mjs';
 import 'piccolore';
-import { $ as $$BaseLayout } from '../chunks/BaseLayout_DIyg3etq.mjs';
-import { s as supabase } from '../chunks/supabase_Bqk9tzv3.mjs';
+import { $ as $$BaseLayout } from '../chunks/BaseLayout_CTuTJhWc.mjs';
+import { s as supabase } from '../chunks/supabase_BFq8iUpn.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
 

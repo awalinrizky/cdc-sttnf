@@ -9,9 +9,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <div>
           <p class="eyebrow">Admin Panel</p>
           <h1>Dashboard Admin</h1>
-          <p class="subtext">
-            Kelola lowongan kerja dan magang CDC STT-NF.
-          </p>
+          <p class="subtext">Kelola lowongan kerja dan magang CDC STT-NF.</p>
         </div>
 
         <div class="header-actions">
@@ -35,7 +33,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
         <div class="card">
           <h3>Manajemen</h3>
-          <p class="card-copy">Masuk ke halaman kelola lowongan untuk tambah, edit, atau hapus data.</p>
+          <p class="card-copy">
+            Masuk ke halaman kelola lowongan untuk tambah, edit, atau hapus data.
+          </p>
           <a href="/admin/job" class="btn btn-primary">Kelola Lowongan</a>
         </div>
       </div>
@@ -149,7 +149,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
   </style>
 
-  <script type="module">
+  <script>
+    // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
 
     const roleBadge = document.getElementById("roleBadge");
@@ -162,21 +163,40 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     async function guardAdmin() {
       const {
         data: { session },
+        error: sessionError,
       } = await supabase.auth.getSession();
+
+      if (sessionError) {
+        alert("Session error: " + sessionError.message);
+        window.location.href = "/login";
+        return null;
+      }
 
       if (!session) {
         window.location.href = "/login";
         return null;
       }
 
-      const { data: profile, error } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error || !profile) {
-        await supabase.auth.signOut();
+      console.log("ADMIN PROFILE:", {
+        profile,
+        profileError,
+        userId: session.user.id,
+      });
+
+      if (profileError) {
+        alert("Profile error: " + profileError.message);
+        window.location.href = "/login";
+        return null;
+      }
+
+      if (!profile) {
+        alert("Profile admin tidak ditemukan.");
         window.location.href = "/login";
         return null;
       }
@@ -186,29 +206,42 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         return null;
       }
 
-      userEmail.textContent = session.user.email || "-";
-      userRole.textContent = profile.role;
-      roleBadge.textContent = profile.role.toUpperCase();
+      if (userEmail) userEmail.textContent = session.user.email || "-";
+      if (userRole) userRole.textContent = profile.role;
+      if (roleBadge) roleBadge.textContent = profile.role.toUpperCase();
 
       return { session, profile };
     }
 
     async function loadStats() {
-      const { count: totalJobs } = await supabase
+      const { count: totalJobs, error: totalError } = await supabase
         .from("jobs")
         .select("*", { count: "exact", head: true });
 
-      const { count: activeJobs } = await supabase
+      const { count: activeJobs, error: activeError } = await supabase
         .from("jobs")
         .select("*", { count: "exact", head: true })
         .eq("is_active", true);
 
-      jobCount.textContent = totalJobs ?? 0;
-      activeCount.textContent = activeJobs ?? 0;
+      console.log("LOAD STATS:", {
+        totalJobs,
+        activeJobs,
+        totalError,
+        activeError,
+      });
+
+      if (jobCount) jobCount.textContent = String(totalJobs ?? 0);
+      if (activeCount) activeCount.textContent = String(activeJobs ?? 0);
     }
 
-    logoutBtn.addEventListener("click", async () => {
-      await supabase.auth.signOut();
+    logoutBtn?.addEventListener("click", async () => {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        alert("Logout gagal: " + error.message);
+        return;
+      }
+
       window.location.href = "/login";
     });
 

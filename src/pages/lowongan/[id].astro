@@ -8,12 +8,12 @@ const { id } = Astro.params;
 
 const { data: job, error } = await supabase
   .from("jobs")
-  .select("id, title, company_name, location, description, apply_url, is_active, created_at")
+  .select("*")
   .eq("id", id)
   .eq("is_active", true)
-  .single();
+  .maybeSingle();
 
-if (!job || error) {
+if (error || !job) {
   return Astro.redirect("/lowongan");
 }
 ---

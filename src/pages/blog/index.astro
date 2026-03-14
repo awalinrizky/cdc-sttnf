@@ -2,36 +2,61 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { supabase } from "../../lib/supabase.js";
 
-const { data: posts } = await supabase
-.from("posts")
-.select("*")
-.eq("published",true)
+const { data: posts, error } = await supabase
+  .from("posts")
+  .select("*")
+  .eq("published", true)
+  .order("created_at", { ascending: false });
 ---
 
-<BaseLayout title="Blog">
+<BaseLayout title="Blog | CDC STT-NF">
+  <section class="section">
+    <div class="container">
+      <h1>Artikel Karier</h1>
 
-<section class="section">
+      {
+        error ? (
+          <p>Gagal memuat artikel: {error.message}</p>
+        ) : posts?.length ? (
+          <div class="post-grid">
+            {posts.map((post) => (
+              <article class="card">
+                <h3>{post.title}</h3>
+                <p>{post.content?.slice(0, 140) || "Belum ada ringkasan artikel."}</p>
+                <a href={`/blog/${post.slug}`}>Baca selengkapnya →</a>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p>Belum ada artikel tersedia.</p>
+        )
+      }
+    </div>
+  </section>
 
-<div class="container">
+  <style>
+    .section {
+      padding: 60px 0;
+    }
 
-<h1>Artikel Karier</h1>
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+    }
 
-{
-posts?.map(post => (
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+    }
 
-<div>
-
-<h3>{post.title}</h3>
-
-<a href={`/blog/${post.slug}`}>Baca</a>
-
-</div>
-
-))
-}
-
-</div>
-
-</section>
-
+    @media (max-width: 900px) {
+      .post-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </BaseLayout>

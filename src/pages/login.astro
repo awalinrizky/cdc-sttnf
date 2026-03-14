@@ -102,7 +102,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     }
   </style>
 
-  <script type="module">
+  <script>
+    // @ts-nocheck
     import { supabase } from "../lib/supabase.js";
 
     const form = document.getElementById("loginForm");
@@ -112,46 +113,51 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     const message = document.getElementById("message");
 
     function setMessage(text, type = "error") {
+      if (!message) return;
       message.textContent = text;
       message.className = `message ${type === "success" ? "success" : ""}`;
     }
 
-    async function redirectIfAlreadyLoggedIn() {
+    async function checkCurrentSession() {
       const {
         data: { session },
+        error,
       } = await supabase.auth.getSession();
+
+      console.log("CHECK CURRENT SESSION:", { session, error });
 
       if (!session) return;
 
-      const { data: profile, error } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role")
         .eq("id", session.user.id)
-        .single();
+        .maybeSingle();
 
-      if (error || !profile) {
-        await supabase.auth.signOut();
-        return;
-      }
+      console.log("CHECK CURRENT PROFILE:", {
+        profile,
+        profileError,
+        userId: session.user.id,
+      });
 
-      if (profile.role === "admin" || profile.role === "superadmin") {
+      if (profile && (profile.role === "admin" || profile.role === "superadmin")) {
         window.location.href = "/admin";
-      } else {
-        await supabase.auth.signOut();
       }
     }
 
-    redirectIfAlreadyLoggedIn();
+    checkCurrentSession();
 
-    form.addEventListener("submit", async (e) => {
+    form?.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const email = emailInput.value.trim();
-      const password = passwordInput.value;
+      const email = emailInput?.value?.trim() || "";
+      const password = passwordInput?.value || "";
 
       setMessage("");
-      loginBtn.disabled = true;
-      loginBtn.textContent = "Sedang login...";
+      if (loginBtn) {
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Sedang login...";
+      }
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -160,8 +166,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
       if (error) {
         setMessage("Login gagal: " + error.message);
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+        }
         return;
       }
 
@@ -169,8 +177,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
       if (!userId) {
         setMessage("Session login tidak valid.");
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+        }
         return;
       }
 
@@ -178,21 +188,34 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         .from("profiles")
         .select("role")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
-      if (profileError || !profile) {
-        await supabase.auth.signOut();
-        setMessage("Profil user tidak ditemukan.");
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
+      console.log("PROFILE AFTER LOGIN:", { profile, profileError, userId });
+
+      if (profileError) {
+        setMessage("Terjadi kesalahan saat membaca profil.");
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+        }
+        return;
+      }
+
+      if (!profile) {
+        setMessage("Profil user tidak ditemukan di tabel profiles.");
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+        }
         return;
       }
 
       if (profile.role !== "admin" && profile.role !== "superadmin") {
-        await supabase.auth.signOut();
         setMessage("Akses ditolak. Akun ini bukan admin.");
-        loginBtn.disabled = false;
-        loginBtn.textContent = "Login";
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
+        }
         return;
       }
 

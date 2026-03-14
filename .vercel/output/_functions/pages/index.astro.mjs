@@ -1,27 +1,14 @@
-import { f as createComponent, m as maybeRenderHead, r as renderTemplate, k as renderComponent } from '../chunks/astro/server_s_qG7lfK.mjs';
+import { f as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_s_qG7lfK.mjs';
 import 'piccolore';
-import { $ as $$BaseLayout } from '../chunks/BaseLayout_DIyg3etq.mjs';
-import 'clsx';
+import { $ as $$BaseLayout } from '../chunks/BaseLayout_CTuTJhWc.mjs';
 /* empty css                                 */
 export { renderers } from '../renderers.mjs';
 
-const $$Hero = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${maybeRenderHead()}<section class="hero" data-astro-cid-bbe6dxrz> <div class="container hero-wrap" data-astro-cid-bbe6dxrz> <h1 data-astro-cid-bbe6dxrz>
-Bangun Karier IT <br data-astro-cid-bbe6dxrz>
-Bersama CDC STT‑NF
-</h1> <p class="hero-text" data-astro-cid-bbe6dxrz>
-Temukan lowongan kerja, ikuti workshop industri,
-      dan bangun karier teknologi bersama
-      Career Development Center STT‑NF.
-</p> <div class="hero-actions" data-astro-cid-bbe6dxrz> <a href="/lowongan" class="btn btn-primary" data-astro-cid-bbe6dxrz>
-Lihat Lowongan
-</a> <a href="/workshop" class="btn btn-outline" data-astro-cid-bbe6dxrz>
-Ikuti Workshop
-</a> </div> </div> </section> `;
-}, "C:/astro-project/src/components/Hero.astro", void 0);
-
 const $$Index = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": "CDC STT-NF | Beranda", "data-astro-cid-j7pv25f6": true }, { "default": ($$result2) => renderTemplate` ${renderComponent($$result2, "Hero", $$Hero, { "data-astro-cid-j7pv25f6": true })} ${maybeRenderHead()}<section class="section" data-astro-cid-j7pv25f6> <div class="container" data-astro-cid-j7pv25f6> <h2 class="section-title" data-astro-cid-j7pv25f6>Tentang CDC STT-NF</h2> <p class="section-text" data-astro-cid-j7pv25f6>
+  return renderTemplate`${renderComponent($$result, "BaseLayout", $$BaseLayout, { "title": "CDC STT-NF | Beranda", "data-astro-cid-j7pv25f6": true }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<section class="hero" data-astro-cid-j7pv25f6> <div class="container hero-wrap" data-astro-cid-j7pv25f6> <div class="hero-copy" data-astro-cid-j7pv25f6> <span class="badge" data-astro-cid-j7pv25f6>Career Development Center</span> <h1 data-astro-cid-j7pv25f6>Mempersiapkan Mahasiswa & Alumni Menuju Dunia Kerja Profesional</h1> <p data-astro-cid-j7pv25f6>
+CDC STT-NF membantu mahasiswa dan alumni menemukan lowongan kerja,
+          magang, dan peluang pengembangan karier yang relevan.
+</p> <div class="hero-actions" data-astro-cid-j7pv25f6> <a href="/lowongan" class="btn btn-primary" data-astro-cid-j7pv25f6>Lihat Lowongan</a> <a href="/login" class="btn btn-outline" data-astro-cid-j7pv25f6>Masuk Admin</a> </div> </div> </div> </section> <section class="section" data-astro-cid-j7pv25f6> <div class="container" data-astro-cid-j7pv25f6> <h2 class="section-title" data-astro-cid-j7pv25f6>Tentang CDC STT-NF</h2> <p class="section-text" data-astro-cid-j7pv25f6>
 CDC STT-NF merupakan unit yang mempersiapkan, melatih, dan menjadi wadah
         mahasiswa serta alumni dalam pengembangan karier, magang, dan koneksi ke
         dunia profesional.

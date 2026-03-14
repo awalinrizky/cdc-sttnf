@@ -2,40 +2,76 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { supabase } from "../../lib/supabase.js";
 
-const { data: events } = await supabase
-.from("events")
-.select("*")
-.eq("is_active",true)
+const { data: events, error } = await supabase
+  .from("events")
+  .select("*")
+  .eq("is_active", true)
+  .order("date", { ascending: true });
 ---
 
-<BaseLayout title="Workshop">
+<BaseLayout title="Workshop | CDC STT-NF">
+  <section class="section">
+    <div class="container">
+      <h1>Workshop & Seminar</h1>
 
-<section class="section">
+      {
+        error ? (
+          <p>Gagal memuat event: {error.message}</p>
+        ) : events?.length ? (
+          <div class="event-grid">
+            {events.map((event) => (
+              <article class="card">
+                <h3>{event.title}</h3>
+                <p class="meta">{event.location || "-"} • {event.date ? new Date(event.date).toLocaleDateString("id-ID") : "-"}</p>
+                <p>{event.description || "Belum ada deskripsi."}</p>
 
-<div class="container">
+                {
+                  event.register_url ? (
+                    <a href={event.register_url} class="btn btn-primary" target="_blank" rel="noreferrer">
+                      Daftar
+                    </a>
+                  ) : (
+                    <button class="btn btn-outline" disabled>Belum tersedia</button>
+                  )
+                }
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p>Belum ada workshop atau seminar.</p>
+        )
+      }
+    </div>
+  </section>
 
-<h1>Workshop & Seminar</h1>
+  <style>
+    .section {
+      padding: 60px 0;
+    }
 
-{
-events?.map(event => (
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 24px;
+    }
 
-<div class="event">
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+    }
 
-<h3>{event.title}</h3>
+    .meta {
+      color: #64748b;
+      margin: 8px 0 12px;
+    }
 
-<p>{event.description}</p>
-
-<a href={event.register_url} class="btn btn-primary">
-Daftar
-</a>
-
-</div>
-
-))
-}
-
-</div>
-
-</section>
-
+    @media (max-width: 900px) {
+      .event-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </BaseLayout>

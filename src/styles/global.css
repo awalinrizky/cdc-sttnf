@@ -173,3 +173,9 @@ hr {
   border-radius:6px;
   cursor:pointer;
 }
+
+.empty-state {
+  margin-top: 24px;
+  color: #64748b;
+  font-size: 16px;
+}
