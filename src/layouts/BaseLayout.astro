@@ -4,7 +4,7 @@ const year = new Date().getFullYear();
 const pathname = Astro.url.pathname;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -231,6 +231,11 @@ const pathname = Astro.url.pathname;
         .nav-actions {
           justify-content: center;
         }
+        .nav-admin-btn {
+          min-width: 108px;
+          border-radius: 16px;
+          font-weight: 800;
+        }
       }
     </style>
   </head>
@@ -266,7 +271,7 @@ const pathname = Astro.url.pathname;
         </div>
 
         <div class="nav-actions">
-          <a href="/login" class="btn btn-light">Admin</a>
+          <a href="/login" class="btn btn-primary nav-admin-btn">Admin</a>
         </div>
       </div>
     </nav>

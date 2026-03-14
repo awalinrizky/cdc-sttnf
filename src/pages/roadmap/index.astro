@@ -2,11 +2,283 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Workshop | CDC STT-NF">
-  <section class="section">
-    <div class="container">
-      <h1>Workshop & Seminar</h1>
-      <p>Halaman workshop sedang disiapkan.</p>
+<BaseLayout title="Roadmap Karier | CDC STT-NF">
+  <section class="hero-section">
+    <div class="container hero-wrap">
+      <span class="eyebrow">Roadmap Karier</span>
+      <h1>Mulai dari arah yang jelas, lalu naik level dengan langkah yang terstruktur.</h1>
+      <p>
+        Roadmap ini membantu mahasiswa dan alumni memahami skill inti, tools utama,
+        dan target output yang perlu dibangun untuk masuk ke dunia kerja.
+      </p>
     </div>
   </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Pilih Jalur Karier</h2>
+        <p class="section-subtitle">
+          Setiap jalur berisi fondasi belajar, teknologi utama, dan hasil portofolio
+          yang bisa langsung kamu praktikkan.
+        </p>
+      </div>
+
+      <div class="roadmap-grid">
+        <article class="roadmap-card">
+          <span class="tag">Frontend</span>
+          <h3>Frontend Developer</h3>
+          <p class="intro">
+            Cocok untuk kamu yang suka membangun interface, interaksi, dan pengalaman visual di web.
+          </p>
+
+          <div class="step-list">
+            <div class="step-item">
+              <strong>Level 1 — Dasar Web</strong>
+              <p>HTML, CSS, JavaScript dasar, Git, responsive layout, dan struktur komponen.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 2 — Framework</strong>
+              <p>React, Astro, state dasar, fetch API, reusable components, dan integrasi UI.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 3 — Siap Deploy</strong>
+              <p>Optimasi performa, auth flow, koneksi database, testing dasar, dan deployment.</p>
+            </div>
+          </div>
+
+          <div class="tools">Tools: VS Code, GitHub, Figma, Astro, React, Vercel</div>
+        </article>
+
+        <article class="roadmap-card">
+          <span class="tag">Backend</span>
+          <h3>Backend Developer</h3>
+          <p class="intro">
+            Cocok untuk kamu yang suka logika, API, database, dan sistem di balik aplikasi.
+          </p>
+
+          <div class="step-list">
+            <div class="step-item">
+              <strong>Level 1 — Dasar Server</strong>
+              <p>Node.js dasar, HTTP, JSON, struktur request-response, dan error handling.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 2 — API & Database</strong>
+              <p>REST API, SQL, authentication, validasi data, dan integrasi Supabase/PostgreSQL.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 3 — Production</strong>
+              <p>Security basic, env vars, logging, deployment, serta struktur backend yang scalable.</p>
+            </div>
+          </div>
+
+          <div class="tools">Tools: Node.js, Postman, Supabase, PostgreSQL, Vercel</div>
+        </article>
+
+        <article class="roadmap-card">
+          <span class="tag">Design</span>
+          <h3>UI/UX Designer</h3>
+          <p class="intro">
+            Cocok untuk kamu yang tertarik dengan research, interface, user flow, dan desain digital.
+          </p>
+
+          <div class="step-list">
+            <div class="step-item">
+              <strong>Level 1 — Basic Thinking</strong>
+              <p>Design principles, hierarchy, user flow, wireframe, dan problem framing.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 2 — UI & Prototype</strong>
+              <p>Figma, design system, prototype, usability, visual consistency, dan handoff dasar.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 3 — Portfolio Ready</strong>
+              <p>Case study, dokumentasi proses, presentasi desain, dan personal branding portfolio.</p>
+            </div>
+          </div>
+
+          <div class="tools">Tools: Figma, FigJam, Notion, Maze, Google Forms</div>
+        </article>
+
+        <article class="roadmap-card">
+          <span class="tag">Data</span>
+          <h3>Data Analyst</h3>
+          <p class="intro">
+            Cocok untuk kamu yang suka membaca data, menemukan insight, dan membantu pengambilan keputusan.
+          </p>
+
+          <div class="step-list">
+            <div class="step-item">
+              <strong>Level 1 — Dasar Data</strong>
+              <p>Spreadsheet, data cleaning, basic statistics, dan visualisasi sederhana.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 2 — Query & Analysis</strong>
+              <p>SQL, dashboard, exploratory analysis, dan storytelling berbasis data.</p>
+            </div>
+            <div class="step-item">
+              <strong>Level 3 — Insight Bisnis</strong>
+              <p>Laporan, dashboard insight, presentasi temuan, dan rekomendasi yang actionable.</p>
+            </div>
+          </div>
+
+          <div class="tools">Tools: Google Sheets, SQL, Looker Studio, Python basic</div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    .container {
+      width: min(100% - 32px, 1120px);
+      margin-inline: auto;
+    }
+
+    .hero-section {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 88px 0 76px;
+    }
+
+    .hero-wrap {
+      max-width: 820px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #dcfce7;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .hero-wrap h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.04;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      max-width: 900px;
+    }
+
+    .hero-wrap p {
+      color: #cbd5e1;
+      font-size: 17px;
+      line-height: 1.9;
+      max-width: 760px;
+    }
+
+    .section {
+      padding: 72px 0;
+    }
+
+    .section-head {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 40px);
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+    }
+
+    .section-subtitle {
+      color: #64748b;
+      line-height: 1.8;
+      max-width: 720px;
+      font-size: 16px;
+    }
+
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+    }
+
+    .roadmap-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: 0.2s ease;
+    }
+
+    .roadmap-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .roadmap-card h3 {
+      font-size: 24px;
+      line-height: 1.28;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+    }
+
+    .intro {
+      color: #475569;
+      font-size: 15px;
+      line-height: 1.8;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .step-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .step-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+
+    .step-item p {
+      color: #64748b;
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    .tools {
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 1.8;
+      font-weight: 600;
+      padding-top: 4px;
+    }
+
+    @media (max-width: 900px) {
+      .roadmap-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </BaseLayout>

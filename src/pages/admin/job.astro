@@ -7,10 +7,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <div class="container">
       <div class="page-header">
         <div>
-          <p class="eyebrow">Admin Panel</p>
+          <span class="eyebrow">Admin Panel</span>
           <h1>Kelola Lowongan</h1>
           <p class="subtext">
-            Tambah, edit, hapus, dan atur status lowongan kerja.
+            Tambah, edit, hapus, dan rapikan lowongan kerja yang tampil ke publik.
           </p>
         </div>
 
@@ -22,7 +22,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       <div class="layout-grid">
         <div class="form-card">
-          <h2 id="formTitle">Tambah Lowongan</h2>
+          <div class="card-head">
+            <h2 id="formTitle">Tambah Lowongan</h2>
+            <p>Isi data dengan jelas agar mudah dibaca calon pelamar.</p>
+          </div>
 
           <form id="jobForm" class="job-form">
             <div class="form-group">
@@ -47,7 +50,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
             <div class="form-group">
               <label for="description">Deskripsi</label>
-              <textarea id="description" rows="6"></textarea>
+              <textarea id="description" rows="7"></textarea>
             </div>
 
             <div class="checkbox-group">
@@ -59,12 +62,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <button type="submit" id="submitBtn" class="btn btn-primary">
                 Simpan Lowongan
               </button>
-              <button
-                type="button"
-                id="cancelEditBtn"
-                class="btn btn-outline"
-                hidden
-              >
+              <button type="button" id="cancelEditBtn" class="btn btn-outline" hidden>
                 Batal Edit
               </button>
             </div>
@@ -75,7 +73,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
         <div class="list-card">
           <div class="list-head">
-            <h2>Daftar Lowongan</h2>
+            <div>
+              <h2>Daftar Lowongan</h2>
+              <p>Gunakan edit untuk memperbarui data dan hapus jika sudah tidak relevan.</p>
+            </div>
+
             <input
               type="text"
               id="searchInput"
@@ -98,7 +100,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     .admin-job-page {
-      padding: 40px 0 64px;
+      padding: 48px 0 72px;
     }
 
     .page-header {
@@ -106,27 +108,36 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       justify-content: space-between;
       align-items: flex-start;
       gap: 20px;
-      margin-bottom: 24px;
       flex-wrap: wrap;
+      margin-bottom: 28px;
     }
 
     .eyebrow {
-      color: #16a34a;
-      font-weight: 700;
-      margin-bottom: 8px;
-      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
       font-size: 13px;
-      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     h1 {
-      font-size: 38px;
-      margin-bottom: 8px;
+      font-size: clamp(32px, 4vw, 48px);
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+      color: #0f172a;
     }
 
     .subtext {
       color: #64748b;
       line-height: 1.8;
+      font-size: 16px;
+      max-width: 720px;
     }
 
     .page-actions {
@@ -139,21 +150,35 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       display: grid;
       grid-template-columns: 400px 1fr;
       gap: 24px;
+      align-items: start;
     }
 
     .form-card,
     .list-card {
       background: white;
       border: 1px solid #e2e8f0;
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 24px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
     }
 
-    .form-card h2,
-    .list-card h2 {
+    .card-head {
       margin-bottom: 18px;
-      font-size: 24px;
+    }
+
+    .card-head h2,
+    .list-head h2 {
+      font-size: 26px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+
+    .card-head p,
+    .list-head p {
+      color: #64748b;
+      line-height: 1.8;
+      font-size: 14px;
     }
 
     .job-form {
@@ -169,7 +194,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     .form-group label,
     .checkbox-group label {
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
+      color: #0f172a;
     }
 
     .form-group input,
@@ -177,18 +203,21 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     .list-head input {
       width: 100%;
       border: 1px solid #cbd5e1;
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 12px 14px;
       font-size: 14px;
       outline: none;
       font-family: inherit;
+      background: #fff;
+      color: #0f172a;
+      transition: 0.2s ease;
     }
 
     .form-group input:focus,
     .form-group textarea:focus,
     .list-head input:focus {
       border-color: #22c55e;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
     }
 
     .checkbox-group {
@@ -212,6 +241,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       min-height: 20px;
       color: #ef4444;
       font-size: 14px;
+      line-height: 1.7;
     }
 
     .message.success {
@@ -221,7 +251,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     .list-head {
       display: flex;
       justify-content: space-between;
-      gap: 12px;
+      align-items: flex-start;
+      gap: 14px;
       flex-wrap: wrap;
       margin-bottom: 18px;
     }
@@ -232,15 +263,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     .job-list {
       display: grid;
-      gap: 14px;
+      gap: 16px;
     }
 
     .job-item {
       border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 18px;
+      border-radius: 18px;
+      padding: 20px;
       display: grid;
-      gap: 10px;
+      gap: 14px;
+      background: #f8fafc;
     }
 
     .job-top {
@@ -252,15 +284,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     .job-title {
-      font-size: 18px;
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #0f172a;
       margin-bottom: 4px;
     }
 
     .job-meta {
       color: #64748b;
       font-size: 14px;
-      line-height: 1.7;
+      line-height: 1.8;
     }
 
     .status-badge {
@@ -284,7 +318,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     .job-description {
       color: #475569;
-      line-height: 1.8;
+      line-height: 1.85;
       font-size: 14px;
       white-space: pre-wrap;
     }
@@ -297,8 +331,47 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     .empty {
       color: #64748b;
-      text-align: center;
-      padding: 24px 0;
+      font-size: 15px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #22c55e;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #16a34a;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-outline {
+      background: white;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
     }
 
     @media (max-width: 980px) {
@@ -307,6 +380,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     }
   </style>
+
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
@@ -364,65 +438,50 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     function renderJobs(data) {
       if (!jobList) return;
-      jobList.innerHTML = "";
 
       if (!data.length) {
         jobList.innerHTML = `<p class="empty">Belum ada lowongan.</p>`;
         return;
       }
 
-      data.forEach((job) => {
-        const item = document.createElement("div");
-        item.className = "job-item";
+      jobList.innerHTML = data
+        .map(
+          (job) => `
+            <div class="job-item">
+              <div class="job-top">
+                <div>
+                  <div class="job-title">${job.title || "-"}</div>
+                  <div class="job-meta">
+                    ${job.company_name || "Perusahaan belum diisi"} • ${job.location || "-"}
+                  </div>
+                </div>
+                <span class="status-badge ${job.is_active ? "status-active" : "status-inactive"}">
+                  ${job.is_active ? "Aktif" : "Nonaktif"}
+                </span>
+              </div>
 
-        const top = document.createElement("div");
-        top.className = "job-top";
+              <div class="job-description">
+                ${job.description || "Belum ada deskripsi."}
+              </div>
 
-        const info = document.createElement("div");
+              <div class="job-actions">
+                <button class="btn btn-outline edit-btn" data-id="${job.id}">Edit</button>
+                <button class="btn btn-danger delete-btn" data-id="${job.id}">Hapus</button>
+              </div>
+            </div>
+          `
+        )
+        .join("");
 
-        const title = document.createElement("div");
-        title.className = "job-title";
-        title.textContent = job.title;
+      jobList.querySelectorAll(".edit-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const job = jobs.find((item) => item.id === btn.dataset.id);
+          if (job) fillForm(job);
+        });
+      });
 
-        const meta = document.createElement("div");
-        meta.className = "job-meta";
-        meta.textContent = `${job.company_name || "Perusahaan belum diisi"} • ${job.location}`;
-
-        info.appendChild(title);
-        info.appendChild(meta);
-
-        const badge = document.createElement("span");
-        badge.className = `status-badge ${job.is_active ? "status-active" : "status-inactive"}`;
-        badge.textContent = job.is_active ? "Aktif" : "Nonaktif";
-
-        top.appendChild(info);
-        top.appendChild(badge);
-
-        const desc = document.createElement("div");
-        desc.className = "job-description";
-        desc.textContent = job.description || "Belum ada deskripsi.";
-
-        const actions = document.createElement("div");
-        actions.className = "job-actions";
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "btn btn-outline";
-        editBtn.textContent = "Edit";
-        editBtn.addEventListener("click", () => fillForm(job));
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.className = "btn btn-danger";
-        deleteBtn.textContent = "Hapus";
-        deleteBtn.addEventListener("click", () => deleteJob(job.id));
-
-        actions.appendChild(editBtn);
-        actions.appendChild(deleteBtn);
-
-        item.appendChild(top);
-        item.appendChild(desc);
-        item.appendChild(actions);
-
-        jobList.appendChild(item);
+      jobList.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", () => deleteJob(btn.dataset.id));
       });
     }
 
@@ -431,8 +490,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         data: { session },
         error: sessionError,
       } = await supabase.auth.getSession();
-
-      console.log("JOB PAGE SESSION:", { session, sessionError });
 
       if (sessionError || !session) {
         window.location.href = "/login";
@@ -444,12 +501,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         .select("role")
         .eq("id", session.user.id)
         .maybeSingle();
-
-      console.log("JOB PAGE PROFILE:", {
-        profile,
-        profileError,
-        userId: session.user.id,
-      });
 
       if (profileError || !profile) {
         window.location.href = "/login";
@@ -500,7 +551,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         ])
         .select();
 
-      console.log("CREATE JOB:", { data, error });
       return { data, error };
     }
 
@@ -518,7 +568,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         .eq("id", id)
         .select();
 
-      console.log("UPDATE JOB:", { data, error });
       return { data, error };
     }
 
@@ -558,7 +607,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         return;
       }
 
-      if (payload.apply_url && !/^https?:\/\//i.test(payload.apply_url)) {
+      if (payload.apply_url && !payload.apply_url.startsWith("http")) {
         setMessage("Link apply harus diawali dengan http:// atau https://");
         return;
       }
@@ -567,17 +616,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         submitBtn.disabled = true;
         submitBtn.textContent = editingId ? "Mengupdate..." : "Menyimpan...";
       }
+
       setMessage("");
 
       let result;
-
       if (editingId) {
         result = await updateJob(editingId, payload);
       } else {
         result = await createJob(payload);
       }
-
-      console.log("SAVE JOB RESULT:", result);
 
       const { error } = result;
 
@@ -585,21 +632,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         setMessage("Gagal menyimpan data: " + error.message);
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = editingId
-            ? "Update Lowongan"
-            : "Simpan Lowongan";
+          submitBtn.textContent = editingId ? "Update Lowongan" : "Simpan Lowongan";
         }
         return;
       }
 
       setMessage(
-        editingId
-          ? "Lowongan berhasil diperbarui."
-          : "Lowongan berhasil ditambahkan.",
-        "success",
+        editingId ? "Lowongan berhasil diperbarui." : "Lowongan berhasil ditambahkan.",
+        "success"
       );
 
       resetForm();
+
       if (submitBtn) {
         submitBtn.disabled = false;
         submitBtn.textContent = "Simpan Lowongan";
@@ -631,12 +675,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     logoutBtn?.addEventListener("click", async () => {
       const { error } = await supabase.auth.signOut();
-
       if (error) {
         alert("Logout gagal: " + error.message);
         return;
       }
-
       window.location.href = "/login";
     });
 
