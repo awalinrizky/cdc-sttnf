@@ -1,31 +1,44 @@
 ---
 const { title = "CDC STT-NF" } = Astro.props;
 const year = new Date().getFullYear();
+const pathname = Astro.url.pathname;
 ---
 
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-    <meta name="description" content="Career Development Center STT-NF" />
-    <meta property="og:title" content="CDC STT‑NF" />
-    <meta property="og:description" content="Career Development Center" />
+    <meta
+      name="description"
+      content="Career Development Center STT-NF untuk lowongan kerja, workshop, seminar, dan pengembangan karier mahasiswa serta alumni."
+    />
+    <meta property="og:title" content={title} />
+    <meta
+      property="og:description"
+      content="Career Development Center STT-NF"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+
     <style>
       :root {
         --bg: #f8fafc;
-        --white: #ffffff;
+        --surface: #ffffff;
+        --surface-soft: #f1f5f9;
         --text: #0f172a;
         --muted: #64748b;
         --primary: #0f172a;
+        --primary-soft: #1e293b;
         --accent: #22c55e;
+        --accent-dark: #16a34a;
+        --accent-soft: #dcfce7;
         --border: #e2e8f0;
         --danger: #ef4444;
+        --shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
         --container: 1120px;
       }
 
@@ -35,7 +48,10 @@ const year = new Date().getFullYear();
         box-sizing: border-box;
       }
 
-      html,
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         font-family: "Inter", sans-serif;
         background: var(--bg);
@@ -47,71 +63,87 @@ const year = new Date().getFullYear();
         text-decoration: none;
       }
 
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
       .container {
         width: min(100% - 32px, var(--container));
         margin-inline: auto;
       }
 
       nav {
-        background: var(--primary);
-        color: white;
         position: sticky;
         top: 0;
         z-index: 50;
+        background: rgba(15, 23, 42, 0.94);
+        backdrop-filter: blur(10px);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       .nav-wrap {
+        min-height: 76px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        min-height: 72px;
+        gap: 20px;
       }
 
       .logo {
-        font-size: 20px;
+        color: white;
+        font-size: 28px;
         font-weight: 800;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.03em;
       }
 
       .nav-links {
         display: flex;
-        gap: 20px;
         align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
       }
 
       .nav-links a {
+        color: #cbd5e1;
         font-size: 14px;
-        color: #e2e8f0;
+        font-weight: 500;
+        padding: 10px 14px;
+        border-radius: 999px;
+        transition: 0.2s ease;
       }
 
       .nav-links a:hover {
         color: white;
+        background: rgba(255, 255, 255, 0.08);
       }
 
-      main {
-        min-height: 80vh;
+      .nav-links a.active {
+        color: white;
+        background: rgba(255, 255, 255, 0.12);
       }
 
-      footer {
-        margin-top: 64px;
-        background: var(--primary);
-        color: #cbd5e1;
-        padding: 32px 0;
-        text-align: center;
-        font-size: 14px;
-        line-height: 1.7;
+      .nav-actions {
+        display: flex;
+        align-items: center;
       }
 
       .btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 8px;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         padding: 12px 18px;
         cursor: pointer;
         font-weight: 600;
+        transition: 0.2s ease;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
       }
 
       .btn-primary {
@@ -120,7 +152,27 @@ const year = new Date().getFullYear();
       }
 
       .btn-primary:hover {
-        opacity: 0.92;
+        background: var(--accent-dark);
+      }
+
+      .btn-outline {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+      }
+
+      .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.16);
+      }
+
+      .btn-light {
+        background: white;
+        color: var(--primary);
+        border: 1px solid var(--border);
+      }
+
+      .btn-light:hover {
+        background: #f8fafc;
       }
 
       .btn-danger {
@@ -128,37 +180,93 @@ const year = new Date().getFullYear();
         color: white;
       }
 
-      .btn-outline {
-        background: white;
-        color: var(--text);
-        border: 1px solid var(--border);
+      .section {
+        padding: 72px 0;
       }
 
-      @media (max-width: 720px) {
+      .section-title {
+        font-size: clamp(28px, 4vw, 40px);
+        margin-bottom: 14px;
+        letter-spacing: -0.03em;
+      }
+
+      .section-subtitle {
+        color: var(--muted);
+        line-height: 1.8;
+        max-width: 720px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+      }
+
+      footer {
+        margin-top: 64px;
+        background: var(--primary);
+        color: #cbd5e1;
+        padding: 36px 0;
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.8;
+      }
+
+      @media (max-width: 960px) {
         .nav-wrap {
           flex-direction: column;
-          gap: 12px;
+          align-items: stretch;
           padding: 16px 0;
         }
 
+        .logo {
+          text-align: center;
+        }
+
         .nav-links {
-          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .nav-actions {
           justify-content: center;
         }
       }
     </style>
   </head>
+
   <body>
     <nav>
       <div class="container nav-wrap">
         <a href="/" class="logo">CDC STT-NF</a>
+
         <div class="nav-links">
-          <a href="/">Home</a>
-          <a href="/lowongan">Jobs</a>
-          <a href="/workshop">Workshops</a>
-          <a href="/roadmap">Roadmap</a>
-          <a href="/blog">Blog</a>
-          <a href="/login" class="btn btn-outline"> Admin </a>
+          <a href="/" class={pathname === "/" ? "active" : ""}>Home</a>
+          <a
+            href="/lowongan"
+            class={pathname.startsWith("/lowongan") ? "active" : ""}
+          >
+            Jobs
+          </a>
+          <a
+            href="/workshop"
+            class={pathname.startsWith("/workshop") ? "active" : ""}
+          >
+            Workshops
+          </a>
+          <a
+            href="/roadmap"
+            class={pathname.startsWith("/roadmap") ? "active" : ""}
+          >
+            Roadmap
+          </a>
+          <a href="/blog" class={pathname.startsWith("/blog") ? "active" : ""}>
+            Blog
+          </a>
+        </div>
+
+        <div class="nav-actions">
+          <a href="/login" class="btn btn-light">Admin</a>
         </div>
       </div>
     </nav>

@@ -3,65 +3,169 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="Lowongan Kerja | CDC STT-NF">
+  <section class="hero-section">
+    <div class="container hero-wrap">
+      <span class="eyebrow">Karier</span>
+      <h1>Lowongan Kerja & Magang</h1>
+      <p>
+        Temukan peluang kerja dan magang yang relevan untuk mahasiswa dan alumni
+        CDC STT-NF.
+      </p>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container">
-      <h1>Lowongan Kerja</h1>
+      <div class="toolbar">
+        <div>
+          <h2 class="section-title">Daftar Lowongan</h2>
+          <p class="section-subtitle">
+            Jelajahi peluang terbaru yang tersedia dan pilih posisi yang sesuai
+            dengan minat kariermu.
+          </p>
+        </div>
+      </div>
+
       <div id="jobList" class="job-grid">
-        <p class="empty-state">Memuat lowongan...</p>
+        <p class="state-message">Memuat lowongan...</p>
       </div>
     </div>
   </section>
 
   <style>
-    .section {
-      padding: 60px 0;
+    .hero-section {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 88px 0 78px;
     }
 
-    .container {
-      width: min(100% - 32px, 1120px);
-      margin-inline: auto;
+    .hero-wrap {
+      max-width: 760px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #dcfce7;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 18px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero-wrap h1 {
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .hero-wrap p {
+      color: #cbd5e1;
+      line-height: 1.9;
+      max-width: 680px;
+      font-size: 17px;
+    }
+
+    .toolbar {
+      margin-bottom: 28px;
     }
 
     .job-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 24px;
+      gap: 22px;
     }
 
     .job-card {
       background: white;
       border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      transition: 0.2s ease;
     }
 
-    .job-card h3 {
-      margin-bottom: 8px;
+    .job-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+    }
+
+    .job-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .job-title {
       font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #0f172a;
     }
 
-    .job-card p {
-      color: #64748b;
-      line-height: 1.7;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-
-    .job-card a {
-      display: inline-block;
-      margin-top: 10px;
+    .job-company {
       color: #16a34a;
-      font-weight: 600;
+      font-weight: 700;
+      font-size: 14px;
+      margin-top: 6px;
     }
 
-    .empty-state {
+    .job-meta {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .job-actions {
+      margin-top: auto;
+      padding-top: 8px;
+    }
+
+    .detail-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .detail-link:hover {
+      color: #16a34a;
+    }
+
+    .state-message {
       color: #64748b;
       font-size: 16px;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 960px) {
+      .job-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
       .job-grid {
         grid-template-columns: 1fr;
       }
@@ -83,14 +187,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       if (error) {
         if (jobList) {
-          jobList.innerHTML = `<p class="empty-state">Gagal memuat lowongan.</p>`;
+          jobList.innerHTML = `<p class="state-message">Gagal memuat lowongan.</p>`;
         }
         return;
       }
 
       if (!data || !data.length) {
         if (jobList) {
-          jobList.innerHTML = `<p class="empty-state">Belum ada lowongan tersedia.</p>`;
+          jobList.innerHTML = `<p class="state-message">Belum ada lowongan tersedia.</p>`;
         }
         return;
       }
@@ -100,10 +204,24 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           .map(
             (job) => `
               <article class="job-card">
-                <h3>${job.title}</h3>
-                <p><strong>Perusahaan:</strong> ${job.company_name || "-"}</p>
-                <p><strong>Lokasi:</strong> ${job.location || "-"}</p>
-                <a href="/lowongan/detail?id=${job.id}">Lihat Detail →</a>
+                <div class="job-head">
+                  <div>
+                    <div class="job-title">${job.title || "-"}</div>
+                    <div class="job-company">${job.company_name || "Perusahaan belum diisi"}</div>
+                  </div>
+                  <span class="badge">Aktif</span>
+                </div>
+
+                <div class="job-meta">
+                  <div><strong>Lokasi:</strong> ${job.location || "-"}</div>
+                  <div><strong>Deskripsi:</strong> ${(job.description || "Belum ada deskripsi.").slice(0, 120)}${(job.description || "").length > 120 ? "..." : ""}</div>
+                </div>
+
+                <div class="job-actions">
+                  <a class="detail-link" href="/lowongan/detail?id=${job.id}">
+                    Lihat Detail →
+                  </a>
+                </div>
               </article>
             `
           )
