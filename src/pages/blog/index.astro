@@ -2,218 +2,101 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Blog | CDC STT-NF">
-  <section class="hero-section">
-    <div class="container hero-wrap">
-      <span class="eyebrow">Artikel Karier</span>
-      <h1>Insight, tips, dan panduan untuk memulai karier lebih terarah.</h1>
+<BaseLayout title="CDC STT-NF | Beranda">
+  <section class="page-hero">
+    <div class="container page-hero__wrap">
+      <span class="page-eyebrow">Career Development Center</span>
+      <h1>Mempersiapkan Mahasiswa & Alumni Menuju Dunia Kerja Profesional</h1>
       <p>
-        Bacaan ringan dan praktis untuk membantu mahasiswa dan alumni memahami
-        dunia kerja, portofolio, CV, interview, dan growth mindset profesional.
+        CDC STT-NF membantu mahasiswa dan alumni menemukan lowongan kerja,
+        magang, workshop, seminar, dan peluang pengembangan karier yang relevan.
       </p>
+
+      <div class="hero-actions">
+        <a href="/lowongan" class="btn btn-primary">Lihat Lowongan</a>
+        <a href="/roadmap" class="btn btn-outline">Lihat Roadmap</a>
+      </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
       <div class="section-head">
-        <h2 class="section-title">Artikel Terbaru</h2>
+        <h2 class="section-title">Tentang CDC STT-NF</h2>
         <p class="section-subtitle">
-          Bahan bacaan ringan dan praktis untuk mendukung pengembangan karier.
+          CDC STT-NF menjadi ruang penghubung antara mahasiswa, alumni, dan dunia kerja
+          melalui informasi lowongan, pengembangan skill, workshop, seminar, dan roadmap karier.
         </p>
       </div>
 
-      <div id="postList" class="post-grid">
-        <p class="state-message">Memuat artikel...</p>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <span class="tag">Jobs</span>
+          <h3>Lowongan Terkurasi</h3>
+          <p>Temukan peluang kerja dan magang yang lebih relevan untuk mahasiswa dan alumni.</p>
+        </article>
+
+        <article class="feature-card">
+          <span class="tag">Growth</span>
+          <h3>Career Growth</h3>
+          <p>Dukung perjalanan karier melalui workshop, seminar, insight, dan peluang aktual.</p>
+        </article>
+
+        <article class="feature-card">
+          <span class="tag">Network</span>
+          <h3>Siap Terhubung</h3>
+          <p>Bangun jembatan antara kampus, alumni, dan dunia kerja profesional.</p>
+        </article>
       </div>
     </div>
   </section>
 
-  <style is:global>
-    .hero-section {
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      color: white;
-      padding: 88px 0 76px;
+  <style>
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
     }
 
-    .hero-wrap {
-      width: min(100% - 32px, 1120px);
-      margin-inline: auto;
-      max-width: 780px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #dcfce7;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 18px;
-    }
-
-    .hero-wrap h1 {
-      font-size: clamp(34px, 5vw, 58px);
-      line-height: 1.04;
-      letter-spacing: -0.03em;
-      margin-bottom: 16px;
-      max-width: 840px;
-    }
-
-    .hero-wrap p {
-      color: #cbd5e1;
-      font-size: 17px;
-      line-height: 1.9;
-      max-width: 700px;
-    }
-
-    .section {
-      padding: 72px 0;
-    }
-
-    .section .container {
-      width: min(100% - 32px, 1120px);
-      margin-inline: auto;
-    }
-
-    .section-head {
-      margin-bottom: 28px;
-    }
-
-    .section-title {
-      font-size: clamp(28px, 4vw, 40px);
-      margin-bottom: 12px;
-      letter-spacing: -0.03em;
-      color: #0f172a;
-    }
-
-    .section-subtitle {
-      color: #64748b;
-      line-height: 1.8;
-      max-width: 720px;
-      font-size: 16px;
-    }
-
-    .post-grid {
+    .feature-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 22px;
     }
 
-    .post-card {
-      background: #ffffff;
+    .feature-card {
+      background: white;
       border: 1px solid #e2e8f0;
       border-radius: 22px;
       padding: 24px;
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-      display: flex;
-      flex-direction: column;
+      display: grid;
       gap: 14px;
-      min-height: 260px;
       transition: 0.2s ease;
     }
 
-    .post-card:hover {
+    .feature-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
     }
 
-    .post-tag {
-      display: inline-flex;
-      align-items: center;
-      width: fit-content;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: #f1f5f9;
-      color: #0f172a;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .post-card h3 {
+    .feature-card h3 {
       font-size: 24px;
-      line-height: 1.28;
+      line-height: 1.3;
       letter-spacing: -0.02em;
-      color: #0f172a;
     }
 
-    .post-card p {
-      color: #475569;
+    .feature-card p {
+      color: #64748b;
       line-height: 1.85;
       font-size: 15px;
     }
 
-    .post-link {
-      margin-top: auto;
-      font-weight: 700;
-      color: #0f172a;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-    }
-
-    .post-link:hover {
-      color: #16a34a;
-    }
-
-    .state-message {
-      color: #64748b;
-      font-size: 16px;
-    }
-
     @media (max-width: 900px) {
-      .post-grid {
+      .feature-grid {
         grid-template-columns: 1fr;
       }
     }
   </style>
-
-  <script>
-    // @ts-nocheck
-    import { supabase } from "../../lib/supabase.js";
-
-    const postList = document.getElementById("postList");
-
-    async function loadPosts() {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .eq("published", true)
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        if (postList) {
-          postList.innerHTML = `<p class="state-message">Gagal memuat artikel.</p>`;
-        }
-        return;
-      }
-
-      if (!data || !data.length) {
-        if (postList) {
-          postList.innerHTML = `<p class="state-message">Belum ada artikel tersedia.</p>`;
-        }
-        return;
-      }
-
-      postList.innerHTML = data
-        .map(
-          (post) => `
-            <article class="post-card">
-              <span class="post-tag">Career Insight</span>
-              <h3>${post.title || "-"}</h3>
-              <p>${(post.content || "Belum ada ringkasan artikel.").slice(0, 180)}${(post.content || "").length > 180 ? "..." : ""}</p>
-              <a class="post-link" href="/blog">Baca selengkapnya →</a>
-            </article>
-          `
-        )
-        .join("");
-    }
-
-    loadPosts();
-  </script>
 </BaseLayout>
