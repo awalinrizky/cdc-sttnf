@@ -103,7 +103,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 <h3>${job.title}</h3>
                 <p><strong>Perusahaan:</strong> ${job.company_name || "-"}</p>
                 <p><strong>Lokasi:</strong> ${job.location || "-"}</p>
-                <a href="/lowongan/${job.id}">Lihat Detail →</a>
+                <a href="/lowongan/detail?id=${job.id}">Lihat Detail →</a>
               </article>
             `
           )

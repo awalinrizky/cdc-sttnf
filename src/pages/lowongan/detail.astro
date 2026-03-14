@@ -1,0 +1,205 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Detail Lowongan | CDC STT-NF">
+  <section class="detail-hero">
+    <div class="container">
+      <a href="/lowongan" class="back-link">← Kembali ke Lowongan</a>
+      <h1 id="jobTitle">Memuat...</h1>
+      <p class="company" id="jobCompany">-</p>
+      <p class="location" id="jobLocation">-</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container detail-layout">
+      <article class="content-card">
+        <h2>Deskripsi Lowongan</h2>
+        <div class="description" id="jobDescription">Memuat deskripsi...</div>
+      </article>
+
+      <aside class="sidebar-card">
+        <h3>Ringkasan</h3>
+        <div class="info-row">
+          <span>Perusahaan</span>
+          <strong id="summaryCompany">-</strong>
+        </div>
+        <div class="info-row">
+          <span>Lokasi</span>
+          <strong id="summaryLocation">-</strong>
+        </div>
+
+        <a
+          id="applyBtn"
+          href="#"
+          class="btn btn-primary full"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Apply Sekarang
+        </a>
+      </aside>
+    </div>
+  </section>
+
+  <style>
+    .container {
+      width: min(100% - 32px, 1120px);
+      margin-inline: auto;
+    }
+
+    .detail-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      padding: 56px 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: #cbd5e1;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .back-link:hover {
+      color: white;
+    }
+
+    .detail-hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      line-height: 1.08;
+      margin-bottom: 10px;
+    }
+
+    .company {
+      font-size: 18px;
+      margin-bottom: 6px;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .location {
+      color: #cbd5e1;
+    }
+
+    .section {
+      padding: 48px 0 64px;
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: 1.5fr 0.8fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .content-card,
+    .sidebar-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+    }
+
+    .content-card h2,
+    .sidebar-card h3 {
+      margin-bottom: 18px;
+    }
+
+    .description {
+      color: #475569;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+
+    .info-row span {
+      color: #64748b;
+    }
+
+    .full {
+      width: 100%;
+      margin-top: 20px;
+      display: inline-flex;
+      justify-content: center;
+    }
+
+    @media (max-width: 900px) {
+      .detail-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <script>
+    // @ts-nocheck
+    import { supabase } from "../../lib/supabase.js";
+
+    const params = new URLSearchParams(window.location.search);
+    const jobId = params.get("id");
+
+    const jobTitle = document.getElementById("jobTitle");
+    const jobCompany = document.getElementById("jobCompany");
+    const jobLocation = document.getElementById("jobLocation");
+    const jobDescription = document.getElementById("jobDescription");
+    const summaryCompany = document.getElementById("summaryCompany");
+    const summaryLocation = document.getElementById("summaryLocation");
+    const applyBtn = document.getElementById("applyBtn");
+
+    async function loadJobDetail() {
+      if (!jobId) {
+        window.location.href = "/lowongan";
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("id", jobId)
+        .eq("is_active", true)
+        .maybeSingle();
+
+      if (error || !data) {
+        window.location.href = "/lowongan";
+        return;
+      }
+
+      if (jobTitle) jobTitle.textContent = data.title || "-";
+      if (jobCompany) jobCompany.textContent = data.company_name || "-";
+      if (jobLocation) jobLocation.textContent = data.location || "-";
+      if (jobDescription) {
+        jobDescription.textContent = data.description || "Belum ada deskripsi.";
+      }
+      if (summaryCompany) summaryCompany.textContent = data.company_name || "-";
+      if (summaryLocation) summaryLocation.textContent = data.location || "-";
+
+      if (applyBtn) {
+        if (data.apply_url) {
+          applyBtn.href = data.apply_url;
+          applyBtn.textContent = "Apply Sekarang";
+          applyBtn.removeAttribute("aria-disabled");
+          applyBtn.style.pointerEvents = "auto";
+          applyBtn.style.opacity = "1";
+        } else {
+          applyBtn.removeAttribute("href");
+          applyBtn.textContent = "Link Apply Belum Tersedia";
+          applyBtn.setAttribute("aria-disabled", "true");
+          applyBtn.style.pointerEvents = "none";
+          applyBtn.style.opacity = "0.6";
+        }
+      }
+    }
+
+    loadJobDetail();
+  </script>
+</BaseLayout>
