@@ -334,7 +334,20 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     .btn-danger:hover {
       background: #dc2626;
     }
+    .module-topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
 
+    .module-count {
+      font-size: 28px;
+      font-weight: 800;
+      line-height: 1;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+    }
     @media (max-width: 900px) {
       .summary-grid,
       .module-grid,
