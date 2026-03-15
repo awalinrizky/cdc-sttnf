@@ -8,7 +8,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <div class="admin-header">
         <div>
           <span class="eyebrow">Admin Panel</span>
-          <h1>Dashboard Admin</h1>
+          <h1>Semangat Admin</h1>
           <p class="subtext">
             Pusat manajemen konten CDC STT-NF untuk lowongan, workshop, blog,
             dan roadmap karier.
@@ -23,134 +23,99 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       <div class="summary-grid">
         <article class="summary-card">
+          <span class="module-tag">Jobs</span>
           <span class="summary-label">Total Lowongan</span>
           <strong id="jobCount" class="summary-value">-</strong>
           <p class="summary-copy">
             Jumlah semua lowongan yang tersimpan di sistem.
           </p>
+          <a href="/admin/job" class="btn btn-primary">Masuk ke Lowongan</a>
         </article>
 
         <article class="summary-card">
-          <span class="summary-label">Lowongan Aktif</span>
-          <strong id="activeCount" class="summary-value">-</strong>
-          <p class="summary-copy">
-            Lowongan yang sedang tampil di halaman publik.
-          </p>
-        </article>
-
-        <article class="summary-card">
-          <span class="summary-label">Total Event</span>
+          <span class="module-tag">Events</span>
+          <span class="summary-label">Total Workshop & Event</span>
           <strong id="eventCount" class="summary-value">-</strong>
           <p class="summary-copy">
             Jumlah workshop dan event yang tersimpan di sistem.
           </p>
+          <a href="/admin/event" class="btn btn-primary">Masuk ke Event</a>
         </article>
 
         <article class="summary-card">
+          <span class="module-tag">Blog</span>
           <span class="summary-label">Total Artikel Blog</span>
           <strong id="postCount" class="summary-value">-</strong>
           <p class="summary-copy">
             Jumlah artikel blog yang tersimpan di sistem.
           </p>
+          <a href="/admin/blog" class="btn btn-primary">Masuk ke Blog</a>
         </article>
 
         <article class="summary-card">
+          <span class="module-tag">Roadmap</span>
+
           <span class="summary-label">Total Roadmap</span>
           <strong id="roadmapCount" class="summary-value">-</strong>
           <p class="summary-copy">
             Jumlah roadmap karier yang tersimpan di sistem.
           </p>
-        </article>
-
-        <article class="summary-card">
-          <span class="summary-label">Role Aktif</span>
-          <strong id="userRoleCard" class="summary-value role-text">-</strong>
-          <p class="summary-copy">
-            Hak akses akun yang sedang digunakan saat ini.
-          </p>
+          <a href="/admin/roadmap" class="btn btn-primary">Masuk ke Roadmap</a>
         </article>
       </div>
 
-      <div class="dashboard-layout">
+      <!-- <div class="dashboard-layout">
         <div class="dashboard-main">
           <div class="section-head">
             <h2>Kelola Konten</h2>
             <p>Pilih modul yang ingin kamu tambah, ubah, atau hapus datanya.</p>
-          </div>
+          </div> -->
 
-          <div class="module-grid">
-            <article class="module-card">
-              <span class="module-tag">Jobs</span>
+      <!-- <div class="module-grid"> -->
+      <!-- <article class="module-card">
               <div class="module-top">
                 <h3>Kelola Lowongan</h3>
-                <strong id="jobModuleCount" class="module-count">-</strong>
               </div>
               <p>
                 Tambah, edit, hapus, dan atur status lowongan kerja yang tampil
                 ke publik.
               </p>
-              <a href="/admin/job" class="btn btn-primary">Masuk ke Lowongan</a>
-            </article>
+            </article> -->
 
-            <article class="module-card">
-              <span class="module-tag">Events</span>
+      <!-- <article class="module-card">
               <div class="module-top">
                 <h3>Kelola Workshop & Event</h3>
-                <strong id="eventModuleCount" class="module-count">-</strong>
               </div>
               <p>
                 Tambah dan perbarui workshop, seminar, atau event karier CDC
                 STT-NF.
               </p>
-              <a href="/admin/event" class="btn btn-primary">Masuk ke Event</a>
-            </article>
+            </article> -->
 
-            <article class="module-card">
-              <span class="module-tag">Blog</span>
+      <!-- <article class="module-card">
               <div class="module-top">
                 <h3>Kelola Artikel Blog</h3>
-                <strong id="postModuleCount" class="module-count">-</strong>
               </div>
               <p>
                 Tulis, edit, dan hapus artikel karier agar halaman blog selalu
                 relevan.
               </p>
-              <a href="/admin/blog" class="btn btn-primary">Masuk ke Blog</a>
-            </article>
+            </article> -->
 
-            <article class="module-card">
-              <span class="module-tag">Roadmap</span>
+      <!-- <article class="module-card">
               <div class="module-top">
                 <h3>Kelola Roadmap</h3>
-                <strong id="roadmapModuleCount" class="module-count">-</strong>
               </div>
               <p>
                 Atur isi roadmap karier supaya bisa diperbarui langsung dari
                 dashboard.
               </p>
-              <a href="/admin/roadmap" class="btn btn-primary">Masuk ke Roadmap</a>
-            </article>
-          </div>
-        </div>
-
-        <aside class="dashboard-side">
-          <div class="account-card">
-            <h2>Informasi Akun</h2>
-
-            <div class="account-grid">
-              <div class="account-item">
-                <span>Email</span>
-                <strong id="userEmail">-</strong>
-              </div>
-
-              <div class="account-item">
-                <span>Role</span>
-                <strong id="userRole">-</strong>
-              </div>
-            </div>
-          </div>
-        </aside>
-      </div>
+                >Masuk ke Roadmap</a
+              >
+            </article> -->
+      <!-- </div> -->
+      <!-- </div>
+      </div> -->
     </div>
   </section>
 
@@ -529,7 +494,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (jobModuleCount) jobModuleCount.textContent = String(totalJobs);
       if (eventModuleCount) eventModuleCount.textContent = String(totalEvents);
       if (postModuleCount) postModuleCount.textContent = String(totalPosts);
-      if (roadmapModuleCount) roadmapModuleCount.textContent = String(totalRoadmaps);
+      if (roadmapModuleCount)
+        roadmapModuleCount.textContent = String(totalRoadmaps);
     }
 
     logoutBtn?.addEventListener("click", async () => {
