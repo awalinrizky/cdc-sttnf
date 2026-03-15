@@ -3,31 +3,31 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout title="CDC STT-NF | Kelola Event">
-  <section class="admin-job-page">
+  <section class="admin-page">
     <div class="container">
       <div class="page-header">
         <div>
           <span class="eyebrow">Admin Panel</span>
           <h1>Kelola Workshop & Event</h1>
           <p class="subtext">
-            Tambah, edit, hapus, dan atur event yang tampil di halaman workshop.
+            Tambah, edit, hapus, dan atur workshop atau seminar yang tampil di halaman publik.
           </p>
         </div>
 
-        <div class="page-actions">
+        <div class="header-actions">
           <a href="/admin" class="btn btn-outline">Kembali ke Dashboard</a>
           <button id="logoutBtn" class="btn btn-danger">Logout</button>
         </div>
       </div>
 
-      <div class="layout-grid">
-        <div class="form-card">
+      <div class="admin-layout">
+        <aside class="form-card">
           <div class="card-head">
             <h2 id="formTitle">Tambah Event</h2>
-            <p>Isi data workshop atau seminar dengan jelas.</p>
+            <p>Isi data workshop atau seminar dengan jelas dan ringkas.</p>
           </div>
 
-          <form id="eventForm" class="job-form">
+          <form id="eventForm" class="admin-form">
             <div class="form-group">
               <label for="title">Judul Event</label>
               <input type="text" id="title" required />
@@ -35,7 +35,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
             <div class="form-group">
               <label for="location">Lokasi</label>
-              <input type="text" id="location" />
+              <input type="text" id="location" placeholder="Online / Kampus / Zoom / dll" />
             </div>
 
             <div class="form-group">
@@ -50,7 +50,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
             <div class="form-group">
               <label for="description">Deskripsi</label>
-              <textarea id="description" rows="6"></textarea>
+              <textarea id="description" rows="7"></textarea>
             </div>
 
             <div class="checkbox-group">
@@ -59,28 +59,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             </div>
 
             <div class="form-actions">
-              <button type="submit" id="submitBtn" class="btn btn-primary">
-                Simpan Event
-              </button>
-              <button
-                type="button"
-                id="cancelEditBtn"
-                class="btn btn-outline"
-                hidden
-              >
-                Batal
-              </button>
+              <button type="submit" id="submitBtn" class="btn btn-primary">Simpan Event</button>
+              <button type="button" id="cancelEditBtn" class="btn btn-outline" hidden>Batal Edit</button>
             </div>
 
             <p id="formMessage" class="message"></p>
           </form>
-        </div>
+        </aside>
 
-        <div class="list-card">
+        <section class="list-card">
           <div class="list-head">
             <div>
               <h2>Daftar Event</h2>
-              <p>Kelola workshop dan seminar yang akan tampil ke publik.</p>
+              <p>Kelola semua workshop dan seminar dari panel ini.</p>
             </div>
 
             <input
@@ -90,10 +81,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             />
           </div>
 
-          <div id="eventList" class="job-list">
+          <div id="eventList" class="item-list">
             <p class="empty">Memuat data event...</p>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   </section>
@@ -104,9 +95,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       margin-inline: auto;
     }
 
-    .admin-job-page {
+    .admin-page {
       padding: 48px 0 72px;
     }
+
     .page-header {
       display: flex;
       justify-content: space-between;
@@ -135,22 +127,23 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       letter-spacing: -0.03em;
       margin-bottom: 10px;
       color: #0f172a;
+      line-height: 1.05;
     }
 
     .subtext {
+      max-width: 760px;
       color: #64748b;
       line-height: 1.8;
       font-size: 16px;
-      max-width: 720px;
     }
 
-    .page-actions {
+    .header-actions {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
     }
 
-    .layout-grid {
+    .admin-layout {
       display: grid;
       grid-template-columns: 400px 1fr;
       gap: 24px;
@@ -166,7 +159,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
     }
 
-    .card-head {
+    .form-card {
+      position: sticky;
+      top: 100px;
+    }
+
+    .card-head,
+    .list-head {
       margin-bottom: 18px;
     }
 
@@ -176,6 +175,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       line-height: 1.2;
       letter-spacing: -0.02em;
       margin-bottom: 8px;
+      color: #0f172a;
     }
 
     .card-head p,
@@ -185,10 +185,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       font-size: 14px;
     }
 
-    .job-form {
+    .admin-form {
       display: grid;
       gap: 16px;
     }
+
     .form-group {
       display: grid;
       gap: 8px;
@@ -225,8 +226,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
     .checkbox-group {
       display: flex;
-      gap: 10px;
       align-items: center;
+      gap: 10px;
     }
 
     .form-actions {
@@ -252,19 +253,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       align-items: flex-start;
       gap: 14px;
       flex-wrap: wrap;
-      margin-bottom: 18px;
     }
 
     .list-head input {
-      max-width: 340px;
+      max-width: 320px;
     }
 
-    .job-list {
+    .item-list {
       display: grid;
       gap: 16px;
     }
 
-    .job-item {
+    .item-card {
       border: 1px solid #e2e8f0;
       border-radius: 18px;
       padding: 20px;
@@ -273,7 +273,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       background: #f8fafc;
     }
 
-    .job-top {
+    .item-top {
       display: flex;
       justify-content: space-between;
       gap: 12px;
@@ -281,15 +281,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       flex-wrap: wrap;
     }
 
-    .job-title {
-      font-size: 20px;
+    .item-title {
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: -0.02em;
       color: #0f172a;
       margin-bottom: 4px;
+      line-height: 1.25;
     }
 
-    .job-meta {
+    .item-meta {
       color: #64748b;
       font-size: 14px;
       line-height: 1.8;
@@ -314,14 +315,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       color: #991b1b;
     }
 
-    .job-description {
+    .item-description {
       color: #475569;
       line-height: 1.85;
       font-size: 14px;
       white-space: pre-wrap;
     }
 
-    .job-actions {
+    .item-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
@@ -349,9 +350,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       color: white;
     }
 
+    .btn-primary:hover {
+      background: #16a34a;
+    }
+
     .btn-danger {
       background: #ef4444;
       color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
     }
 
     .btn-outline {
@@ -360,9 +369,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       border: 1px solid #e2e8f0;
     }
 
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+
     @media (max-width: 980px) {
-      .layout-grid {
+      .admin-layout {
         grid-template-columns: 1fr;
+      }
+
+      .form-card {
+        position: static;
       }
     }
   </style>
@@ -370,7 +387,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
-    import { requireAdmin } from "../../lib/admin-guard.js";
+    import { requireSuperadmin } from "../../lib/admin-guard.js";
 
     const eventForm = document.getElementById("eventForm");
     const formTitle = document.getElementById("formTitle");
@@ -407,22 +424,24 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       setMessage("");
     }
 
-    function fillForm(eventItem) {
-      editingId = eventItem.id;
+    function fillForm(item) {
+      editingId = item.id;
       if (formTitle) formTitle.textContent = "Edit Event";
       if (submitBtn) submitBtn.textContent = "Update Event";
       if (cancelEditBtn) cancelEditBtn.hidden = false;
 
-      if (titleInput) titleInput.value = eventItem.title || "";
-      if (locationInput) locationInput.value = eventItem.location || "";
-      if (dateInput && eventItem.date) {
-        dateInput.value = new Date(eventItem.date).toISOString().slice(0, 16);
+      if (titleInput) titleInput.value = item.title || "";
+      if (locationInput) locationInput.value = item.location || "";
+      if (dateInput) {
+        dateInput.value = item.date
+          ? new Date(new Date(item.date).getTime() - new Date(item.date).getTimezoneOffset() * 60000)
+              .toISOString()
+              .slice(0, 16)
+          : "";
       }
-      if (registerUrlInput)
-        registerUrlInput.value = eventItem.register_url || "";
-      if (descriptionInput)
-        descriptionInput.value = eventItem.description || "";
-      if (isActiveInput) isActiveInput.checked = !!eventItem.is_active;
+      if (registerUrlInput) registerUrlInput.value = item.register_url || "";
+      if (descriptionInput) descriptionInput.value = item.description || "";
+      if (isActiveInput) isActiveInput.checked = !!item.is_active;
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -437,37 +456,44 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
       eventList.innerHTML = data
         .map(
-          (eventItem) => `
-            <div class="job-item">
-              <div class="job-top">
+          (item) => `
+            <div class="item-card">
+              <div class="item-top">
                 <div>
-                  <div class="job-title">${eventItem.title || "-"}</div>
-                  <div class="job-meta">
-                    ${eventItem.location || "Lokasi belum diisi"} • ${eventItem.date ? new Date(eventItem.date).toLocaleString("id-ID") : "Tanggal belum diisi"}
+                  <div class="item-title">${item.title || "-"}</div>
+                  <div class="item-meta">
+                    ${item.location || "Lokasi belum diisi"} • ${
+                      item.date
+                        ? new Date(item.date).toLocaleString("id-ID", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                          })
+                        : "Tanggal belum diisi"
+                    }
                   </div>
                 </div>
-                <span class="status-badge ${eventItem.is_active ? "status-active" : "status-inactive"}">
-                  ${eventItem.is_active ? "Aktif" : "Nonaktif"}
+                <span class="status-badge ${item.is_active ? "status-active" : "status-inactive"}">
+                  ${item.is_active ? "Aktif" : "Nonaktif"}
                 </span>
               </div>
 
-              <div class="job-description">
-                ${eventItem.description || "Belum ada deskripsi."}
+              <div class="item-description">
+                ${item.description || "Belum ada deskripsi."}
               </div>
 
-              <div class="job-actions">
-                <button class="btn btn-outline edit-btn" data-id="${eventItem.id}">Edit</button>
-                <button class="btn btn-danger delete-btn" data-id="${eventItem.id}">Hapus</button>
+              <div class="item-actions">
+                <button class="btn btn-outline edit-btn" data-id="${item.id}">Edit</button>
+                <button class="btn btn-danger delete-btn" data-id="${item.id}">Hapus</button>
               </div>
             </div>
-          `,
+          `
         )
         .join("");
 
       eventList.querySelectorAll(".edit-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const eventItem = events.find((item) => item.id === btn.dataset.id);
-          if (eventItem) fillForm(eventItem);
+          const item = events.find((row) => row.id === btn.dataset.id);
+          if (item) fillForm(item);
         });
       });
 
@@ -477,31 +503,14 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function guardAdmin() {
-      const result = await requireAdmin();
+      const result = await requireSuperadmin();
       return !!result;
-
-      if (!session) {
-        window.location.href = "/login";
-        return false;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", session.user.id)
-        .maybeSingle();
-
-      if (!profile || profile.role !== "superadmin") {
-        window.location.href = "/403";
-        return false;
-      }
-
-      return true;
     }
 
     async function loadEvents() {
-      if (eventList)
+      if (eventList) {
         eventList.innerHTML = `<p class="empty">Memuat data event...</p>`;
+      }
 
       const { data, error } = await supabase
         .from("events")
@@ -509,8 +518,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         .order("date", { ascending: true });
 
       if (error) {
-        if (eventList)
+        if (eventList) {
           eventList.innerHTML = `<p class="empty">Gagal memuat event: ${error.message}</p>`;
+        }
         return;
       }
 
@@ -534,11 +544,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function updateEvent(id, payload) {
-      return await supabase
-        .from("events")
-        .update(payload)
-        .eq("id", id)
-        .select();
+      return await supabase.from("events").update(payload).eq("id", id).select();
     }
 
     async function deleteEvent(id) {
@@ -593,11 +599,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
 
       setMessage(
-        editingId
-          ? "Event berhasil diperbarui."
-          : "Event berhasil ditambahkan.",
-        "success",
+        editingId ? "Event berhasil diperbarui." : "Event berhasil ditambahkan.",
+        "success"
       );
+
       resetForm();
 
       if (submitBtn) {
@@ -618,17 +623,23 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         return;
       }
 
-      const filtered = events.filter(
-        (eventItem) =>
-          (eventItem.title || "").toLowerCase().includes(keyword) ||
-          (eventItem.location || "").toLowerCase().includes(keyword),
-      );
+      const filtered = events.filter((item) => {
+        return (
+          (item.title || "").toLowerCase().includes(keyword) ||
+          (item.location || "").toLowerCase().includes(keyword)
+        );
+      });
 
       renderEvents(filtered);
     });
 
     logoutBtn?.addEventListener("click", async () => {
-      await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        alert("Logout gagal: " + error.message);
+        return;
+      }
+
       window.location.href = "/login";
     });
 
