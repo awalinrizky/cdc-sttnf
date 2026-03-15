@@ -2,15 +2,15 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="CDC STT-NF | Kelola Event">
+<BaseLayout title="CDC STT-NF | Kelola Blog">
   <section class="admin-job-page">
     <div class="container">
       <div class="page-header">
         <div>
           <span class="eyebrow">Admin Panel</span>
-          <h1>Kelola Workshop & Event</h1>
+          <h1>Kelola Artikel Blog</h1>
           <p class="subtext">
-            Tambah, edit, hapus, dan atur event yang tampil di halaman workshop.
+            Tambah, edit, hapus artikel karier yang tampil di halaman blog.
           </p>
         </div>
 
@@ -23,53 +23,46 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       <div class="layout-grid">
         <div class="form-card">
           <div class="card-head">
-            <h2 id="formTitle">Tambah Event</h2>
-            <p>Isi data workshop atau seminar dengan jelas.</p>
+            <h2 id="formTitle">Tambah Artikel</h2>
+            <p>Isi artikel singkat dan slug yang unik.</p>
           </div>
 
-          <form id="eventForm" class="job-form">
+          <form id="postForm" class="job-form">
             <div class="form-group">
-              <label for="title">Judul Event</label>
+              <label for="title">Judul Artikel</label>
               <input type="text" id="title" required />
             </div>
 
             <div class="form-group">
-              <label for="location">Lokasi</label>
-              <input type="text" id="location" />
+              <label for="slug">Slug</label>
+              <input
+                type="text"
+                id="slug"
+                required
+                placeholder="tips-membuat-cv-ats"
+              />
             </div>
 
             <div class="form-group">
-              <label for="date">Tanggal Event</label>
-              <input type="datetime-local" id="date" />
-            </div>
-
-            <div class="form-group">
-              <label for="registerUrl">Link Pendaftaran</label>
-              <input type="url" id="registerUrl" placeholder="https://..." />
-            </div>
-
-            <div class="form-group">
-              <label for="description">Deskripsi</label>
-              <textarea id="description" rows="6"></textarea>
+              <label for="content">Isi Artikel</label>
+              <textarea id="content" rows="10"></textarea>
             </div>
 
             <div class="checkbox-group">
-              <input type="checkbox" id="isActive" checked />
-              <label for="isActive">Tampilkan di publik</label>
+              <input type="checkbox" id="published" checked />
+              <label for="published">Publikasikan</label>
             </div>
 
             <div class="form-actions">
-              <button type="submit" id="submitBtn" class="btn btn-primary">
-                Simpan Event
-              </button>
+              <button type="submit" id="submitBtn" class="btn btn-primary"
+                >Simpan Artikel</button
+              >
               <button
                 type="button"
                 id="cancelEditBtn"
                 class="btn btn-outline"
-                hidden
+                hidden>Batal Edit</button
               >
-                Batal Edit
-              </button>
             </div>
 
             <p id="formMessage" class="message"></p>
@@ -79,19 +72,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <div class="list-card">
           <div class="list-head">
             <div>
-              <h2>Daftar Event</h2>
-              <p>Kelola workshop dan seminar yang akan tampil ke publik.</p>
+              <h2>Daftar Artikel</h2>
+              <p>Kelola artikel yang tampil di halaman blog.</p>
             </div>
-
             <input
               type="text"
               id="searchInput"
-              placeholder="Cari judul / lokasi..."
+              placeholder="Cari judul / slug..."
             />
           </div>
 
-          <div id="eventList" class="job-list">
-            <p class="empty">Memuat data event...</p>
+          <div id="postList" class="job-list">
+            <p class="empty">Memuat artikel...</p>
           </div>
         </div>
       </div>
@@ -103,7 +95,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       width: min(100% - 32px, 1200px);
       margin-inline: auto;
     }
-
     .admin-job-page {
       padding: 48px 0 72px;
     }
@@ -115,7 +106,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       flex-wrap: wrap;
       margin-bottom: 28px;
     }
-
     .eyebrow {
       display: inline-flex;
       align-items: center;
@@ -129,34 +119,29 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-
     h1 {
       font-size: clamp(32px, 4vw, 48px);
       letter-spacing: -0.03em;
       margin-bottom: 10px;
       color: #0f172a;
     }
-
     .subtext {
       color: #64748b;
       line-height: 1.8;
       font-size: 16px;
       max-width: 720px;
     }
-
     .page-actions {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
     }
-
     .layout-grid {
       display: grid;
       grid-template-columns: 400px 1fr;
       gap: 24px;
       align-items: start;
     }
-
     .form-card,
     .list-card {
       background: white;
@@ -165,11 +150,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       padding: 24px;
       box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
     }
-
     .card-head {
       margin-bottom: 18px;
     }
-
     .card-head h2,
     .list-head h2 {
       font-size: 26px;
@@ -177,14 +160,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       letter-spacing: -0.02em;
       margin-bottom: 8px;
     }
-
     .card-head p,
     .list-head p {
       color: #64748b;
       line-height: 1.8;
       font-size: 14px;
     }
-
     .job-form {
       display: grid;
       gap: 16px;
@@ -193,14 +174,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       display: grid;
       gap: 8px;
     }
-
     .form-group label,
     .checkbox-group label {
       font-size: 14px;
       font-weight: 700;
       color: #0f172a;
     }
-
     .form-group input,
     .form-group textarea,
     .list-head input {
@@ -213,39 +192,26 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       font-family: inherit;
       background: #fff;
       color: #0f172a;
-      transition: 0.2s ease;
     }
-
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .list-head input:focus {
-      border-color: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
-    }
-
     .checkbox-group {
       display: flex;
       gap: 10px;
       align-items: center;
     }
-
     .form-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-
     .message {
       min-height: 20px;
       color: #ef4444;
       font-size: 14px;
       line-height: 1.7;
     }
-
     .message.success {
       color: #16a34a;
     }
-
     .list-head {
       display: flex;
       justify-content: space-between;
@@ -254,16 +220,13 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       flex-wrap: wrap;
       margin-bottom: 18px;
     }
-
     .list-head input {
       max-width: 340px;
     }
-
     .job-list {
       display: grid;
       gap: 16px;
     }
-
     .job-item {
       border: 1px solid #e2e8f0;
       border-radius: 18px;
@@ -272,15 +235,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       gap: 14px;
       background: #f8fafc;
     }
-
-    .job-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: flex-start;
-      flex-wrap: wrap;
-    }
-
     .job-title {
       font-size: 20px;
       font-weight: 800;
@@ -288,50 +242,26 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       color: #0f172a;
       margin-bottom: 4px;
     }
-
     .job-meta {
       color: #64748b;
       font-size: 14px;
       line-height: 1.8;
     }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    .status-active {
-      background: #dcfce7;
-      color: #166534;
-    }
-
-    .status-inactive {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-
     .job-description {
       color: #475569;
       line-height: 1.85;
       font-size: 14px;
       white-space: pre-wrap;
     }
-
     .job-actions {
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
-
     .empty {
       color: #64748b;
       font-size: 15px;
     }
-
     .btn {
       display: inline-flex;
       align-items: center;
@@ -343,23 +273,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       border: none;
       cursor: pointer;
     }
-
     .btn-primary {
       background: #22c55e;
       color: white;
     }
-
     .btn-danger {
       background: #ef4444;
       color: white;
     }
-
     .btn-outline {
       background: white;
       color: #0f172a;
       border: 1px solid #e2e8f0;
     }
-
     @media (max-width: 980px) {
       .layout-grid {
         grid-template-columns: 1fr;
@@ -371,107 +297,89 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
 
-    const eventForm = document.getElementById("eventForm");
+    const postForm = document.getElementById("postForm");
     const formTitle = document.getElementById("formTitle");
     const submitBtn = document.getElementById("submitBtn");
     const cancelEditBtn = document.getElementById("cancelEditBtn");
     const formMessage = document.getElementById("formMessage");
-    const eventList = document.getElementById("eventList");
+    const postList = document.getElementById("postList");
     const searchInput = document.getElementById("searchInput");
     const logoutBtn = document.getElementById("logoutBtn");
 
     const titleInput = document.getElementById("title");
-    const locationInput = document.getElementById("location");
-    const dateInput = document.getElementById("date");
-    const registerUrlInput = document.getElementById("registerUrl");
-    const descriptionInput = document.getElementById("description");
-    const isActiveInput = document.getElementById("isActive");
+    const slugInput = document.getElementById("slug");
+    const contentInput = document.getElementById("content");
+    const publishedInput = document.getElementById("published");
 
     let editingId = null;
-    let events = [];
+    let posts = [];
 
     function setMessage(text, type = "error") {
-      if (!formMessage) return;
       formMessage.textContent = text;
       formMessage.className = `message ${type === "success" ? "success" : ""}`;
     }
 
     function resetForm() {
       editingId = null;
-      if (formTitle) formTitle.textContent = "Tambah Event";
-      if (submitBtn) submitBtn.textContent = "Simpan Event";
-      if (cancelEditBtn) cancelEditBtn.hidden = true;
-      eventForm?.reset();
-      if (isActiveInput) isActiveInput.checked = true;
+      formTitle.textContent = "Tambah Artikel";
+      submitBtn.textContent = "Simpan Artikel";
+      cancelEditBtn.hidden = true;
+      postForm.reset();
+      publishedInput.checked = true;
       setMessage("");
     }
 
-    function fillForm(eventItem) {
-      editingId = eventItem.id;
-      if (formTitle) formTitle.textContent = "Edit Event";
-      if (submitBtn) submitBtn.textContent = "Update Event";
-      if (cancelEditBtn) cancelEditBtn.hidden = false;
+    function fillForm(post) {
+      editingId = post.id;
+      formTitle.textContent = "Edit Artikel";
+      submitBtn.textContent = "Update Artikel";
+      cancelEditBtn.hidden = false;
 
-      if (titleInput) titleInput.value = eventItem.title || "";
-      if (locationInput) locationInput.value = eventItem.location || "";
-      if (dateInput && eventItem.date) {
-        dateInput.value = new Date(eventItem.date).toISOString().slice(0, 16);
-      }
-      if (registerUrlInput)
-        registerUrlInput.value = eventItem.register_url || "";
-      if (descriptionInput)
-        descriptionInput.value = eventItem.description || "";
-      if (isActiveInput) isActiveInput.checked = !!eventItem.is_active;
+      titleInput.value = post.title || "";
+      slugInput.value = post.slug || "";
+      contentInput.value = post.content || "";
+      publishedInput.checked = !!post.published;
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function renderEvents(data) {
-      if (!eventList) return;
-
+    function renderPosts(data) {
       if (!data.length) {
-        eventList.innerHTML = `<p class="empty">Belum ada event.</p>`;
+        postList.innerHTML = `<p class="empty">Belum ada artikel.</p>`;
         return;
       }
 
-      eventList.innerHTML = data
+      postList.innerHTML = data
         .map(
-          (eventItem) => `
+          (post) => `
             <div class="job-item">
-              <div class="job-top">
-                <div>
-                  <div class="job-title">${eventItem.title || "-"}</div>
-                  <div class="job-meta">
-                    ${eventItem.location || "Lokasi belum diisi"} • ${eventItem.date ? new Date(eventItem.date).toLocaleString("id-ID") : "Tanggal belum diisi"}
-                  </div>
-                </div>
-                <span class="status-badge ${eventItem.is_active ? "status-active" : "status-inactive"}">
-                  ${eventItem.is_active ? "Aktif" : "Nonaktif"}
-                </span>
+              <div>
+                <div class="job-title">${post.title || "-"}</div>
+                <div class="job-meta">Slug: ${post.slug || "-"} • ${post.published ? "Published" : "Draft"}</div>
               </div>
 
               <div class="job-description">
-                ${eventItem.description || "Belum ada deskripsi."}
+                ${(post.content || "Belum ada isi artikel.").slice(0, 220)}${(post.content || "").length > 220 ? "..." : ""}
               </div>
 
               <div class="job-actions">
-                <button class="btn btn-outline edit-btn" data-id="${eventItem.id}">Edit</button>
-                <button class="btn btn-danger delete-btn" data-id="${eventItem.id}">Hapus</button>
+                <button class="btn btn-outline edit-btn" data-id="${post.id}">Edit</button>
+                <button class="btn btn-danger delete-btn" data-id="${post.id}">Hapus</button>
               </div>
             </div>
           `,
         )
         .join("");
 
-      eventList.querySelectorAll(".edit-btn").forEach((btn) => {
+      postList.querySelectorAll(".edit-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
-          const eventItem = events.find((item) => item.id === btn.dataset.id);
-          if (eventItem) fillForm(eventItem);
+          const post = posts.find((item) => item.id === btn.dataset.id);
+          if (post) fillForm(post);
         });
       });
 
-      eventList.querySelectorAll(".delete-btn").forEach((btn) => {
-        btn.addEventListener("click", () => deleteEvent(btn.dataset.id));
+      postList.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", () => deletePost(btn.dataset.id));
       });
     }
 
@@ -499,113 +407,91 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       return true;
     }
 
-    async function loadEvents() {
-      if (eventList)
-        eventList.innerHTML = `<p class="empty">Memuat data event...</p>`;
+    async function loadPosts() {
+      postList.innerHTML = `<p class="empty">Memuat artikel...</p>`;
 
       const { data, error } = await supabase
-        .from("events")
+        .from("posts")
         .select("*")
-        .order("date", { ascending: true });
+        .order("created_at", { ascending: false });
 
       if (error) {
-        if (eventList)
-          eventList.innerHTML = `<p class="empty">Gagal memuat event: ${error.message}</p>`;
+        postList.innerHTML = `<p class="empty">Gagal memuat artikel: ${error.message}</p>`;
         return;
       }
 
-      events = data || [];
-      renderEvents(events);
+      posts = data || [];
+      renderPosts(posts);
     }
 
     function getPayload() {
       return {
-        title: titleInput?.value?.trim() || "",
-        location: locationInput?.value?.trim() || "",
-        date: dateInput?.value || null,
-        register_url: registerUrlInput?.value?.trim() || "",
-        description: descriptionInput?.value?.trim() || "",
-        is_active: !!isActiveInput?.checked,
+        title: titleInput.value.trim(),
+        slug: slugInput.value.trim(),
+        content: contentInput.value.trim(),
+        published: !!publishedInput.checked,
       };
     }
 
-    async function createEvent(payload) {
-      return await supabase.from("events").insert([payload]).select();
+    async function createPost(payload) {
+      return await supabase.from("posts").insert([payload]).select();
     }
 
-    async function updateEvent(id, payload) {
-      return await supabase
-        .from("events")
-        .update(payload)
-        .eq("id", id)
-        .select();
+    async function updatePost(id, payload) {
+      return await supabase.from("posts").update(payload).eq("id", id).select();
     }
 
-    async function deleteEvent(id) {
-      const confirmed = confirm("Yakin ingin menghapus event ini?");
+    async function deletePost(id) {
+      const confirmed = confirm("Yakin ingin menghapus artikel ini?");
       if (!confirmed) return;
 
-      const { error } = await supabase.from("events").delete().eq("id", id);
-
+      const { error } = await supabase.from("posts").delete().eq("id", id);
       if (error) {
-        alert("Gagal menghapus event: " + error.message);
+        alert("Gagal menghapus artikel: " + error.message);
         return;
       }
 
       if (editingId === id) resetForm();
-      await loadEvents();
+      await loadPosts();
     }
 
-    eventForm?.addEventListener("submit", async (e) => {
+    postForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const payload = getPayload();
 
-      if (!payload.title) {
-        setMessage("Judul event wajib diisi.");
+      if (!payload.title || !payload.slug) {
+        setMessage("Judul dan slug wajib diisi.");
         return;
       }
 
-      if (payload.register_url && !payload.register_url.startsWith("http")) {
-        setMessage("Link pendaftaran harus diawali http:// atau https://");
-        return;
-      }
-
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = editingId ? "Mengupdate..." : "Menyimpan...";
-      }
+      submitBtn.disabled = true;
+      submitBtn.textContent = editingId ? "Mengupdate..." : "Menyimpan...";
 
       let result;
       if (editingId) {
-        result = await updateEvent(editingId, payload);
+        result = await updatePost(editingId, payload);
       } else {
-        result = await createEvent(payload);
+        result = await createPost(payload);
       }
 
       if (result.error) {
-        setMessage("Gagal menyimpan event: " + result.error.message);
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = editingId ? "Update Event" : "Simpan Event";
-        }
+        setMessage("Gagal menyimpan artikel: " + result.error.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = editingId ? "Update Artikel" : "Simpan Artikel";
         return;
       }
 
       setMessage(
         editingId
-          ? "Event berhasil diperbarui."
-          : "Event berhasil ditambahkan.",
+          ? "Artikel berhasil diperbarui."
+          : "Artikel berhasil ditambahkan.",
         "success",
       );
       resetForm();
-
-      if (submitBtn) {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Simpan Event";
-      }
-
-      await loadEvents();
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Simpan Artikel";
+      await loadPosts();
     });
 
     cancelEditBtn?.addEventListener("click", resetForm);
@@ -614,17 +500,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       const keyword = searchInput.value.toLowerCase().trim();
 
       if (!keyword) {
-        renderEvents(events);
+        renderPosts(posts);
         return;
       }
 
-      const filtered = events.filter(
-        (eventItem) =>
-          (eventItem.title || "").toLowerCase().includes(keyword) ||
-          (eventItem.location || "").toLowerCase().includes(keyword),
+      const filtered = posts.filter(
+        (post) =>
+          (post.title || "").toLowerCase().includes(keyword) ||
+          (post.slug || "").toLowerCase().includes(keyword),
       );
 
-      renderEvents(filtered);
+      renderPosts(filtered);
     });
 
     logoutBtn?.addEventListener("click", async () => {
@@ -635,7 +521,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const allowed = await guardAdmin();
     if (allowed) {
       resetForm();
-      await loadEvents();
+      await loadPosts();
     }
   </script>
 </BaseLayout>
