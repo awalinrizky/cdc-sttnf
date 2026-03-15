@@ -10,8 +10,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <span class="eyebrow">Admin Panel</span>
           <h1>Dashboard Admin</h1>
           <p class="subtext">
-            Kelola lowongan kerja dan pantau data utama CDC STT-NF dari satu
-            tempat.
+            Pusat manajemen konten CDC STT-NF untuk lowongan, workshop, blog,
+            dan roadmap karier.
           </p>
         </div>
 
@@ -21,351 +21,404 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         </div>
       </div>
 
-      <div class="stats-grid">
-        <!-- <div class="stat-card">
-          <div class="stat-label">Total Lowongan</div>
-          <div id="jobCount" class="stat-value">-</div>
-          <p class="stat-copy">Jumlah seluruh data lowongan yang tersimpan di sistem.</p>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Lowongan Aktif</div>
-          <div id="activeCount" class="stat-value">-</div>
-          <p class="stat-copy">Hanya lowongan yang tampil di halaman publik.</p>
-        </div>
-
-        <div class="stat-card action-card">
-          <div class="stat-label">Manajemen Lowongan</div>
-          <h3>Tambah, edit, dan rapikan data lowongan.</h3>
-          <p class="stat-copy">
-            Masuk ke halaman kelola lowongan untuk memperbarui data yang tampil ke publik.
+      <div class="summary-grid">
+        <div class="summary-card">
+          <span class="summary-label">Total Lowongan</span>
+          <strong id="jobCount" class="summary-value">-</strong>
+          <p class="summary-copy">
+            Jumlah semua lowongan yang tersimpan di sistem.
           </p>
-          <a href="/admin/job" class="btn btn-primary">Kelola Lowongan</a>
-        </div>
-      </div> -->
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">Total Lowongan</div>
-            <div id="jobCount" class="stat-value">-</div>
-            <p class="stat-copy">
-              Jumlah seluruh data lowongan yang tersimpan di sistem.
-            </p>
-            <a href="/admin/job" class="btn btn-primary">Kelola Lowongan</a>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">Workshop & Event</div>
-            <div class="stat-value">+</div>
-            <p class="stat-copy">
-              Tambah, edit, dan hapus workshop atau seminar.
-            </p>
-            <a href="/admin/event" class="btn btn-primary">Kelola Event</a>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">Artikel Blog</div>
-            <div class="stat-value">+</div>
-            <p class="stat-copy">
-              Kelola artikel karier yang tampil di halaman blog.
-            </p>
-            <a href="/admin/blog" class="btn btn-primary">Kelola Blog</a>
-          </div>
-
-          <div class="stat-card">
-            <div class="stat-label">Roadmap</div>
-            <div class="stat-value">+</div>
-            <p class="stat-copy">
-              Kelola isi roadmap karier agar bisa diupdate dari dashboard.
-            </p>
-            <a href="/admin/roadmap" class="btn btn-primary">Kelola Roadmap</a>
-          </div>
         </div>
 
-        <div class="account-card">
-          <h2>Informasi Akun</h2>
-          <div class="account-grid">
-            <div class="account-item">
-              <span>Email</span>
-              <strong id="userEmail">-</strong>
-            </div>
-            <div class="account-item">
-              <span>Role</span>
-              <strong id="userRole">-</strong>
-            </div>
+        <div class="summary-card">
+          <span class="summary-label">Lowongan Aktif</span>
+          <strong id="activeCount" class="summary-value">-</strong>
+          <p class="summary-copy">
+            Lowongan yang sedang tampil di halaman publik.
+          </p>
+        </div>
+
+        <div class="summary-card">
+          <span class="summary-label">Role Login</span>
+          <strong id="userRoleCard" class="summary-value small">-</strong>
+          <p class="summary-copy">Hak akses akun yang sedang aktif saat ini.</p>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <h2>Kelola Konten</h2>
+        <p>Pilih modul yang ingin kamu tambah, ubah, atau hapus datanya.</p>
+      </div>
+
+      <div class="module-grid">
+        <article class="module-card">
+          <span class="module-tag">Jobs</span>
+          <h3>Kelola Lowongan</h3>
+          <p>
+            Tambah, edit, hapus, dan atur status lowongan kerja yang tampil ke
+            publik.
+          </p>
+          <a href="/admin/job" class="btn btn-primary">Masuk ke Lowongan</a>
+        </article>
+
+        <article class="module-card">
+          <span class="module-tag">Events</span>
+          <h3>Kelola Workshop & Event</h3>
+          <p>
+            Tambah dan perbarui workshop, seminar, atau event karier CDC STT-NF.
+          </p>
+          <a href="/admin/event" class="btn btn-primary">Masuk ke Event</a>
+        </article>
+
+        <article class="module-card">
+          <span class="module-tag">Blog</span>
+          <h3>Kelola Artikel Blog</h3>
+          <p>
+            Tulis, edit, dan hapus artikel karier agar halaman blog selalu
+            relevan.
+          </p>
+          <a href="/admin/blog" class="btn btn-primary">Masuk ke Blog</a>
+        </article>
+
+        <article class="module-card">
+          <span class="module-tag">Roadmap</span>
+          <h3>Kelola Roadmap</h3>
+          <p>
+            Atur isi roadmap karier supaya bisa diperbarui langsung dari
+            dashboard.
+          </p>
+          <a href="/admin/roadmap" class="btn btn-primary">Masuk ke Roadmap</a>
+        </article>
+      </div>
+
+      <div class="account-card">
+        <h2>Informasi Akun</h2>
+        <div class="account-grid">
+          <div class="account-item">
+            <span>Email</span>
+            <strong id="userEmail">-</strong>
+          </div>
+          <div class="account-item">
+            <span>Role</span>
+            <strong id="userRole">-</strong>
           </div>
         </div>
       </div>
     </div>
+  </section>
 
-    <style>
-      .container {
-        width: min(100% - 32px, 1120px);
-        margin-inline: auto;
-      }
+  <style>
+    .container {
+      width: min(100% - 32px, 1120px);
+      margin-inline: auto;
+    }
 
-      .admin-page {
-        padding: 48px 0 72px;
-      }
+    .admin-page {
+      padding: 48px 0 72px;
+    }
 
-      .admin-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 20px;
-        flex-wrap: wrap;
-        margin-bottom: 30px;
-      }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
 
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: #dcfce7;
-        color: #166534;
-        font-size: 13px;
-        font-weight: 700;
-        margin-bottom: 16px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #dcfce7;
+      color: #166534;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
 
-      h1 {
-        font-size: clamp(32px, 4vw, 48px);
-        letter-spacing: -0.03em;
-        margin-bottom: 10px;
-        color: #0f172a;
-      }
+    h1 {
+      font-size: clamp(32px, 4vw, 48px);
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+      color: #0f172a;
+    }
 
-      .subtext {
-        max-width: 700px;
-        color: #64748b;
-        line-height: 1.8;
-        font-size: 16px;
-      }
+    .subtext {
+      max-width: 760px;
+      color: #64748b;
+      line-height: 1.8;
+      font-size: 16px;
+    }
 
-      .header-actions {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-      .role-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 10px 14px;
-        background: #f1f5f9;
-        color: #0f172a;
-        border: 1px solid #e2e8f0;
-        border-radius: 999px;
-        font-size: 13px;
-        font-weight: 700;
-      }
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 14px;
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+    }
 
-      .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        margin-bottom: 24px;
-      }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 34px;
+    }
 
-      .stat-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 22px;
-        padding: 24px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        min-height: 220px;
-      }
+    .summary-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      display: grid;
+      gap: 12px;
+    }
 
-      .stat-label {
-        color: #64748b;
-        font-size: 14px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
+    .summary-label {
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
 
-      .stat-value {
-        font-size: 48px;
-        font-weight: 800;
-        line-height: 1;
-        color: #0f172a;
-        letter-spacing: -0.04em;
-      }
+    .summary-value {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1;
+      color: #0f172a;
+      letter-spacing: -0.04em;
+    }
 
-      .stat-copy {
-        color: #64748b;
-        line-height: 1.8;
-        font-size: 14px;
-      }
+    .summary-value.small {
+      font-size: 28px;
+      line-height: 1.2;
+    }
 
-      .action-card h3 {
-        font-size: 24px;
-        line-height: 1.3;
-        letter-spacing: -0.02em;
-        color: #0f172a;
-      }
+    .summary-copy {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.8;
+    }
 
-      .account-card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 22px;
-        padding: 24px;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-      }
+    .section-head {
+      margin-bottom: 20px;
+    }
 
-      .account-card h2 {
-        font-size: 24px;
-        margin-bottom: 18px;
-        letter-spacing: -0.02em;
-      }
+    .section-head h2 {
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
 
+    .section-head p {
+      color: #64748b;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .module-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 230px;
+      transition: 0.2s ease;
+    }
+
+    .module-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
+    }
+
+    .module-tag {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      color: #0f172a;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .module-card h3 {
+      font-size: 24px;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+    }
+
+    .module-card p {
+      color: #64748b;
+      line-height: 1.8;
+      font-size: 15px;
+      flex: 1;
+    }
+
+    .account-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+
+    .account-card h2 {
+      font-size: 24px;
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .account-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .account-item {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .account-item span {
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .account-item strong {
+      color: #0f172a;
+      font-size: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #22c55e;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #16a34a;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    @media (max-width: 960px) {
+      .summary-grid,
+      .module-grid,
       .account-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 18px;
+        grid-template-columns: 1fr;
       }
+    }
+  </style>
 
-      .account-item {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 16px;
-        display: grid;
-        gap: 8px;
+  <script>
+    // @ts-nocheck
+    import { supabase } from "../../lib/supabase.js";
+    import { requireAdmin } from "../../lib/admin-guard.js";
+    
+    const roleBadge = document.getElementById("roleBadge");
+    const userEmail = document.getElementById("userEmail");
+    const userRole = document.getElementById("userRole");
+    const userRoleCard = document.getElementById("userRoleCard");
+    const jobCount = document.getElementById("jobCount");
+    const activeCount = document.getElementById("activeCount");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    async function guardAdmin() {
+      const result = await requireAdmin();
+      if (!result) return null;
+
+      const { session, profile } = result;
+
+      if (userEmail) userEmail.textContent = session.user.email || "-";
+      if (userRole) userRole.textContent = profile.role;
+      if (userRoleCard) userRoleCard.textContent = profile.role.toUpperCase();
+      if (roleBadge) roleBadge.textContent = profile.role.toUpperCase();
+
+      return result;
+    }
+
+    async function loadStats() {
+      const { count: totalJobs } = await supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true });
+
+      const { count: activeJobs } = await supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .eq("is_active", true);
+
+      if (jobCount) jobCount.textContent = String(totalJobs ?? 0);
+      if (activeCount) activeCount.textContent = String(activeJobs ?? 0);
+    }
+
+    logoutBtn?.addEventListener("click", async () => {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        alert("Logout gagal: " + error.message);
+        return;
       }
+      window.location.href = "/login";
+    });
 
-      .account-item span {
-        color: #64748b;
-        font-size: 13px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .account-item strong {
-        color: #0f172a;
-        font-size: 16px;
-      }
-
-      .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border: none;
-        border-radius: 12px;
-        padding: 12px 18px;
-        font-weight: 700;
-        cursor: pointer;
-        text-decoration: none;
-      }
-
-      .btn-primary {
-        background: #22c55e;
-        color: white;
-      }
-
-      .btn-primary:hover {
-        background: #16a34a;
-      }
-
-      .btn-danger {
-        background: #ef4444;
-        color: white;
-      }
-
-      .btn-danger:hover {
-        background: #dc2626;
-      }
-
-      @media (max-width: 900px) {
-        .stats-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .account-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-
-    <script>
-      // @ts-nocheck
-      import { supabase } from "../../lib/supabase.js";
-
-      const roleBadge = document.getElementById("roleBadge");
-      const userEmail = document.getElementById("userEmail");
-      const userRole = document.getElementById("userRole");
-      const jobCount = document.getElementById("jobCount");
-      const activeCount = document.getElementById("activeCount");
-      const logoutBtn = document.getElementById("logoutBtn");
-
-      async function guardAdmin() {
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabase.auth.getSession();
-
-        if (sessionError || !session) {
-          window.location.href = "/login";
-          return null;
-        }
-
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", session.user.id)
-          .maybeSingle();
-
-        if (profileError || !profile) {
-          window.location.href = "/login";
-          return null;
-        }
-
-        if (profile.role !== "admin" && profile.role !== "superadmin") {
-          window.location.href = "/403";
-          return null;
-        }
-
-        if (userEmail) userEmail.textContent = session.user.email || "-";
-        if (userRole) userRole.textContent = profile.role;
-        if (roleBadge) roleBadge.textContent = profile.role.toUpperCase();
-
-        return { session, profile };
-      }
-
-      async function loadStats() {
-        const { count: totalJobs } = await supabase
-          .from("jobs")
-          .select("*", { count: "exact", head: true });
-
-        const { count: activeJobs } = await supabase
-          .from("jobs")
-          .select("*", { count: "exact", head: true })
-          .eq("is_active", true);
-
-        if (jobCount) jobCount.textContent = String(totalJobs ?? 0);
-        if (activeCount) activeCount.textContent = String(activeJobs ?? 0);
-      }
-
-      logoutBtn?.addEventListener("click", async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-          alert("Logout gagal: " + error.message);
-          return;
-        }
-        window.location.href = "/login";
-      });
-
-      const authResult = await guardAdmin();
-      if (authResult) {
-        await loadStats();
-      }
-    </script>
-  </section></BaseLayout
->
+    const authResult = await guardAdmin();
+    if (authResult) {
+      await loadStats();
+    }
+  </script>
+</BaseLayout>

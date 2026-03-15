@@ -10,7 +10,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <span class="eyebrow">Admin Panel</span>
           <h1>Kelola Lowongan</h1>
           <p class="subtext">
-            Tambah, edit, hapus, dan rapikan lowongan kerja yang tampil ke publik.
+            Tambah, edit, hapus, dan rapikan lowongan kerja yang tampil ke
+            publik.
           </p>
         </div>
 
@@ -62,7 +63,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <button type="submit" id="submitBtn" class="btn btn-primary">
                 Simpan Lowongan
               </button>
-              <button type="button" id="cancelEditBtn" class="btn btn-outline" hidden>
+              <button
+                type="button"
+                id="cancelEditBtn"
+                class="btn btn-outline"
+                hidden
+              >
                 Batal Edit
               </button>
             </div>
@@ -75,7 +81,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <div class="list-head">
             <div>
               <h2>Daftar Lowongan</h2>
-              <p>Gunakan edit untuk memperbarui data dan hapus jika sudah tidak relevan.</p>
+              <p>
+                Gunakan edit untuk memperbarui data dan hapus jika sudah tidak
+                relevan.
+              </p>
             </div>
 
             <input
@@ -384,6 +393,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
+    import { requireAdmin } from "../../lib/admin-guard.js";
 
     const jobForm = document.getElementById("jobForm");
     const formTitle = document.getElementById("formTitle");
@@ -469,7 +479,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 <button class="btn btn-danger delete-btn" data-id="${job.id}">Hapus</button>
               </div>
             </div>
-          `
+          `,
         )
         .join("");
 
@@ -486,12 +496,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function guardAdmin() {
-      const {
-        data: { session },
-        error: sessionError,
-      } = await supabase.auth.getSession();
+      const result = await requireAdmin();
+      return !!result;
 
-      if (sessionError || !session) {
+      if (  sessionError || !session) {
         window.location.href = "/login";
         return false;
       }
@@ -632,14 +640,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         setMessage("Gagal menyimpan data: " + error.message);
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = editingId ? "Update Lowongan" : "Simpan Lowongan";
+          submitBtn.textContent = editingId
+            ? "Update Lowongan"
+            : "Simpan Lowongan";
         }
         return;
       }
 
       setMessage(
-        editingId ? "Lowongan berhasil diperbarui." : "Lowongan berhasil ditambahkan.",
-        "success"
+        editingId
+          ? "Lowongan berhasil diperbarui."
+          : "Lowongan berhasil ditambahkan.",
+        "success",
       );
 
       resetForm();

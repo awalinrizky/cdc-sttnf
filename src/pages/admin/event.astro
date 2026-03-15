@@ -370,6 +370,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
+    import { requireAdmin } from "../../lib/admin-guard.js";
 
     const eventForm = document.getElementById("eventForm");
     const formTitle = document.getElementById("formTitle");
@@ -476,10 +477,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function guardAdmin() {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
+      const result = await requireAdmin();
+      return !!result;
+      
       if (!session) {
         window.location.href = "/login";
         return false;
