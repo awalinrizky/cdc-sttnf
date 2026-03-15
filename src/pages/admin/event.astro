@@ -68,7 +68,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 class="btn btn-outline"
                 hidden
               >
-                Batal Edit
+                Batal
               </button>
             </div>
 
@@ -479,7 +479,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     async function guardAdmin() {
       const result = await requireAdmin();
       return !!result;
-      
+
       if (!session) {
         window.location.href = "/login";
         return false;
