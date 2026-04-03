@@ -400,7 +400,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
-    import { requireSuperadmin } from "../../lib/admin-guard.js";
+    import { requireAdmin } from "../../lib/adminGuard.js";
 
     const roadmapForm = document.getElementById("roadmapForm");
     const formTitle = document.getElementById("formTitle");
@@ -506,24 +506,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         btn.addEventListener("click", () => deleteRoadmap(btn.dataset.id));
       });
     }
-
-    async function guardAdmin() {
-      const result = await requireSuperadmin();
-      return !!result;
-    }
-    async function init() {
-      const isAllowed = await requireAdmin();
-
-      if (isAllowed) {
-        resetForm();
-        await loadRoadmaps();
-      } else {
-        alert("Akses ditolak: Anda bukan admin.");
-        window.location.href = "/login";
-      }
-    }
-
-    init();
 
     async function loadRoadmaps() {
       if (roadmapList) {
@@ -669,7 +651,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       window.location.href = "/login";
     });
 
-    const allowed = await guardAdmin();
+    const allowed = await requireAdmin();
     if (allowed) {
       resetForm();
       await loadRoadmaps();

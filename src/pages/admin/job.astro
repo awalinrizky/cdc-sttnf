@@ -397,7 +397,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
-    import { requireAdmin } from "../../lib/admin-guard.js";
+    import { requireAdmin } from "../../lib/adminGuard.js";
 
     const jobForm = document.getElementById("jobForm");
     const formTitle = document.getElementById("formTitle");
@@ -498,20 +498,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         btn.addEventListener("click", () => deleteJob(btn.dataset.id));
       });
     }
-
-    async function init() {
-      const isAllowed = await requireAdmin();
-
-      if (isAllowed) {
-        resetForm();
-        await loadJobs();
-      } else {
-        alert("Akses ditolak: Anda bukan admin.");
-        window.location.href = "/login";
-      }
-    }
-
-    init();
 
     async function loadJobs() {
       if (jobList) {
