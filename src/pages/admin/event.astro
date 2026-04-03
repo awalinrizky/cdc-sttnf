@@ -10,7 +10,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <span class="eyebrow">Admin Panel</span>
           <h1>Kelola Workshop & Event</h1>
           <p class="subtext">
-            Tambah, edit, hapus, dan atur workshop atau seminar yang tampil di halaman publik.
+            Tambah, edit, hapus, dan atur workshop atau seminar yang tampil di
+            halaman publik.
           </p>
         </div>
 
@@ -35,7 +36,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
             <div class="form-group">
               <label for="location">Lokasi</label>
-              <input type="text" id="location" placeholder="Online / Kampus / Zoom / dll" />
+              <input
+                type="text"
+                id="location"
+                placeholder="Online / Kampus / Zoom / dll"
+              />
             </div>
 
             <div class="form-group">
@@ -59,8 +64,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             </div>
 
             <div class="form-actions">
-              <button type="submit" id="submitBtn" class="btn btn-primary">Simpan Event</button>
-              <button type="button" id="cancelEditBtn" class="btn btn-outline" hidden>Batal Edit</button>
+              <button type="submit" id="submitBtn" class="btn btn-primary"
+                >Simpan Event</button
+              >
+              <button
+                type="button"
+                id="cancelEditBtn"
+                class="btn btn-outline"
+                hidden>Batal Edit</button
+              >
             </div>
 
             <p id="formMessage" class="message"></p>
@@ -434,7 +446,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       if (locationInput) locationInput.value = item.location || "";
       if (dateInput) {
         dateInput.value = item.date
-          ? new Date(new Date(item.date).getTime() - new Date(item.date).getTimezoneOffset() * 60000)
+          ? new Date(
+              new Date(item.date).getTime() -
+                new Date(item.date).getTimezoneOffset() * 60000,
+            )
               .toISOString()
               .slice(0, 16)
           : "";
@@ -486,7 +501,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 <button class="btn btn-danger delete-btn" data-id="${item.id}">Hapus</button>
               </div>
             </div>
-          `
+          `,
         )
         .join("");
 
@@ -506,6 +521,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       const result = await requireSuperadmin();
       return !!result;
     }
+    async function init() {
+      const isAllowed = await requireAdmin();
+
+      if (isAllowed) {
+        resetForm();
+        await loadEvents();
+      } else {
+        alert("Akses ditolak: Anda bukan admin.");
+        window.location.href = "/login";
+      }
+    }
+
+    init();
 
     async function loadEvents() {
       if (eventList) {
@@ -544,7 +572,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function updateEvent(id, payload) {
-      return await supabase.from("events").update(payload).eq("id", id).select();
+      return await supabase
+        .from("events")
+        .update(payload)
+        .eq("id", id)
+        .select();
     }
 
     async function deleteEvent(id) {
@@ -599,8 +631,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
 
       setMessage(
-        editingId ? "Event berhasil diperbarui." : "Event berhasil ditambahkan.",
-        "success"
+        editingId
+          ? "Event berhasil diperbarui."
+          : "Event berhasil ditambahkan.",
+        "success",
       );
 
       resetForm();

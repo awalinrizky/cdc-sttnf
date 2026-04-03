@@ -1,73 +1,47 @@
 import { supabase } from "./supabase.js";
 
-export async function getCurrentProfile() {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
-
+// FUNGSI 1: Untuk halaman konten biasa (Lowongan, Blog, Event, dll)
+export async function requireAdmin() {
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  
   if (sessionError || !session) {
-    return {
-      ok: false,
-      reason: "no-session",
-      session: null,
-      profile: null,
-    };
+    window.location.href = "/login";
+    return null;
   }
 
+  // Cek role user di database (Pastiin nama tabel lo bener, biasanya 'profiles' atau 'users')
   const { data: profile, error: profileError } = await supabase
-    .from("profiles")
+    .from("profiles") // <-- Ganti jika tabel role lo namanya beda
     .select("role")
     .eq("id", session.user.id)
-    .maybeSingle();
+    .single();
 
   if (profileError || !profile) {
-    return {
-      ok: false,
-      reason: "no-profile",
-      session,
-      profile: null,
-    };
-  }
-
-  return {
-    ok: true,
-    reason: null,
-    session,
-    profile,
-  };
-}
-
-export async function requireAdmin() {
-  const result = await getCurrentProfile();
-
-  if (!result.ok) {
     window.location.href = "/login";
     return null;
   }
 
-  const role = result.profile.role;
-
-  if (role !== "admin" && role !== "superadmin") {
-    window.location.href = "/403";
+  // LOGIKA STEP 1 ADA DI SINI:
+  // Izinkan masuk JIKA rolenya 'admin' ATAU 'superadmin'
+  if (profile.role !== "admin" && profile.role !== "superadmin") {
+    window.location.href = "/403"; // Lempar ke halaman akses ditolak jika role-nya mahasiswa/umum
     return null;
   }
 
-  return result;
+  // Jika lolos, kembalikan data session dan profile buat dipake di halaman
+  return { session, profile };
 }
 
-export async function requireSuperadmin() {
-  const result = await getCurrentProfile();
+// FUNGSI 2: Untuk halaman sistem/Kelola Pengguna (KHUSUS SUPERADMIN)
+export async function requireSuperAdmin() {
+  // Panggil pengecekan pertama dulu
+  const result = await requireAdmin();
+  if (!result) return null;
 
-  if (!result.ok) {
-    window.location.href = "/login";
-    return null;
-  }
-
-  const role = result.profile.role;
-
-  if (role !== "superadmin") {
-    window.location.href = "/403";
+  // Kalau lolos cek pertama, pastikan dia BENERAN superadmin
+  if (result.profile.role !== "superadmin") {
+    alert("Akses Ditolak: Fitur ini khusus untuk Superadmin.");
+    window.location.href = "/admin"; // Tendang balik ke halaman dashboard utama
     return null;
   }
 

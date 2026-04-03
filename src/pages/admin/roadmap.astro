@@ -10,7 +10,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <span class="eyebrow">Admin Panel</span>
           <h1>Kelola Roadmap</h1>
           <p class="subtext">
-            Tambah, edit, hapus, dan atur isi roadmap karier yang tampil di halaman publik.
+            Tambah, edit, hapus, dan atur isi roadmap karier yang tampil di
+            halaman publik.
           </p>
         </div>
 
@@ -24,13 +25,20 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <aside class="form-card">
           <div class="card-head">
             <h2 id="formTitle">Tambah Roadmap</h2>
-            <p>Lengkapi roadmap per level agar tampil rapi di halaman publik.</p>
+            <p>
+              Lengkapi roadmap per level agar tampil rapi di halaman publik.
+            </p>
           </div>
 
           <form id="roadmapForm" class="admin-form">
             <div class="form-group">
               <label for="category">Kategori</label>
-              <input type="text" id="category" placeholder="frontend / backend / design / data" required />
+              <input
+                type="text"
+                id="category"
+                placeholder="frontend / backend / design / data"
+                required
+              />
             </div>
 
             <div class="form-group">
@@ -84,8 +92,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             </div>
 
             <div class="form-actions">
-              <button type="submit" id="submitBtn" class="btn btn-primary">Simpan Roadmap</button>
-              <button type="button" id="cancelEditBtn" class="btn btn-outline" hidden>Batal Edit</button>
+              <button type="submit" id="submitBtn" class="btn btn-primary"
+                >Simpan Roadmap</button
+              >
+              <button
+                type="button"
+                id="cancelEditBtn"
+                class="btn btn-outline"
+                hidden>Batal Edit</button
+              >
             </div>
 
             <p id="formMessage" class="message"></p>
@@ -476,7 +491,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 <button class="btn btn-danger delete-btn" data-id="${item.id}">Hapus</button>
               </div>
             </div>
-          `
+          `,
         )
         .join("");
 
@@ -496,6 +511,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       const result = await requireSuperadmin();
       return !!result;
     }
+    async function init() {
+      const isAllowed = await requireAdmin();
+
+      if (isAllowed) {
+        resetForm();
+        await loadRoadmaps();
+      } else {
+        alert("Akses ditolak: Anda bukan admin.");
+        window.location.href = "/login";
+      }
+    }
+
+    init();
 
     async function loadRoadmaps() {
       if (roadmapList) {
@@ -539,7 +567,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function updateRoadmap(id, payload) {
-      return await supabase.from("roadmaps").update(payload).eq("id", id).select();
+      return await supabase
+        .from("roadmaps")
+        .update(payload)
+        .eq("id", id)
+        .select();
     }
 
     async function deleteRoadmap(id) {
@@ -583,14 +615,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         setMessage("Gagal menyimpan roadmap: " + result.error.message);
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = editingId ? "Update Roadmap" : "Simpan Roadmap";
+          submitBtn.textContent = editingId
+            ? "Update Roadmap"
+            : "Simpan Roadmap";
         }
         return;
       }
 
       setMessage(
-        editingId ? "Roadmap berhasil diperbarui." : "Roadmap berhasil ditambahkan.",
-        "success"
+        editingId
+          ? "Roadmap berhasil diperbarui."
+          : "Roadmap berhasil ditambahkan.",
+        "success",
       );
 
       resetForm();

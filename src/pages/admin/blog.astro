@@ -10,7 +10,8 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           <span class="eyebrow">Admin Panel</span>
           <h1>Kelola Artikel Blog</h1>
           <p class="subtext">
-            Tambah, edit, hapus, dan atur artikel karier yang tampil di halaman blog.
+            Tambah, edit, hapus, dan atur artikel karier yang tampil di halaman
+            blog.
           </p>
         </div>
 
@@ -35,7 +36,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 
             <div class="form-group">
               <label for="slug">Slug</label>
-              <input type="text" id="slug" placeholder="tips-membuat-cv-ats" required />
+              <input
+                type="text"
+                id="slug"
+                placeholder="tips-membuat-cv-ats"
+                required
+              />
             </div>
 
             <div class="form-group">
@@ -49,8 +55,15 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
             </div>
 
             <div class="form-actions">
-              <button type="submit" id="submitBtn" class="btn btn-primary">Simpan Artikel</button>
-              <button type="button" id="cancelEditBtn" class="btn btn-outline" hidden>Batal Edit</button>
+              <button type="submit" id="submitBtn" class="btn btn-primary"
+                >Simpan Artikel</button
+              >
+              <button
+                type="button"
+                id="cancelEditBtn"
+                class="btn btn-outline"
+                hidden>Batal Edit</button
+              >
             </div>
 
             <p id="formMessage" class="message"></p>
@@ -429,7 +442,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 <button class="btn btn-danger delete-btn" data-id="${item.id}">Hapus</button>
               </div>
             </div>
-          `
+          `,
         )
         .join("");
 
@@ -449,6 +462,19 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       const result = await requireSuperadmin();
       return !!result;
     }
+    async function init() {
+      const isAllowed = await requireAdmin();
+
+      if (isAllowed) {
+        resetForm();
+        await loadPosts();
+      } else {
+        alert("Akses ditolak: Anda bukan admin.");
+        window.location.href = "/login";
+      }
+    }
+
+    init();
 
     async function loadPosts() {
       if (postList) {
@@ -529,14 +555,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         setMessage("Gagal menyimpan artikel: " + result.error.message);
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.textContent = editingId ? "Update Artikel" : "Simpan Artikel";
+          submitBtn.textContent = editingId
+            ? "Update Artikel"
+            : "Simpan Artikel";
         }
         return;
       }
 
       setMessage(
-        editingId ? "Artikel berhasil diperbarui." : "Artikel berhasil ditambahkan.",
-        "success"
+        editingId
+          ? "Artikel berhasil diperbarui."
+          : "Artikel berhasil ditambahkan.",
+        "success",
       );
 
       resetForm();

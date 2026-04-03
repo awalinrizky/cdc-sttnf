@@ -1,0 +1,209 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="CDC STT-NF | Kelola Kuesioner">
+  <section class="admin-page">
+    <div class="container">
+      <div class="page-header">
+        <div>
+          <h1>Kelola Kuesioner Dinamis</h1>
+          <p class="subtext">Buat pertanyaan berkode dan Export hasil jawaban mahasiswa.</p>
+        </div>
+        <button id="exportCsvBtn" class="btn btn-primary">Download Hasil (CSV)</button>
+      </div>
+
+      <div class="layout-grid">
+        <div class="form-card">
+          <h2>Tambah Pertanyaan</h2>
+          <form id="soalForm" class="kuesioner-form">
+            <div class="form-group">
+              <label>Kode Soal (Misal: F1, F4)</label>
+              <input type="text" id="kodeSoal" required />
+            </div>
+            
+            <div class="form-group">
+              <label>Pertanyaan</label>
+              <textarea id="pertanyaan" required rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Tipe Input</label>
+              <select id="tipeInput" class="form-select">
+                <option value="radio">Pilihan Ganda (Radio)</option>
+                <option value="text">Isian Teks (Text)</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="opsiContainer">
+              <label>Opsi Jawaban (Format -> KODE:TEKS, pisahkan dengan Enter)</label>
+              <textarea id="opsiJawaban" rows="4" placeholder="01:Bekerja&#10;02:Belum Bekerja"></textarea>
+              <small style="color: #64748b;">Kosongkan jika tipe input adalah Isian Teks</small>
+            </div>
+
+            <div class="form-group">
+              <label>Link Download Master File (Opsional)</label>
+              <input type="text" id="linkFile" placeholder="/Master_Provinsi.xlsx" />
+              <small style="color: #64748b;">Isi dengan nama file di folder public jika soal ini butuh file master.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Simpan Soal</button>
+            <p id="msg" class="message"></p>
+          </form>
+        </div>
+
+        <div class="list-card">
+          <h2>Daftar Soal Kuesioner</h2>
+          <div id="soalList" class="soal-list">Memuat...</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <style>
+    /* Gunakan style CSS yang persis sama dengan file job.astro milikmu di sini */
+    .container { width: min(100% - 32px, 1200px); margin-inline: auto; }
+    .admin-page { padding: 48px 0 72px; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+    h1 { font-size: 32px; color: #0f172a; margin-bottom: 8px;}
+    .layout-grid { display: grid; grid-template-columns: 400px 1fr; gap: 24px; }
+    .form-card, .list-card { background: white; border: 1px solid #e2e8f0; border-radius: 22px; padding: 24px; }
+    .form-group { display: grid; gap: 8px; margin-bottom: 16px; }
+    .form-group input, .form-group textarea, .form-select { width: 100%; border: 1px solid #cbd5e1; border-radius: 12px; padding: 12px; }
+    .btn { padding: 12px 18px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
+    .btn-primary { background: #22c55e; color: white; }
+    .soal-item { border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; margin-bottom: 12px; background: #f8fafc; }
+    .message { color: #ef4444; font-size: 14px; }
+    .success { color: #16a34a; }
+  </style>
+
+  <script>
+    // @ts-nocheck
+    import { supabase } from "../../lib/supabase.js";
+    import { requireAdmin } from "../../lib/admin-guard.js";
+
+    const soalForm = document.getElementById("soalForm");
+    const soalList = document.getElementById("soalList");
+    const msg = document.getElementById("msg");
+    const tipeInput = document.getElementById("tipeInput");
+    const opsiContainer = document.getElementById("opsiContainer");
+    const exportCsvBtn = document.getElementById("exportCsvBtn");
+
+    // Hide/Show Opsi textarea based on Tipe
+    tipeInput.addEventListener("change", (e) => {
+      opsiContainer.style.display = e.target.value === "text" ? "none" : "block";
+    });
+
+    async function loadSoal() {
+      const { data } = await supabase.from("kuesioner_soal").select("*, kuesioner_opsi(*)").order("kode_soal");
+      if(!data || data.length === 0) return soalList.innerHTML = "Belum ada soal.";
+      
+      soalList.innerHTML = data.map(s => `
+        <div class="soal-item">
+          <strong>[${s.kode_soal}]</strong> ${s.pertanyaan} <br/>
+          <small>Tipe: ${s.tipe_input} ${s.link_file ? `| File: ${s.link_file}` : ''}</small>
+          ${s.kuesioner_opsi.length > 0 ? `<ul style="margin: 8px 0 0 20px; font-size: 14px; color: #475569;">
+            ${s.kuesioner_opsi.map(o => `<li>${o.kode_opsi}: ${o.teks_opsi}</li>`).join('')}
+          </ul>` : ''}
+          <button onclick="deleteSoal('${s.kode_soal}')" style="margin-top:10px; color:red; cursor:pointer; background:none; border:none; padding:0;">Hapus Soal</button>
+        </div>
+      `).join("");
+    }
+
+    window.deleteSoal = async function(kode) {
+      if(confirm("Hapus soal ini?")) {
+        await supabase.from("kuesioner_soal").delete().eq("kode_soal", kode);
+        loadSoal();
+      }
+    }
+
+    soalForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      msg.textContent = "Menyimpan...";
+      msg.className = "message";
+
+      const kode_soal = document.getElementById("kodeSoal").value.toUpperCase();
+      const pertanyaan = document.getElementById("pertanyaan").value;
+      const tipe_input = tipeInput.value;
+      const link_file = document.getElementById("linkFile").value || null;
+      const opsiRaw = document.getElementById("opsiJawaban").value;
+
+      // 1. Simpan ke kuesioner_soal
+      const { error: errSoal } = await supabase.from("kuesioner_soal").insert([{ kode_soal, pertanyaan, tipe_input, link_file }]);
+      
+      if (errSoal) {
+        msg.textContent = "Gagal: " + errSoal.message;
+        return;
+      }
+
+      // 2. Jika tipe radio, parse opsi dan simpan ke kuesioner_opsi
+      if (tipe_input === "radio" && opsiRaw.trim() !== "") {
+        const opsiArray = opsiRaw.split('\n').filter(o => o.includes(':')).map(line => {
+          const [kode_opsi, teks_opsi] = line.split(':');
+          return { kode_soal, kode_opsi: kode_opsi.trim(), teks_opsi: teks_opsi.trim() };
+        });
+
+        if (opsiArray.length > 0) {
+          await supabase.from("kuesioner_opsi").insert(opsiArray);
+        }
+      }
+
+      msg.textContent = "Soal berhasil disimpan!";
+      msg.className = "message success";
+      soalForm.reset();
+      loadSoal();
+    });
+
+    // LOGIC EXPORT CSV UNTUK CLIENT
+    exportCsvBtn.addEventListener("click", async () => {
+      exportCsvBtn.textContent = "Menyiapkan File...";
+      const { data, error } = await supabase.from("kuesioner_hasil").select("*");
+      
+      if(error || !data.length) {
+        alert("Belum ada data jawaban untuk dieksport.");
+        exportCsvBtn.textContent = "Download Hasil (CSV)";
+        return;
+      }
+
+      // Kumpulin semua kolom unik dari objek JSON 'jawaban'
+      let headers = ["id_respon", "email_mahasiswa", "waktu_submit"];
+      let jsonKeys = new Set();
+      data.forEach(row => Object.keys(row.jawaban).forEach(k => jsonKeys.add(k)));
+      
+      const sortedKeys = Array.from(jsonKeys).sort();
+      headers = headers.concat(sortedKeys);
+
+      // Bikin baris CSV
+      let csvContent = headers.join(",") + "\n";
+      data.forEach(row => {
+        let rowData = [
+          row.id, 
+          row.email_mahasiswa, 
+          new Date(row.created_at).toLocaleString('id-ID')
+        ];
+        
+        sortedKeys.forEach(key => {
+          let val = row.jawaban[key] || "";
+          // Hapus koma di dalam teks agar tidak merusak format CSV
+          val = String(val).replace(/,/g, " "); 
+          rowData.push(val);
+        });
+        csvContent += rowData.join(",") + "\n";
+      });
+
+      // Trigger Download HTML5
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute("download", `Hasil_Kuesioner_${new Date().getTime()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      exportCsvBtn.textContent = "Download Hasil (CSV)";
+    });
+
+    // Init
+    requireAdmin().then(res => { if(res) loadSoal(); });
+  </script>
+</BaseLayout>
