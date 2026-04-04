@@ -62,6 +62,16 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </p>
           <a href="/admin/roadmap" class="btn btn-primary">Masuk ke Roadmap</a>
         </article>
+
+        <article class="summary-card">
+          <span class="module-tag" style="background: #fef08a; color: #854d0e;">SURVEY</span>
+          <span class="summary-label">Tracer Study</span>
+          <strong id="kuesionerCount" class="summary-value">0</strong> 
+          <p class="summary-copy">
+            Kelola pertanyaan kuesioner berkode dan export hasil jawaban mahasiswa.
+          </p>
+          <a href="/admin/kuesioner" class="btn btn-primary" style="background: #eab308; color: black;">Kelola Kuesioner</a>
+        </article>
       </div>
 
       <!-- <div class="dashboard-layout">
@@ -424,7 +434,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
   </style>
 
-  <script>
+<script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
     import { requireAdmin } from "../../lib/adminGuard.js";
@@ -439,11 +449,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     const eventCount = document.getElementById("eventCount");
     const postCount = document.getElementById("postCount");
     const roadmapCount = document.getElementById("roadmapCount");
-
-    const jobModuleCount = document.getElementById("jobModuleCount");
-    const eventModuleCount = document.getElementById("eventModuleCount");
-    const postModuleCount = document.getElementById("postModuleCount");
-    const roadmapModuleCount = document.getElementById("roadmapModuleCount");
+    const kuesionerCount = document.getElementById("kuesionerCount"); // Ini elemen HTML
 
     const logoutBtn = document.getElementById("logoutBtn");
 
@@ -462,40 +468,45 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     async function loadStats() {
-      const [
-        jobsResult,
-        activeJobsResult,
-        eventsResult,
-        postsResult,
-        roadmapsResult,
-      ] = await Promise.all([
-        supabase.from("jobs").select("*", { count: "exact", head: true }),
-        supabase
-          .from("jobs")
-          .select("*", { count: "exact", head: true })
-          .eq("is_active", true),
-        supabase.from("events").select("*", { count: "exact", head: true }),
-        supabase.from("posts").select("*", { count: "exact", head: true }),
-        supabase.from("roadmaps").select("*", { count: "exact", head: true }),
-      ]);
+      try {
+        const [
+          jobsResult,
+          activeJobsResult,
+          eventsResult,
+          postsResult,
+          roadmapsResult,
+          kuesionerResult,
+        ] = await Promise.all([
+          supabase.from("jobs").select("*", { count: "exact", head: true }),
+          supabase.from("jobs").select("*", { count: "exact", head: true }).eq("is_active", true),
+          supabase.from("events").select("*", { count: "exact", head: true }),
+          supabase.from("posts").select("*", { count: "exact", head: true }),
+          supabase.from("roadmaps").select("*", { count: "exact", head: true }),
+          supabase.from("kuesioner_hasil").select("*", { count: "exact", head: true }),
+        ]);
 
-      const totalJobs = jobsResult.count ?? 0;
-      const activeJobs = activeJobsResult.count ?? 0;
-      const totalEvents = eventsResult.count ?? 0;
-      const totalPosts = postsResult.count ?? 0;
-      const totalRoadmaps = roadmapsResult.count ?? 0;
+        // CEK ERROR (Buat jaga-jaga kalau RLS masih ngeblokir)
+        if (kuesionerResult.error) {
+           console.error("Gagal ambil data kuesioner:", kuesionerResult.error.message);
+        }
 
-      if (jobCount) jobCount.textContent = String(totalJobs);
-      if (activeCount) activeCount.textContent = String(activeJobs);
-      if (eventCount) eventCount.textContent = String(totalEvents);
-      if (postCount) postCount.textContent = String(totalPosts);
-      if (roadmapCount) roadmapCount.textContent = String(totalRoadmaps);
+        // AMBIL ANGKA DARI HASIL QUERY SUPABASE (Bukan dari elemen HTML)
+        const totalJobs = jobsResult.count ?? 0;
+        const totalEvents = eventsResult.count ?? 0;
+        const totalPosts = postsResult.count ?? 0;
+        const totalRoadmaps = roadmapsResult.count ?? 0;
+        const totalResponden = kuesionerResult.count ?? 0; 
 
-      if (jobModuleCount) jobModuleCount.textContent = String(totalJobs);
-      if (eventModuleCount) eventModuleCount.textContent = String(totalEvents);
-      if (postModuleCount) postModuleCount.textContent = String(totalPosts);
-      if (roadmapModuleCount)
-        roadmapModuleCount.textContent = String(totalRoadmaps);
+        // MASUKKIN KE HTML
+        if (jobCount) jobCount.textContent = String(totalJobs);
+        if (eventCount) eventCount.textContent = String(totalEvents);
+        if (postCount) postCount.textContent = String(totalPosts);
+        if (roadmapCount) roadmapCount.textContent = String(totalRoadmaps);
+        if (kuesionerCount) kuesionerCount.textContent = String(totalResponden);
+
+      } catch (err) {
+        console.error("Terjadi kesalahan loadStats:", err);
+      }
     }
 
     logoutBtn?.addEventListener("click", async () => {
@@ -504,7 +515,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         alert("Logout gagal: " + error.message);
         return;
       }
-
       window.location.href = "/login";
     });
 

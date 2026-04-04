@@ -47,3 +47,41 @@ export async function requireSuperAdmin() {
 
   return result;
 }
+// FUNGSI 3: Satpam Halaman Konten (Untuk Mahasiswa Aktif & Alumni yang di-ACC)
+export async function requireMahasiswa() {
+  const { data: { session }, error } = await supabase.auth.getSession();
+  
+  if (error || !session) {
+    window.location.href = "/login";
+    return null;
+  }
+
+  const email = session.user.email;
+  
+  // 1. Cek apakah ini email kampus (Mahasiswa / Dosen)
+  const isMahasiswaAktif = email.endsWith("@student.nurulfikri.ac.id");
+  const isDosen = email.endsWith("@nurulfikri.ac.id");
+
+  // Kalau email kampus, otomatis lolos!
+  if (isMahasiswaAktif || isDosen) {
+    return session;
+  }
+
+  // 2. Kalau bukan email kampus (misal Gmail/Yahoo), kita cek apakah dia Alumni yang udah di-ACC
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", session.user.id)
+    .single();
+
+  // Kalau dia login pake Gmail tapi Admin belum ngasih role "alumni" / "admin" ke dia -> Tendang!
+  if (!profile || (profile.role !== "alumni" && profile.role !== "admin" && profile.role !== "superadmin")) {
+    alert("Akses Ditolak: Email luar kampus harus di-invite dan di-ACC oleh Admin CDC.");
+    await supabase.auth.signOut();
+    window.location.href = "/login";
+    return null;
+  }
+
+  // Kalau dia punya role 'alumni', lolos!
+  return session; 
+}

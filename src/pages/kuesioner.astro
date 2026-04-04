@@ -36,9 +36,10 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     .message { margin-top:16px; text-align: center; font-weight: bold; }
   </style>
 
-  <script>
+ <script>
     // @ts-nocheck
     import { supabase } from "../lib/supabase.js";
+    import { requireMahasiswa } from "../lib/adminGuard.js"; // Import Satpam
 
     const renderSoal = document.getElementById("renderSoal");
     const mahasiswaForm = document.getElementById("mahasiswaForm");
@@ -47,17 +48,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     const userInfo = document.getElementById("userInfo");
 
     let userEmail = "";
-
-    async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        window.location.href = "/login"; // Lempar ke login kalau belum masuk
-        return false;
-      }
-      userEmail = session.user.email;
-      userInfo.textContent = `Login sebagai: ${userEmail}`;
-      return true;
-    }
 
     async function loadForm() {
       const { data } = await supabase.from("kuesioner_soal").select("*, kuesioner_opsi(*)").order("kode_soal");
@@ -93,7 +83,6 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       submitBtn.disabled = true;
       submitBtn.textContent = "Mengirim...";
 
-      // Ambil semua input form dan jadikan JSON Object
       const formData = new FormData(mahasiswaForm);
       const jsonJawaban = {};
       formData.forEach((value, key) => {
@@ -118,9 +107,13 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       msg.textContent = "";
     });
 
-    // Jalankan pengecekan
-    checkAuth().then(isLoggedIn => {
-      if(isLoggedIn) loadForm();
+    // Jalankan Satpam Pusat
+    requireMahasiswa().then((session) => {
+      if (session) {
+        userEmail = session.user.email;
+        if (userInfo) userInfo.textContent = `Login sebagai: ${userEmail}`;
+        loadForm();
+      }
     });
   </script>
 </BaseLayout>

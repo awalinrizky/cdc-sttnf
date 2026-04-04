@@ -99,4 +99,47 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     }
   </style>
+  <script>
+    // @ts-nocheck
+    import { supabase } from "../../lib/supabase.js";
+    import { requireMahasiswa } from "../../lib/adminGuard.js";
+
+    // Asumsi lo punya <div id="postList"></div> di HTML blog lo
+    const postList = document.getElementById("postList");
+
+    async function loadPosts() {
+      const { data, error } = await supabase
+        .from("posts")
+        .select("*")
+        .eq("published", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        if (postList) postList.innerHTML = `<p>Gagal memuat blog.</p>`;
+        return;
+      }
+
+      if (!data || !data.length) {
+        if (postList) postList.innerHTML = `<p>Belum ada artikel.</p>`;
+        return;
+      }
+
+      // Sesuaikan desain HTML ini dengan UI blog lo
+      if (postList) {
+        postList.innerHTML = data.map(post => `
+          <article class="card p-4 mb-4">
+            <h3>${post.title}</h3>
+            <p>${(post.content || "").slice(0, 150)}...</p>
+            <a href="/blog/${post.slug}">Baca selengkapnya</a>
+          </article>
+        `).join("");
+      }
+    }
+
+    requireMahasiswa().then((session) => {
+      if (session) {
+        loadPosts();
+      }
+    });
+  </script>
 </BaseLayout>

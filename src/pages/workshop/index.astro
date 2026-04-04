@@ -202,6 +202,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
+    import { requireMahasiswa } from "../../lib/adminGuard.js"; // Import Satpam
 
     const eventList = document.getElementById("eventList");
 
@@ -258,6 +259,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         .join("");
     }
 
-    loadEvents();
+    // Panggil satpam sebelum ngeload event
+    requireMahasiswa().then((session) => {
+      if (session) {
+        loadEvents();
+      }
+    });
   </script>
 </BaseLayout>

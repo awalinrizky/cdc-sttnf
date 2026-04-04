@@ -115,9 +115,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
   </style>
 
-  <script>
+<script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
+    import { requireMahasiswa } from "../../lib/adminGuard.js"; // 1. Panggil Satpamnya
 
     const params = new URLSearchParams(window.location.search);
     const jobId = params.get("id");
@@ -170,6 +171,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       }
     }
 
-    loadJobDetail();
+    // 2. INI KUNCINYA: Cek KTP dulu, kalau lolos baru load datanya!
+    requireMahasiswa().then((session) => {
+      if (session) {
+        loadJobDetail();
+      }
+    });
   </script>
 </BaseLayout>
