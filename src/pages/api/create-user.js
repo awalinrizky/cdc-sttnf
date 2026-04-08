@@ -36,8 +36,8 @@ export const POST = async ({ request }) => {
 
     // 3. Masukkan role ke tabel 'profiles' (atau 'users')
     const { error: insertErr } = await supabaseAdmin
-      .from('profiles') // Sesuaikan dengan nama tabel profil/role lo
-      .insert([{
+      .from('profiles') // sesuaikan dengan nama tabel profil/role
+      .upsert([{
         id: authData.user.id,
         email: email,
         role: role

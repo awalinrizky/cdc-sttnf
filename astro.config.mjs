@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://cdc-sttnf.vercel.app",
-  output: "static",
+  output: "server", // (Dari static ke server)
   adapter: vercel(),
   integrations: [sitemap()],
   redirects: {

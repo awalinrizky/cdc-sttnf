@@ -5,47 +5,293 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 <BaseLayout title="CDC STT-NF | Kelola Pengguna">
   <section class="admin-page">
     <div class="container">
-      <div class="page-header">
-        <div>
-          <span class="eyebrow">Superadmin Only</span>
+      <div class="page-header-wrapper">
+        <div class="header-info">
+          <span class="eyebrow" style="background: #fee2e2; color: #991b1b;"
+            >Superadmin Only</span
+          >
           <h1>Kelola Pengguna</h1>
-          <p class="subtext">Tambah Dosen atau Admin baru untuk mengelola konten CDC.</p>
+          <p class="subtext">
+            Tambah Dosen, Admin, atau ACC Alumni untuk mengakses sistem CDC.
+          </p>
         </div>
-        <a href="/admin" class="btn btn-outline">Kembali ke Dashboard</a>
+        <div class="header-actions">
+          <a href="/admin" class="btn btn-outline">← Kembali ke Dashboard</a>
+        </div>
       </div>
 
-      <div class="layout-grid" style="grid-template-columns: 400px 1fr;">
+      <div class="layout-grid">
         <div class="form-card">
           <h2>Tambah Akun Baru</h2>
-          <form id="userForm">
+          <p class="card-desc">
+            Pastikan email valid dan password mudah diingat oleh pengguna.
+          </p>
+
+          <form id="userForm" class="admin-form">
             <div class="form-group">
-              <label>Email Dosen/Admin</label>
-              <input type="email" id="email" required placeholder="dosen@nf.ac.id" />
+              <label>Email Pengguna</label>
+              <input
+                type="email"
+                id="email"
+                required
+                placeholder="dosen@nurulfikri.ac.id / mhs@student..."
+              />
             </div>
+
             <div class="form-group">
               <label>Password Awal</label>
-              <input type="password" id="password" required placeholder="Minimal 6 karakter" />
+              <input
+                type="password"
+                id="password"
+                required
+                placeholder="Minimal 6 karakter"
+              />
             </div>
+
             <div class="form-group">
-              <label>Role</label>
-              <select id="role" class="form-select" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid #cbd5e1;">
+              <label>Role / Hak Akses</label>
+              <select id="role" class="form-select">
                 <option value="alumni">Alumni (Akses lihat konten)</option>
-                <option value="admin">Admin (Konten saja)</option>
+                <option value="admin">Admin (Kelola konten saja)</option>
                 <option value="superadmin">Superadmin (Konten + User)</option>
               </select>
             </div>
-            <button type="submit" id="submitBtn" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Buat Akun</button>
+
+            <button
+              type="submit"
+              id="submitBtn"
+              class="btn btn-primary btn-full">Buat Akun Sekarang</button
+            >
             <p id="msg" class="message"></p>
           </form>
         </div>
 
         <div class="list-card">
-          <h2>Daftar Pengguna Aktif</h2>
-          <div id="userList">Memuat daftar pengguna...</div>
+          <h2>Daftar Pengguna Sistem</h2>
+          <p class="card-desc">
+            Semua akun yang memiliki akses ke dalam sistem CDC STT-NF
+          </p>
+
+          <div id="userList" class="user-list">
+            <p class="empty">Memuat daftar pengguna...</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
+
+  <style>
+    /* Styling Pro Standar Admin CDC */
+    .container {
+      width: min(100% - 32px, 1200px);
+      margin-inline: auto;
+    }
+    .admin-page {
+      padding: 48px 0 72px;
+    }
+
+    .page-header-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 32px;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .subtext {
+      color: #64748b;
+      font-size: 15px;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    .form-card,
+    .list-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+    }
+    .form-card {
+      position: sticky;
+      top: 100px;
+    }
+
+    h2 {
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+    .card-desc {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .admin-form {
+      display: grid;
+      gap: 16px;
+    }
+    .form-group {
+      display: grid;
+      gap: 8px;
+    }
+    .form-group label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .form-group input,
+    .form-select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+      background: #fff;
+      color: #0f172a;
+      transition: 0.2s ease;
+    }
+    .form-group input:focus,
+    .form-select:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      padding: 10px 18px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+    .btn-outline {
+      background: white;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+    }
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+    .btn-full {
+      width: 100%;
+      margin-top: 8px;
+      padding: 14px;
+      font-size: 15px;
+    }
+
+    .message {
+      min-height: 20px;
+      font-size: 14px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .empty {
+      color: #64748b;
+      font-size: 15px;
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    /* Tabel User Premium */
+    .user-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .user-table th {
+      text-align: left;
+      padding: 14px 16px;
+      border-bottom: 2px solid #e2e8f0;
+      color: #64748b;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .user-table td {
+      padding: 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #0f172a;
+    }
+    .user-table tr:hover td {
+      background: #f8fafc;
+    }
+    .user-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge-role {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .role-superadmin {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .role-admin {
+      background: #e0f2fe;
+      color: #075985;
+    }
+    .role-alumni {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    @media (max-width: 980px) {
+      .layout-grid {
+        grid-template-columns: 1fr;
+      }
+      .form-card {
+        position: static;
+      }
+    }
+  </style>
 
   <script>
     // @ts-nocheck
@@ -53,61 +299,187 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     import { requireSuperAdmin } from "../../lib/adminGuard.js";
 
     const userForm = document.getElementById("userForm");
+    const submitBtn = document.getElementById("submitBtn");
     const msg = document.getElementById("msg");
     const userList = document.getElementById("userList");
     let currentAdminId = "";
 
+    // async function loadUsers() {
+    //   const { data, error } = await supabase
+    //     .from("profiles")
+    //     .select("*")
+    //     .order("role");
+
+    //   if (error)
+    //     return (userList.innerHTML = `<p class="empty">Gagal memuat data pengguna.</p>`);
+    //   if (!data || data.length === 0)
+    //     return (userList.innerHTML = `<p class="empty">Belum ada pengguna terdaftar.</p>`);
+
+    //   userList.innerHTML = `
+
+    //     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+
+    //       <tr style="text-align: left; border-bottom: 2px solid #e2e8f0;">
+
+    //         <th style="padding: 10px;">Email</th>
+
+    //         <th style="padding: 10px;">Role</th>
+
+    //       </tr>
+
+    //       ${data
+    //         .map(
+    //           (u) => `
+
+    //         <tr style="border-bottom: 1px solid #f1f5f9;">
+
+    //           <td style="padding: 10px;">${u.email}</td>
+
+    //           <td style="padding: 10px;"><span class="badge">${u.role.toUpperCase()}</span></td>
+
+    //         </tr>
+
+    //       `,
+    //         )
+    //         .join("")}
+
+    //     </table>
+
+    //   `;
+    // }
+    // // TAMBAHIN FUNGSI INI DI BAWAH loadUsers:
+    // window.hapusUser = async function (id, email) {
+    //   if (!confirm(`Yakin mau menghapus akun ${email} secara permanen?`))
+    //     return;
+
+    //   // Kasih efek loading sementara di UI
+    //   userList.innerHTML = `<p class="empty">Sedang menghapus ${email}...</p>`;
+
+    //   try {
+    //     const res = await fetch("/api/delete-user", {
+    //       method: "POST",
+    //       headers: { "Content-Type": "application/json" },
+    //       body: JSON.stringify({ userId: id }),
+    //     });
+
+    //     const result = await res.json();
+    //     if (!result.success) alert("Gagal menghapus: " + result.error);
+    //   } catch (err) {
+    //     alert("Gagal terhubung ke server.");
+    //   }
+
+    //   loadUsers(); // Refresh tabel setelah hapus
+    // };
+    // UBAH FUNGSI loadUsers JADI GINI:
     async function loadUsers() {
-      const { data, error } = await supabase.from("profiles").select("*").order("role");
-      if (error) return userList.innerHTML = "Gagal memuat data.";
-      
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .order("role");
+
+      if (error)
+        return (userList.innerHTML = `<p class="empty">Gagal memuat data pengguna.</p>`);
+      if (!data || data.length === 0)
+        return (userList.innerHTML = `<p class="empty">Belum ada pengguna terdaftar.</p>`);
+
       userList.innerHTML = `
-        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
-          <tr style="text-align: left; border-bottom: 2px solid #e2e8f0;">
-            <th style="padding: 10px;">Email</th>
-            <th style="padding: 10px;">Role</th>
-          </tr>
-          ${data.map(u => `
-            <tr style="border-bottom: 1px solid #f1f5f9;">
-              <td style="padding: 10px;">${u.email}</td>
-              <td style="padding: 10px;"><span class="badge">${u.role.toUpperCase()}</span></td>
-            </tr>
-          `).join('')}
-        </table>
+        <div style="overflow-x: auto;">
+          <table class="user-table">
+            <thead>
+              <tr>
+                <th>Alamat Email</th>
+                <th>Hak Akses</th>
+                <th style="text-align: right;">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data
+                .map(
+                  (u) => `
+                <tr>
+                  <td><strong>${u.email}</strong></td>
+                  <td><span class="badge-role role-${u.role || "alumni"}">${u.role || "alumni"}</span></td>
+                  <td style="text-align: right;">
+                    ${u.role !== "superadmin" ? `<button onclick="hapusUser('${u.id}', '${u.email}')" style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 600; font-size: 13px;">Hapus</button>` : `<span style="color: #cbd5e1; font-size: 12px;">Paten</span>`}
+                  </td>
+                </tr>
+              `,
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </div>
       `;
     }
 
+    // TAMBAHIN FUNGSI INI DI BAWAH loadUsers:
+    window.hapusUser = async function (id, email) {
+      if (!confirm(`Yakin mau menghapus akun ${email} secara permanen?`))
+        return;
+
+      // Kasih efek loading sementara di UI
+      userList.innerHTML = `<p class="empty">Sedang menghapus ${email}...</p>`;
+
+      try {
+        const res = await fetch("/api/delete-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: id }),
+        });
+
+        const result = await res.json();
+        if (!result.success) alert("Gagal menghapus: " + result.error);
+      } catch (err) {
+        alert("Gagal terhubung ke server.");
+      }
+
+      loadUsers(); // Refresh tabel setelah hapus
+    };
     userForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      msg.textContent = "Sedang memproses...";
-      msg.style.color = "blue";
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Memproses...";
+      msg.textContent = "Sedang membuat akun, mohon tunggu...";
+      msg.style.color = "#3b82f6"; // Warna biru proses
 
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const role = document.getElementById("role").value;
 
-      // Panggil API Route yang kita bikin tadi
-      const response = await fetch("/api/create-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role, adminId: currentAdminId })
-      });
+      try {
+        const response = await fetch("/api/create-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email,
+            password,
+            role,
+            adminId: currentAdminId,
+          }),
+        });
 
-      const result = await response.json();
+        const result = await response.json();
 
-      if (result.success) {
-        msg.textContent = "Berhasil! Akun " + email + " sudah aktif.";
-        msg.style.color = "green";
-        userForm.reset();
-        loadUsers();
-      } else {
-        msg.textContent = "Error: " + result.error;
-        msg.style.color = "red";
+        if (result.success) {
+          msg.textContent = `Berhasil! Akun ${email} siap digunakan.`;
+          msg.style.color = "#16a34a"; // Warna hijau sukses
+          userForm.reset();
+          loadUsers(); // Refresh tabel langsung
+        } else {
+          msg.textContent = "Gagal: " + result.error;
+          msg.style.color = "#ef4444"; // Warna merah error
+        }
+      } catch (err) {
+        msg.textContent = "Gagal terhubung ke server.";
+        msg.style.color = "#ef4444";
       }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Buat Akun Sekarang";
     });
 
-    // Jalankan Satpam Khusus Superadmin
-    requireSuperAdmin().then(res => {
+    // Jalankan Satpam Khusus Superadmin sebelum nampilin data
+    requireSuperAdmin().then((res) => {
       if (res) {
         currentAdminId = res.session.user.id;
         loadUsers();
