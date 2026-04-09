@@ -2,44 +2,181 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="CDC STT-NF | Isi Kuesioner">
+<BaseLayout title="CDC STT-NF | Kuesioner Tracer Study">
   <section class="kuesioner-page">
     <div class="container">
-      <div class="header-section">
-        <h1>Kuesioner Tracer Study</h1>
-        <p>Silakan isi data berikut. Jika ada instruksi mengunduh file master, klik link yang tersedia pada soal.</p>
-        <div id="userInfo" style="margin-top: 10px; font-weight: bold; color: #22c55e;"></div>
-      </div>
+      
+      <header class="kuesioner-header">
+        <div class="header-accent"></div>
+        <div class="header-body">
+          <h1>Kuesioner Tracer Study</h1>
+          <p>Kontribusi Anda sangat berharga untuk pengembangan kampus dan pelaporan ke Dikti. Mohon isi data dengan sebenar-benarnya.</p>
+          <div id="userInfo" class="user-badge">
+            <span class="pulse"></span>
+            Memeriksa Akun...
+          </div>
+        </div>
+      </header>
 
-      <div class="form-card">
+      <div class="form-container">
         <form id="mahasiswaForm">
-          <div id="renderSoal">Memuat soal...</div>
-          <button type="submit" id="submitBtn" class="btn btn-primary" style="margin-top: 24px; width: 100%; display: none;">Kirim Jawaban</button>
-          <p id="msg" class="message"></p>
+          <div id="renderSoal">
+            <div class="skeleton-loader">Memuat daftar pertanyaan...</div>
+          </div>
+          
+          <div class="form-footer">
+            <button type="submit" id="submitBtn" class="btn-submit-glow" style="display: none;">
+              Kirim Jawaban Kuesioner
+            </button>
+            <p id="msg" class="status-message"></p>
+          </div>
         </form>
       </div>
+
     </div>
   </section>
 
-  <style>
-    /* Styling standar UI */
-    .container { width: min(100% - 32px, 800px); margin-inline: auto; padding: 40px 0;}
-    .form-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-    .soal-box { margin-bottom: 24px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px;}
-    .soal-box:last-child { border-bottom: none; }
-    .soal-title { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 12px;}
-    .file-link { display: inline-block; margin-top: 8px; font-size: 13px; color: #2563eb; text-decoration: none; padding: 6px 12px; background: #eff6ff; border-radius: 6px; font-weight: bold;}
-    .radio-opsi { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 15px;}
-    .text-input { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 12px; }
-    .btn { padding: 14px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; }
-    .btn-primary { background: #22c55e; color: white; }
-    .message { margin-top:16px; text-align: center; font-weight: bold; }
+  <style is:global>
+    :root {
+      --gform-purple: #673ab7;
+      --brand-indigo: #4f46e5;
+      --slate-900: #0f172a;
+      --slate-600: #475569;
+      --slate-200: #e2e8f0;
+      --bg-light: #f0f2f5;
+    }
+
+    .kuesioner-page {
+      background-color: var(--bg-light);
+      min-height: 100vh;
+      padding: 40px 0 100px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .container { width: min(100% - 32px, 800px); margin-inline: auto; }
+
+    /* HEADER STYLE */
+    .kuesioner-header {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid var(--slate-200);
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .header-accent { height: 10px; background: var(--gform-purple); }
+    .header-body { padding: 32px; }
+    .header-body h1 { font-size: 32px; font-weight: 800; color: var(--slate-900); margin-bottom: 12px; letter-spacing: -0.02em; }
+    .header-body p { color: var(--slate-600); line-height: 1.6; font-size: 15px; border-bottom: 1px solid var(--slate-200); padding-bottom: 20px; }
+
+    .user-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--gform-purple);
+      background: #f3e5f5;
+      padding: 8px 16px;
+      border-radius: 99px;
+    }
+
+    /* QUESTION BOX STYLE */
+    .soal-card {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 32px;
+      margin-bottom: 20px;
+      transition: border-color 0.3s;
+    }
+    .soal-card:focus-within { border-left: 6px solid var(--brand-indigo); }
+
+    .soal-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--slate-900);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* INPUTS */
+    .text-input-pro {
+      width: 100%;
+      border: none;
+      border-bottom: 1.5px solid var(--slate-200);
+      padding: 12px 0;
+      font-size: 15px;
+      font-family: inherit;
+      transition: 0.3s;
+      outline: none;
+    }
+    .text-input-pro:focus { border-bottom: 2.5px solid var(--gform-purple); }
+
+    .radio-group { display: grid; gap: 12px; }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--slate-200);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .radio-label:hover { background: #f8fafc; border-color: var(--slate-900); }
+    .radio-label input[type="radio"] { width: 20px; height: 20px; accent-color: var(--gform-purple); }
+
+    /* FILE LINK */
+    .file-download-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 10px;
+      color: #0369a1;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      width: fit-content;
+    }
+    .file-download-box:hover { background: #e0f2fe; }
+
+    /* FOOTER & BUTTON */
+    .form-footer { margin-top: 40px; }
+    .btn-submit-glow {
+      width: 100%;
+      background: var(--brand-indigo);
+      color: white;
+      padding: 18px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 800;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+    }
+    .btn-submit-glow:hover { background: var(--brand-dark); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79, 70, 229, 0.4); }
+    .btn-submit-glow:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+
+    .status-message { text-align: center; margin-top: 16px; font-weight: 700; font-size: 14px; }
+    .success-screen { text-align: center; padding: 60px 20px; }
+
+    .pulse { width: 8px; height: 8px; background: #16a34a; border-radius: 50%; display: inline-block; animation: pulse-green 2s infinite; }
+    @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); } 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); } }
   </style>
 
- <script>
+  <script>
     // @ts-nocheck
     import { supabase } from "../lib/supabase.js";
-    import { requireMahasiswa } from "../lib/adminGuard.js"; // Import Satpam
+    import { requireMahasiswa } from "../lib/adminGuard.js";
 
     const renderSoal = document.getElementById("renderSoal");
     const mahasiswaForm = document.getElementById("mahasiswaForm");
@@ -48,45 +185,90 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     const userInfo = document.getElementById("userInfo");
 
     let userEmail = "";
+    let kuesionerData = [];
+
+    // --- FUNGSI SKIP LOGIC ---
+    window.checkLogic = function() {
+      const formData = new FormData(mahasiswaForm);
+      const jawabanSekarang = {};
+      formData.forEach((value, key) => jawabanSekarang[key] = value);
+
+      kuesionerData.forEach(soal => {
+        const el = document.getElementById(`box-${soal.kode_soal}`);
+        if (!el) return;
+
+        if (soal.syarat_kode && soal.syarat_nilai) {
+          const jawabanSyarat = jawabanSekarang[soal.syarat_kode];
+          if (jawabanSyarat === soal.syarat_nilai) {
+            el.style.display = "block";
+            el.querySelectorAll('input').forEach(i => i.disabled = false);
+          } else {
+            el.style.display = "none";
+            el.querySelectorAll('input').forEach(i => i.disabled = true);
+          }
+        }
+      });
+    }
 
     async function loadForm() {
-      const { data } = await supabase.from("kuesioner_soal").select("*, kuesioner_opsi(*)").order("kode_soal");
+      const { data, error } = await supabase
+        .from("kuesioner_soal")
+        .select("*")
+        .order("kode_soal", { ascending: true });
       
-      if(!data || data.length === 0) {
-        renderSoal.innerHTML = "Kuesioner belum tersedia.";
+      if(error || !data || data.length === 0) {
+        renderSoal.innerHTML = `<div class="soal-card">Belum ada soal kuesioner tersedia.</div>`;
         return;
       }
 
-      renderSoal.innerHTML = data.map(s => `
-        <div class="soal-box">
-          <div class="soal-title">${s.pertanyaan}</div>
-          
-          ${s.tipe_input === 'radio' ? 
-            s.kuesioner_opsi.map(o => `
-              <label class="radio-opsi">
-                <input type="radio" name="${s.kode_soal}" value="${o.kode_opsi}" required>
-                ${o.kode_opsi} - ${o.teks_opsi}
-              </label>
-            `).join('') 
-          : `<input type="text" name="${s.kode_soal}" class="text-input" placeholder="Ketik jawaban (kode) di sini..." required>`
-          }
+      kuesionerData = data;
 
-          ${s.link_file ? `<a href="${s.link_file}" class="file-link" download>⬇️ Unduh File Master</a>` : ''}
-        </div>
-      `).join("");
+      renderSoal.innerHTML = data.map(s => {
+        // Parsing opsi jawaban dari string (1-Bagus, 2-Jelek)
+        let htmlOpsi = "";
+        if (s.tipe_input === 'radio' && s.opsi_jawaban) {
+          const arrOpsi = s.opsi_jawaban.split(",");
+          htmlOpsi = `<div class="radio-group">` + arrOpsi.map(o => {
+            const [val, teks] = o.split("-");
+            return `
+              <label class="radio-label">
+                <input type="radio" name="${s.kode_soal}" value="${val}" required onchange="checkLogic()">
+                ${teks}
+              </label>
+            `;
+          }).join('') + `</div>`;
+        } else {
+          htmlOpsi = `<input type="text" name="${s.kode_soal}" class="text-input-pro" placeholder="Ketik jawaban Anda..." required oninput="checkLogic()">`;
+        }
+
+        return `
+          <div class="soal-card" id="box-${s.kode_soal}">
+            <div class="soal-title">${s.pertanyaan}</div>
+            ${htmlOpsi}
+            ${s.link_file ? `
+              <a href="${s.link_file}" class="file-download-box" download>
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                Unduh File Master (Wajib)
+              </a>` : ''}
+          </div>
+        `;
+      }).join("");
 
       submitBtn.style.display = "block";
+      window.checkLogic(); // Jalankan logic di awal
     }
 
     mahasiswaForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       submitBtn.disabled = true;
-      submitBtn.textContent = "Mengirim...";
+      submitBtn.textContent = "Mengirim Jawaban...";
 
       const formData = new FormData(mahasiswaForm);
       const jsonJawaban = {};
       formData.forEach((value, key) => {
-        jsonJawaban[key] = value;
+        // Cek apakah input disabled (disembunyikan logic)
+        const input = mahasiswaForm.querySelector(`[name="${key}"]`);
+        if (!input.disabled) jsonJawaban[key] = value;
       });
 
       const { error } = await supabase.from("kuesioner_hasil").insert([{
@@ -95,23 +277,29 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       }]);
 
       if (error) {
-        msg.textContent = "Gagal kirim: " + error.message;
-        msg.style.color = "red";
+        msg.textContent = "Gagal mengirim: " + error.message;
+        msg.style.color = "#b91c1c";
         submitBtn.disabled = false;
-        submitBtn.textContent = "Kirim Jawaban";
+        submitBtn.textContent = "Kirim Jawaban Kuesioner";
         return;
       }
 
-      renderSoal.innerHTML = `<h2 style="color:#16a34a; text-align:center;">Terima kasih! Jawaban Anda telah tersimpan.</h2>`;
+      renderSoal.innerHTML = `
+        <div class="success-screen">
+          <div style="font-size: 64px; margin-bottom: 20px;">✅</div>
+          <h2 style="color: var(--slate-900); font-size: 28px; margin-bottom: 12px;">Terima Kasih!</h2>
+          <p style="color: var(--slate-600); font-size: 16px;">Jawaban Anda telah berhasil disimpan di sistem CDC STT-NF.</p>
+          <a href="/" class="btn-submit-glow" style="display:inline-block; margin-top:32px; text-decoration:none; width:auto; padding: 14px 32px;">Kembali ke Beranda</a>
+        </div>
+      `;
+      document.querySelector('.kuesioner-header').style.display = "none";
       submitBtn.style.display = "none";
-      msg.textContent = "";
     });
 
-    // Jalankan Satpam Pusat
     requireMahasiswa().then((session) => {
       if (session) {
         userEmail = session.user.email;
-        if (userInfo) userInfo.textContent = `Login sebagai: ${userEmail}`;
+        userInfo.innerHTML = `<span class="pulse"></span> Login: ${userEmail}`;
         loadForm();
       }
     });

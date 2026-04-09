@@ -262,7 +262,7 @@ const pathname = Astro.url.pathname;
         font-size: 14px;
         font-weight: 500;
         padding: 10px 14px;
-        border-radius: 999px;
+        border-radius: 99px;
         transition: 0.2s ease;
       }
 
@@ -285,6 +285,31 @@ const pathname = Astro.url.pathname;
         min-width: 20px;
         border-radius: 5px;
         font-weight: 200;
+      }
+
+      /* Tambahan untuk styling gembok menu */
+      #authLinks {
+        display: none; /* Kunci dari awal */
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      #userMenuNav {
+        display: none;
+        gap: 10px;
+        align-items: center;
+      }
+
+      /* Tombol Dashboard khusus Admin */
+      .btn-indigo {
+        background: #4f46e5;
+        color: white;
+        border: none;
+      }
+      .btn-indigo:hover {
+        background: #4338ca;
       }
 
       main {
@@ -330,15 +355,23 @@ const pathname = Astro.url.pathname;
 
         <div class="nav-links">
           <a href="/" class={pathname === "/" ? "active" : ""}>Home</a>
-          <a href="/lowongan" class={pathname.startsWith("/lowongan") ? "active" : ""}>Jobs</a>
-          <a href="/workshop" class={pathname.startsWith("/workshop") ? "active" : ""}>Workshops</a>
-          <a href="/roadmap" class={pathname.startsWith("/roadmap") ? "active" : ""}>Roadmap</a>
-          <a href="/blog" class={pathname.startsWith("/blog") ? "active" : ""}>Blog</a>
-          <a href="/kuesioner" class={pathname.startsWith("/kuesioner") ? "active" : ""}>Kuesioner</a>
+          
+          <div id="authLinks">
+            <a href="/lowongan" class={pathname.startsWith("/lowongan") ? "active" : ""}>Jobs</a>
+            <a href="/workshop" class={pathname.startsWith("/workshop") ? "active" : ""}>Workshops</a>
+            <a href="/roadmap" class={pathname.startsWith("/roadmap") ? "active" : ""}>Roadmap</a>
+            <a href="/blog" class={pathname.startsWith("/blog") ? "active" : ""}>Blog</a>
+            <a href="/kuesioner" class={pathname.startsWith("/kuesioner") ? "active" : ""}>Kuesioner</a>
+          </div>
         </div>
 
         <div class="nav-actions">
-          <a href="/login" class="btn btn-light nav-admin-btn">Login</a>
+          <a href="/login" id="loginBtnNav" class="btn btn-light nav-admin-btn">Log in</a>
+          
+          <div id="userMenuNav">
+            <a href="/admin" id="dashboardBtnNav" class="btn btn-indigo nav-admin-btn" style="display: none;">Dashboard</a>
+            <button id="logoutBtnNav" class="btn btn-danger nav-admin-btn" style="border: none;">Logout</button>
+          </div>
         </div>
       </div>
     </nav>
@@ -354,5 +387,49 @@ const pathname = Astro.url.pathname;
         © {year} All rights reserved
       </div>
     </footer>
+
+    <script>
+      // @ts-nocheck
+      import { supabase } from "../lib/supabase.js";
+
+      async function initSmartNav() {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        const authLinks = document.getElementById("authLinks");
+        const loginBtnNav = document.getElementById("loginBtnNav");
+        const userMenuNav = document.getElementById("userMenuNav");
+        const dashboardBtnNav = document.getElementById("dashboardBtnNav");
+
+        // Kalau ada tiket login
+        if (session) {
+          if (authLinks) authLinks.style.display = "flex"; // Munculin menu
+          if (loginBtnNav) loginBtnNav.style.display = "none"; // Umpetin tombol login
+          if (userMenuNav) userMenuNav.style.display = "flex"; // Munculin grup logout/dashboard
+
+          // Cek di tabel profiles, role-nya apa
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", session.user.id)
+            .maybeSingle();
+
+          // Kalau dia Admin/Superadmin, munculin tombol Dashboard
+          if (profile && (profile.role === "admin" || profile.role === "superadmin")) {
+            if (dashboardBtnNav) dashboardBtnNav.style.display = "inline-flex";
+          }
+        }
+      }
+
+      initSmartNav();
+
+      // Logika Logout
+      const logoutBtnNav = document.getElementById("logoutBtnNav");
+      if (logoutBtnNav) {
+        logoutBtnNav.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          window.location.href = "/"; // Balik ke Home setelah logout
+        });
+      }
+    </script>
   </body>
 </html>

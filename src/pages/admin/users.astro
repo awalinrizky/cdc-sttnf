@@ -2,488 +2,251 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="CDC STT-NF | Kelola Pengguna">
-  <section class="admin-page">
+<BaseLayout title="CDC STT-NF | Manajemen Akses Pengguna">
+  <section class="admin-manage-page">
     <div class="container">
-      <div class="page-header-wrapper">
+      
+      <header class="manage-header">
         <div class="header-info">
-          <span class="eyebrow" style="background: #fee2e2; color: #991b1b;"
-            >Superadmin Only</span
-          >
+          <span class="eyebrow" style="background: #fee2e2; color: #991b1b;">Eksklusif Superadmin</span>
           <h1>Kelola Pengguna</h1>
-          <p class="subtext">
-            Tambah Dosen, Admin, atau ACC Alumni untuk mengakses sistem CDC.
-          </p>
+          <p>Daftarkan administrator baru atau kelola akses alumni ke sistem CDC.</p>
         </div>
-        <div class="header-actions">
-          <a href="/admin" class="btn btn-outline">← Kembali ke Dashboard</a>
+        <div class="header-btns">
+          <a href="/admin" class="btn-back">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Dashboard
+          </a>
         </div>
-      </div>
+      </header>
 
-      <div class="layout-grid">
-        <div class="form-card">
-          <h2>Tambah Akun Baru</h2>
-          <p class="card-desc">
-            Pastikan email valid dan password mudah diingat oleh pengguna.
-          </p>
+      <div class="manage-grid">
+        <aside class="sidebar-form">
+          <div class="glass-card">
+            <h2 id="formTitle">Tambah Akun Baru</h2>
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Pastikan alamat email valid dan berikan password awal yang aman.</p>
+            
+            <form id="userForm" class="modern-form">
+              <div class="input-group">
+                <label>Alamat Email</label>
+                <input type="email" id="email" required placeholder="Cth: dosen@nurulfikri.ac.id" />
+              </div>
 
-          <form id="userForm" class="admin-form">
-            <div class="form-group">
-              <label>Email Pengguna</label>
-              <input
-                type="email"
-                id="email"
-                required
-                placeholder="dosen@nurulfikri.ac.id / mhs@student..."
-              />
-            </div>
+              <div class="input-group">
+                <label>Password Awal</label>
+                <input type="password" id="password" required placeholder="Minimal 6 karakter" />
+              </div>
 
-            <div class="form-group">
-              <label>Password Awal</label>
-              <input
-                type="password"
-                id="password"
-                required
-                placeholder="Minimal 6 karakter"
-              />
-            </div>
+              <div class="input-group">
+                <label>Level Akses (Role)</label>
+                <select id="role" class="custom-select">
+                  <option value="alumni">Alumni (Lihat Konten)</option>
+                  <option value="admin">Admin (Kelola Konten)</option>
+                  <option value="superadmin">Superadmin (Konten + User)</option>
+                </select>
+              </div>
 
-            <div class="form-group">
-              <label>Role / Hak Akses</label>
-              <select id="role" class="form-select">
-                <option value="alumni">Alumni (Akses lihat konten)</option>
-                <option value="admin">Admin (Kelola konten saja)</option>
-                <option value="superadmin">Superadmin (Konten + User)</option>
-              </select>
-            </div>
-
-            <button
-              type="submit"
-              id="submitBtn"
-              class="btn btn-primary btn-full">Buat Akun Sekarang</button
-            >
-            <p id="msg" class="message"></p>
-          </form>
-        </div>
-
-        <div class="list-card">
-          <h2>Daftar Pengguna Sistem</h2>
-          <p class="card-desc">
-            Semua akun yang memiliki akses ke dalam sistem CDC STT-NF
-          </p>
-
-          <div id="userList" class="user-list">
-            <p class="empty">Memuat daftar pengguna...</p>
+              <button type="submit" id="submitBtn" class="btn-main">Buat Akun Sekarang</button>
+              <p id="msg" class="msg-box"></p>
+            </form>
           </div>
-        </div>
+        </aside>
+
+        <main class="list-area">
+          <div class="glass-card">
+            <div class="list-header-pro">
+              <h2>Daftar Pengguna Sistem</h2>
+              <span id="userCount" class="count-badge">... Users</span>
+            </div>
+            
+            <div id="userList" class="table-responsive">
+              <div class="loading-state">Menarik data kredensial...</div>
+            </div>
+          </div>
+        </main>
       </div>
     </div>
-  </section>
 
-  <style>
-    /* Styling Pro Standar Admin CDC */
-    .container {
-      width: min(100% - 32px, 1200px);
-      margin-inline: auto;
-    }
-    .admin-page {
-      padding: 48px 0 72px;
-    }
-
-    .page-header-wrapper {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 32px;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      margin-bottom: 12px;
-    }
-    h1 {
-      font-size: 32px;
-      letter-spacing: -0.02em;
-      color: #0f172a;
-      margin-bottom: 8px;
-    }
-    .subtext {
-      color: #64748b;
-      font-size: 15px;
-    }
-
-    .layout-grid {
-      display: grid;
-      grid-template-columns: 400px 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-    .form-card,
-    .list-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 22px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
-    }
-    .form-card {
-      position: sticky;
-      top: 100px;
-    }
-
-    h2 {
-      font-size: 22px;
-      letter-spacing: -0.02em;
-      color: #0f172a;
-      margin-bottom: 4px;
-    }
-    .card-desc {
-      color: #64748b;
-      font-size: 14px;
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-
-    .admin-form {
-      display: grid;
-      gap: 16px;
-    }
-    .form-group {
-      display: grid;
-      gap: 8px;
-    }
-    .form-group label {
-      font-size: 14px;
-      font-weight: 700;
-      color: #0f172a;
-    }
-    .form-group input,
-    .form-select {
-      width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 14px;
-      outline: none;
-      font-family: inherit;
-      background: #fff;
-      color: #0f172a;
-      transition: 0.2s ease;
-    }
-    .form-group input:focus,
-    .form-select:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 12px;
-      padding: 10px 18px;
-      font-weight: 700;
-      font-size: 14px;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-    .btn-primary {
-      background: #3b82f6;
-      color: white;
-    }
-    .btn-primary:hover {
-      background: #2563eb;
-    }
-    .btn-outline {
-      background: white;
-      color: #0f172a;
-      border: 1px solid #e2e8f0;
-    }
-    .btn-outline:hover {
-      background: #f8fafc;
-    }
-    .btn-full {
-      width: 100%;
-      margin-top: 8px;
-      padding: 14px;
-      font-size: 15px;
-    }
-
-    .message {
-      min-height: 20px;
-      font-size: 14px;
-      margin-top: 8px;
-      font-weight: 500;
-    }
-    .empty {
-      color: #64748b;
-      font-size: 15px;
-      text-align: center;
-      padding: 40px 0;
-    }
-
-    /* Tabel User Premium */
-    .user-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .user-table th {
-      text-align: left;
-      padding: 14px 16px;
-      border-bottom: 2px solid #e2e8f0;
-      color: #64748b;
-      font-weight: 600;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .user-table td {
-      padding: 16px;
-      border-bottom: 1px solid #f1f5f9;
-      color: #0f172a;
-    }
-    .user-table tr:hover td {
-      background: #f8fafc;
-    }
-    .user-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .badge-role {
-      display: inline-block;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .role-superadmin {
-      background: #fee2e2;
-      color: #991b1b;
-    }
-    .role-admin {
-      background: #e0f2fe;
-      color: #075985;
-    }
-    .role-alumni {
-      background: #fef3c7;
-      color: #92400e;
-    }
-
-    @media (max-width: 980px) {
-      .layout-grid {
-        grid-template-columns: 1fr;
+    <style is:global>
+      :root {
+        --brand: #4f46e5;
+        --brand-dark: #3730a3;
+        --bg-main: #f1f5f9;
+        --text-dark: #0f172a;
+        --text-muted: #475569;
+        --border-color: #cbd5e1;
       }
-      .form-card {
-        position: static;
-      }
-    }
-  </style>
 
-  <script>
-    // @ts-nocheck
-    import { supabase } from "../../lib/supabase.js";
-    import { requireSuperAdmin } from "../../lib/adminGuard.js";
+      .admin-manage-page { background: var(--bg-main); min-height: 100vh; padding: 40px 0; font-family: 'Inter', sans-serif; color: var(--text-dark); }
+      .container { width: min(100% - 32px, 1200px); margin-inline: auto; }
 
-    const userForm = document.getElementById("userForm");
-    const submitBtn = document.getElementById("submitBtn");
-    const msg = document.getElementById("msg");
-    const userList = document.getElementById("userList");
-    let currentAdminId = "";
+      /* Header */
+      .manage-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color); }
+      .header-info h1 { font-size: 32px; font-weight: 800; color: var(--text-dark); margin: 8px 0; letter-spacing: -0.02em; }
+      .header-info p { color: var(--text-muted); font-size: 16px; font-weight: 500; }
+      .eyebrow { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
 
-    // async function loadUsers() {
-    //   const { data, error } = await supabase
-    //     .from("profiles")
-    //     .select("*")
-    //     .order("role");
+      /* Layout */
+      .manage-grid { display: grid; grid-template-columns: 380px 1fr; gap: 32px; align-items: start; }
+      .sidebar-form { position: sticky; top: 20px; }
+      .glass-card { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
 
-    //   if (error)
-    //     return (userList.innerHTML = `<p class="empty">Gagal memuat data pengguna.</p>`);
-    //   if (!data || data.length === 0)
-    //     return (userList.innerHTML = `<p class="empty">Belum ada pengguna terdaftar.</p>`);
+      /* Form */
+      .modern-form { display: grid; gap: 20px; }
+      .input-group { display: grid; gap: 8px; }
+      .input-group label { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+      .input-group input, .custom-select { width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border-color); font-family: inherit; font-size: 14px; color: var(--text-dark); background: #f8fafc; transition: 0.2s; }
+      .input-group input:focus, .custom-select:focus { border-color: var(--brand); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 102, 241, 0.1); }
 
-    //   userList.innerHTML = `
+      /* Buttons */
+      .btn-main { background: var(--brand); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; font-size: 15px; }
+      .btn-main:hover { background: var(--brand-dark); transform: translateY(-1px); }
+      .btn-back { display: flex; align-items: center; gap: 8px; background: white; color: var(--text-dark); padding: 10px 18px; border: 1.5px solid var(--border-color); border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.2s; }
+      .btn-back:hover { border-color: var(--text-dark); background: #f8fafc; }
 
-    //     <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+      /* Table Pro */
+      .list-header-pro { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+      .count-badge { background: #f1f5f9; color: var(--slate-700); padding: 4px 12px; border-radius: 99px; font-size: 13px; font-weight: 700; }
+      
+      .table-responsive { overflow-x: auto; }
+      .user-table { width: 100%; border-collapse: collapse; text-align: left; }
+      .user-table th { padding: 12px; border-bottom: 2px solid #f1f5f9; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 800; }
+      .user-table td { padding: 16px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+      
+      .user-identity { display: flex; align-items: center; gap: 12px; }
+      .user-avatar { width: 36px; height: 36px; background: #e0e7ff; color: var(--brand); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
+      
+      .badge-role { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+      .role-superadmin { background: #fee2e2; color: #991b1b; }
+      .role-admin { background: #e0f2fe; color: #075985; }
+      .role-alumni { background: #fef3c7; color: #92400e; }
 
-    //       <tr style="text-align: left; border-bottom: 2px solid #e2e8f0;">
+      .btn-delete-link { color: #ef4444; background: none; border: none; font-weight: 700; font-size: 13px; cursor: pointer; padding: 6px; border-radius: 6px; }
+      .btn-delete-link:hover { background: #fee2e2; }
 
-    //         <th style="padding: 10px;">Email</th>
+      .loading-state { text-align: center; padding: 40px; color: var(--text-muted); font-weight: 600; }
+      .msg-box { font-size: 13px; font-weight: 700; text-align: center; margin-top: 12px; }
 
-    //         <th style="padding: 10px;">Role</th>
+      @media (max-width: 1024px) { .manage-grid { grid-template-columns: 1fr; } .sidebar-form { position: static; } }
+    </style>
 
-    //       </tr>
+    <script>
+      // @ts-nocheck
+      import { supabase } from "../../lib/supabase.js";
+      import { requireSuperAdmin } from "../../lib/adminGuard.js";
 
-    //       ${data
-    //         .map(
-    //           (u) => `
+      const userForm = document.getElementById("userForm");
+      const submitBtn = document.getElementById("submitBtn");
+      const msg = document.getElementById("msg");
+      const userList = document.getElementById("userList");
+      const userCount = document.getElementById("userCount");
+      let currentAdminId = "";
 
-    //         <tr style="border-bottom: 1px solid #f1f5f9;">
+      async function loadUsers() {
+        const { data, error } = await supabase.from("profiles").select("*").order("role");
 
-    //           <td style="padding: 10px;">${u.email}</td>
+        if (error) {
+          userList.innerHTML = `<p class="loading-state">Gagal memuat data pengguna.</p>`;
+          return;
+        }
 
-    //           <td style="padding: 10px;"><span class="badge">${u.role.toUpperCase()}</span></td>
+        userCount.textContent = `${data.length} Akun Terdaftar`;
 
-    //         </tr>
-
-    //       `,
-    //         )
-    //         .join("")}
-
-    //     </table>
-
-    //   `;
-    // }
-    // // TAMBAHIN FUNGSI INI DI BAWAH loadUsers:
-    // window.hapusUser = async function (id, email) {
-    //   if (!confirm(`Yakin mau menghapus akun ${email} secara permanen?`))
-    //     return;
-
-    //   // Kasih efek loading sementara di UI
-    //   userList.innerHTML = `<p class="empty">Sedang menghapus ${email}...</p>`;
-
-    //   try {
-    //     const res = await fetch("/api/delete-user", {
-    //       method: "POST",
-    //       headers: { "Content-Type": "application/json" },
-    //       body: JSON.stringify({ userId: id }),
-    //     });
-
-    //     const result = await res.json();
-    //     if (!result.success) alert("Gagal menghapus: " + result.error);
-    //   } catch (err) {
-    //     alert("Gagal terhubung ke server.");
-    //   }
-
-    //   loadUsers(); // Refresh tabel setelah hapus
-    // };
-    // UBAH FUNGSI loadUsers JADI GINI:
-    async function loadUsers() {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .order("role");
-
-      if (error)
-        return (userList.innerHTML = `<p class="empty">Gagal memuat data pengguna.</p>`);
-      if (!data || data.length === 0)
-        return (userList.innerHTML = `<p class="empty">Belum ada pengguna terdaftar.</p>`);
-
-      userList.innerHTML = `
-        <div style="overflow-x: auto;">
+        userList.innerHTML = `
           <table class="user-table">
             <thead>
               <tr>
-                <th>Alamat Email</th>
+                <th>Pengguna</th>
                 <th>Hak Akses</th>
                 <th style="text-align: right;">Aksi</th>
               </tr>
             </thead>
             <tbody>
-              ${data
-                .map(
-                  (u) => `
-                <tr>
-                  <td><strong>${u.email}</strong></td>
-                  <td><span class="badge-role role-${u.role || "alumni"}">${u.role || "alumni"}</span></td>
-                  <td style="text-align: right;">
-                    ${u.role !== "superadmin" ? `<button onclick="hapusUser('${u.id}', '${u.email}')" style="color: #ef4444; background: none; border: none; cursor: pointer; font-weight: 600; font-size: 13px;">Hapus</button>` : `<span style="color: #cbd5e1; font-size: 12px;">Paten</span>`}
-                  </td>
-                </tr>
-              `,
-                )
-                .join("")}
+              ${data.map(u => {
+                const initial = u.email ? u.email[0].toUpperCase() : '?';
+                return `
+                  <tr>
+                    <td>
+                      <div class="user-identity">
+                        <div class="user-avatar">${initial}</div>
+                        <strong>${u.email}</strong>
+                      </div>
+                    </td>
+                    <td><span class="badge-role role-${u.role}">${u.role.toUpperCase()}</span></td>
+                    <td style="text-align: right;">
+                      ${u.role !== 'superadmin' ? 
+                        `<button onclick="hapusUser('${u.id}', '${u.email}')" class="btn-delete-link">Hapus</button>` : 
+                        `<span style="color: #cbd5e1; font-size: 11px; font-weight: 700;">SYSTEM</span>`}
+                    </td>
+                  </tr>
+                `;
+              }).join("")}
             </tbody>
           </table>
-        </div>
-      `;
-    }
-
-    // TAMBAHIN FUNGSI INI DI BAWAH loadUsers:
-    window.hapusUser = async function (id, email) {
-      if (!confirm(`Yakin mau menghapus akun ${email} secara permanen?`))
-        return;
-
-      // Kasih efek loading sementara di UI
-      userList.innerHTML = `<p class="empty">Sedang menghapus ${email}...</p>`;
-
-      try {
-        const res = await fetch("/api/delete-user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: id }),
-        });
-
-        const result = await res.json();
-        if (!result.success) alert("Gagal menghapus: " + result.error);
-      } catch (err) {
-        alert("Gagal terhubung ke server.");
+        `;
       }
 
-      loadUsers(); // Refresh tabel setelah hapus
-    };
-    userForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Memproses...";
-      msg.textContent = "Sedang membuat akun, mohon tunggu...";
-      msg.style.color = "#3b82f6"; // Warna biru proses
-
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const role = document.getElementById("role").value;
-
-      try {
-        const response = await fetch("/api/create-user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email,
-            password,
-            role,
-            adminId: currentAdminId,
-          }),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          msg.textContent = `Berhasil! Akun ${email} siap digunakan.`;
-          msg.style.color = "#16a34a"; // Warna hijau sukses
-          userForm.reset();
-          loadUsers(); // Refresh tabel langsung
-        } else {
-          msg.textContent = "Gagal: " + result.error;
-          msg.style.color = "#ef4444"; // Warna merah error
+      window.hapusUser = async function (id, email) {
+        if (!confirm(`Hapus permanen akses akun ${email}? Tindakan ini tidak bisa dibatalkan.`)) return;
+        
+        userList.innerHTML = `<div class="loading-state">Menghapus ${email}...</div>`;
+        
+        try {
+          const res = await fetch("/api/delete-user", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId: id }),
+          });
+          const result = await res.json();
+          if (!result.success) alert("Gagal menghapus: " + result.error);
+        } catch (err) {
+          alert("Gagal terhubung ke server.");
         }
-      } catch (err) {
-        msg.textContent = "Gagal terhubung ke server.";
-        msg.style.color = "#ef4444";
-      }
-
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Buat Akun Sekarang";
-    });
-
-    // Jalankan Satpam Khusus Superadmin sebelum nampilin data
-    requireSuperAdmin().then((res) => {
-      if (res) {
-        currentAdminId = res.session.user.id;
         loadUsers();
-      }
-    });
-  </script>
+      };
+
+      userForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Memproses...";
+        msg.textContent = "Mendaftarkan akun baru...";
+        msg.style.color = "var(--brand)";
+
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const role = document.getElementById("role").value;
+
+        try {
+          const response = await fetch("/api/create-user", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password, role, adminId: currentAdminId }),
+          });
+          const result = await response.json();
+
+          if (result.success) {
+            msg.textContent = "Akun berhasil dibuat!";
+            msg.style.color = "#15803d";
+            userForm.reset();
+            loadUsers();
+          } else {
+            msg.textContent = "Gagal: " + result.error;
+            msg.style.color = "#b91c1c";
+          }
+        } catch (err) {
+          msg.textContent = "Terjadi kesalahan koneksi.";
+          msg.style.color = "#b91c1c";
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Buat Akun Sekarang";
+      });
+
+      requireSuperAdmin().then((res) => {
+        if (res) {
+          currentAdminId = res.session.user.id;
+          loadUsers();
+        }
+      });
+    </script>
+  </section>
 </BaseLayout>

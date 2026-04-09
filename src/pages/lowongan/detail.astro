@@ -2,136 +2,235 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Detail Lowongan | CDC STT-NF">
-  <section class="page-hero">
-    <div class="container page-hero__wrap">
-      <a href="/lowongan" class="back-link">← Kembali ke Lowongan</a>
-      <h1 id="jobTitle">Memuat...</h1>
-      <p id="jobCompany">-</p>
-      <p id="jobLocation" class="hero-location">-</p>
+<BaseLayout title="Detail Pekerjaan | CDC STT-NF">
+  <section class="job-detail-hero">
+    <div class="container hero-content-pro">
+      <a href="/lowongan" class="btn-back-link">
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Kembali ke Daftar Lowongan
+      </a>
+      <h1 id="jobTitle">Memuat Judul...</h1>
+      <div class="hero-meta-pro">
+        <span id="jobCompany" class="company-tag">Menghubungkan Perusahaan...</span>
+        <span class="separator">•</span>
+        <span id="jobLocation" class="location-text">Lokasi...</span>
+      </div>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container detail-layout">
-      <article class="detail-card content-card">
-        <h2>Deskripsi Lowongan</h2>
-        <div class="description" id="jobDescription">Memuat deskripsi...</div>
-      </article>
-
-      <aside class="detail-card sidebar-card">
-        <h3>Ringkasan</h3>
-
-        <div class="info-row">
-          <span>Perusahaan</span>
-          <strong id="summaryCompany">-</strong>
+  <section class="job-detail-body">
+    <div class="container layout-pro">
+      
+      <main class="job-main-card">
+        <div class="card-section">
+          <h2>Deskripsi & Kualifikasi</h2>
+          <div class="description-text" id="jobDescription">
+            Memuat detail pekerjaan secara lengkap...
+          </div>
         </div>
+      </main>
 
-        <div class="info-row">
-          <span>Lokasi</span>
-          <strong id="summaryLocation">-</strong>
+      <aside class="job-sidebar">
+        <div class="sidebar-card-pro">
+          <h3>Ringkasan Pekerjaan</h3>
+          
+          <div class="summary-list">
+            <div class="summary-item">
+              <span class="label">Perusahaan</span>
+              <strong id="summaryCompany">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="label">Lokasi</span>
+              <strong id="summaryLocation">-</strong>
+            </div>
+            <div class="summary-item">
+              <span class="label">Status</span>
+              <strong class="status-active">Aktif</strong>
+            </div>
+          </div>
+
+          <a id="applyBtn" href="#" class="btn-apply-glow" target="_blank" rel="noreferrer">
+            Lamar Pekerjaan Ini
+          </a>
+          <p class="apply-info">Pastikan CV Anda sudah siap sebelum melamar.</p>
         </div>
-
-        <a
-          id="applyBtn"
-          href="#"
-          class="btn btn-primary full"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Apply Sekarang
-        </a>
       </aside>
+
     </div>
   </section>
 
-  <style>
-    .back-link {
-      display: inline-block;
-      color: #cbd5e1;
-      margin-bottom: 20px;
-      font-size: 14px;
+  <style is:global>
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-600: #475569;
+      --slate-200: #e2e8f0;
+      --emerald-600: #059669;
     }
 
-    .back-link:hover {
+    .job-detail-hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding: 80px 0 60px;
       color: white;
     }
 
-    .hero-location {
-      color: #cbd5e1 !important;
+    .hero-content-pro {
+      width: min(100% - 32px, 1200px);
+      margin-inline: auto;
     }
 
-    .detail-layout {
+    .btn-back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #94a3b8;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 32px;
+      transition: 0.2s;
+    }
+    .btn-back-link:hover { color: white; }
+
+    .hero-content-pro h1 {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero-meta-pro {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .company-tag { color: #818cf8; font-weight: 700; }
+    .location-text { color: #cbd5e1; }
+    .separator { color: #475569; }
+
+    /* LAYOUT BODY */
+    .job-detail-body {
+      padding: 60px 0 100px;
+      background: #f8fafc;
+      min-height: 500px;
+    }
+
+    .layout-pro {
       display: grid;
-      grid-template-columns: 1.5fr 0.85fr;
-      gap: 24px;
-      align-items: start;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      width: min(100% - 32px, 1200px);
+      margin-inline: auto;
     }
 
-    .detail-card {
+    /* MAIN CARD */
+    .job-main-card {
       background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 22px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      border: 1px solid var(--slate-200);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
     }
 
-    .content-card h2,
-    .sidebar-card h3 {
-      margin-bottom: 18px;
+    .job-main-card h2 {
       font-size: 24px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 24px;
       letter-spacing: -0.02em;
     }
 
-    .description {
-      color: #475569;
-      line-height: 1.9;
+    .description-text {
+      color: var(--slate-700);
+      font-size: 16px;
+      line-height: 1.8;
       white-space: pre-wrap;
-      font-size: 15px;
     }
 
-    .info-row {
+    /* SIDEBAR CARD */
+    .sidebar-card-pro {
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 24px;
+      padding: 32px;
+      position: sticky;
+      top: 40px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.04);
+    }
+
+    .sidebar-card-pro h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin-bottom: 20px;
+    }
+
+    .summary-list { display: grid; gap: 16px; margin-bottom: 32px; }
+    .summary-item {
       display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 13px 0;
-      border-bottom: 1px solid #e2e8f0;
-      font-size: 14px;
+      flex-direction: column;
+      gap: 4px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .summary-item .label { font-size: 12px; font-weight: 700; color: #94a3b8; text-transform: uppercase; }
+    .summary-item strong { color: var(--slate-900); font-size: 15px; }
+    .status-active { color: var(--emerald-600) !important; }
+
+    .btn-apply-glow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+      transition: all 0.2s;
+    }
+    .btn-apply-glow:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
     }
 
-    .info-row span {
-      color: #64748b;
+    .apply-info {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--slate-500);
+      font-weight: 500;
     }
 
-    .full {
-      width: 100%;
-      margin-top: 20px;
+    @media (max-width: 1024px) {
+      .layout-pro { grid-template-columns: 1fr; }
+      .job-sidebar { order: -1; }
+      .sidebar-card-pro { position: static; }
     }
 
-    @media (max-width: 900px) {
-      .detail-layout {
-        grid-template-columns: 1fr;
-      }
+    @media (max-width: 640px) {
+        .job-main-card { padding: 24px; }
     }
   </style>
 
-<script>
+  <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
-    import { requireMahasiswa } from "../../lib/adminGuard.js"; // 1. Panggil Satpamnya
+    import { requireMahasiswa } from "../../lib/adminGuard.js";
 
     const params = new URLSearchParams(window.location.search);
     const jobId = params.get("id");
 
-    const jobTitle = document.getElementById("jobTitle");
-    const jobCompany = document.getElementById("jobCompany");
-    const jobLocation = document.getElementById("jobLocation");
-    const jobDescription = document.getElementById("jobDescription");
-    const summaryCompany = document.getElementById("summaryCompany");
-    const summaryLocation = document.getElementById("summaryLocation");
-    const applyBtn = document.getElementById("applyBtn");
-
-    async function loadJobDetail() {
+    async function loadJobDetailPro() {
       if (!jobId) {
         window.location.href = "/lowongan";
         return;
@@ -149,33 +248,29 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         return;
       }
 
-      if (jobTitle) jobTitle.textContent = data.title || "-";
-      if (jobCompany) jobCompany.textContent = data.company_name || "-";
-      if (jobLocation) jobLocation.textContent = data.location || "-";
-      if (jobDescription) jobDescription.textContent = data.description || "Belum ada deskripsi.";
-      if (summaryCompany) summaryCompany.textContent = data.company_name || "-";
-      if (summaryLocation) summaryLocation.textContent = data.location || "-";
+      // DOM Fill
+      document.getElementById("jobTitle").textContent = data.title;
+      document.getElementById("jobCompany").textContent = data.company_name || "Perusahaan";
+      document.getElementById("jobLocation").textContent = data.location || "Remote";
+      document.getElementById("jobDescription").textContent = data.description || "Tidak ada deskripsi tersedia.";
+      document.getElementById("summaryCompany").textContent = data.company_name || "-";
+      document.getElementById("summaryLocation").textContent = data.location || "-";
 
-      if (applyBtn) {
-        if (data.apply_url) {
-          applyBtn.href = data.apply_url;
-          applyBtn.textContent = "Apply Sekarang";
-          applyBtn.style.pointerEvents = "auto";
-          applyBtn.style.opacity = "1";
-        } else {
-          applyBtn.removeAttribute("href");
-          applyBtn.textContent = "Link Apply Belum Tersedia";
-          applyBtn.style.pointerEvents = "none";
-          applyBtn.style.opacity = "0.6";
-        }
+      const applyBtn = document.getElementById("applyBtn");
+      if (data.apply_url) {
+        applyBtn.href = data.apply_url;
+      } else {
+        applyBtn.textContent = "Link Apply Tidak Tersedia";
+        applyBtn.style.background = "#f1f5f9";
+        applyBtn.style.color = "#94a3b8";
+        applyBtn.style.pointerEvents = "none";
+        applyBtn.style.boxShadow = "none";
       }
     }
 
-    // 2. INI KUNCINYA: Cek KTP dulu, kalau lolos baru load datanya!
-    requireMahasiswa().then((session) => {
-      if (session) {
-        loadJobDetail();
-      }
+    // Jalankan Satpam
+    requireMahasiswa().then(session => {
+      if (session) loadJobDetailPro();
     });
   </script>
 </BaseLayout>

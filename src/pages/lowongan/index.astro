@@ -2,214 +2,198 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
 
-<BaseLayout title="Lowongan Kerja | CDC STT-NF">
-  <section class="hero-section">
+<BaseLayout title="Lowongan Kerja & Magang | CDC STT-NF">
+  <section class="hero-job">
     <div class="container hero-wrap">
-      <span class="eyebrow">Karier</span>
-      <h1>Lowongan Kerja & Magang</h1>
+      <span class="eyebrow-indigo">Karier & Peluang</span>
+      <h1>Temukan Karier Impianmu di Sini</h1>
       <p>
-        Temukan peluang kerja dan magang yang relevan untuk mahasiswa dan alumni
-        STT-NF.
+        Eksplorasi berbagai peluang lowongan kerja dan program magang terbaik yang telah dikurasi khusus untuk mahasiswa dan alumni STT-NF.
       </p>
     </div>
   </section>
 
-  <section class="section">
+  <section class="job-feed-section">
     <div class="container">
-      <div class="section-head">
-        <h2 class="section-title">Daftar Lowongan</h2>
-        <p class="section-subtitle">
-          Jelajahi peluang terbaru yang tersedia dan pilih posisi yang sesuai
-          dengan minat kariermu
-        </p>
+      <div class="section-intro">
+        <h2 class="section-title">Peluang Terbaru</h2>
+        <p class="section-subtitle">Pilih posisi yang sesuai dengan minat dan kompetensi kariermu.</p>
       </div>
 
-      <div id="jobList" class="job-grid">
-        <p class="state-message">Memuat lowongan...</p>
+      <div id="jobList" class="job-grid-pro">
+        <div class="loader-container">
+            <div class="spinner"></div>
+            <p>Mencari lowongan untukmu...</p>
+        </div>
       </div>
     </div>
   </section>
 
   <style is:global>
-    .hero-section {
+    :root {
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --slate-900: #0f172a;
+      --slate-700: #334155;
+      --slate-500: #64748b;
+      --emerald-600: #059669;
+    }
+
+    /* HERO STYLING */
+    .hero-job {
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
       color: white;
-      padding: 88px 0 78px;
+      padding: 100px 0 80px;
     }
 
     .hero-wrap {
-      width: min(100% - 32px, 1120px);
+      width: min(100% - 32px, 800px);
       margin-inline: auto;
-      max-width: 760px;
+      text-align: center;
     }
 
-    .eyebrow {
+    .eyebrow-indigo {
       display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #dcfce7;
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 18px;
-      letter-spacing: 0.04em;
+      padding: 8px 16px;
+      border-radius: 99px;
+      background: rgba(79, 70, 229, 0.15);
+      color: #818cf8;
+      font-size: 12px;
+      font-weight: 800;
       text-transform: uppercase;
+      letter-spacing: 0.1em;
+      border: 1px solid rgba(129, 140, 248, 0.3);
+      margin-bottom: 24px;
     }
 
     .hero-wrap h1 {
       font-size: clamp(34px, 5vw, 56px);
-      line-height: 1.05;
-      letter-spacing: -0.03em;
-      margin-bottom: 16px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
     }
 
     .hero-wrap p {
       color: #cbd5e1;
-      line-height: 1.9;
-      max-width: 680px;
-      font-size: 17px;
+      font-size: 18px;
+      line-height: 1.7;
     }
 
-    .section {
-      padding: 72px 0;
+    /* FEED SECTION */
+    .job-feed-section {
+      padding: 80px 0 120px;
+      background: #f8fafc;
+      min-height: 500px;
     }
 
-    .section .container {
-      width: min(100% - 32px, 1120px);
-      margin-inline: auto;
-    }
+    .section-intro { margin-bottom: 40px; }
+    .section-title { font-size: 32px; font-weight: 800; color: var(--slate-900); letter-spacing: -0.02em; }
+    .section-subtitle { color: var(--slate-500); font-size: 16px; margin-top: 6px; }
 
-    .section-head {
-      margin-bottom: 28px;
-    }
-
-    .section-title {
-      font-size: clamp(28px, 4vw, 40px);
-      margin-bottom: 12px;
-      letter-spacing: -0.03em;
-      color: #0f172a;
-    }
-
-    .section-subtitle {
-      color: #64748b;
-      line-height: 1.8;
-      max-width: 720px;
-      font-size: 16px;
-    }
-
-    .job-grid {
+    /* GRID & CARDS */
+    .job-grid-pro {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
-      align-items: stretch;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
     }
 
-    .job-card {
-      background: #ffffff;
+    .job-card-pro {
+      background: white;
       border: 1px solid #e2e8f0;
-      border-radius: 22px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      border-radius: 24px;
+      padding: 32px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-      min-height: 260px;
-      transition: 0.2s ease;
-    }
-
-    .job-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.08);
-    }
-
-    .job-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 14px;
-    }
-
-    .job-title {
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: #0f172a;
-      line-height: 1.25;
-      margin-bottom: 6px;
-    }
-
-    .job-company {
-      color: #16a34a;
-      font-weight: 700;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: #dcfce7;
-      color: #166534;
-      font-size: 12px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .job-meta {
-      display: grid;
-      gap: 8px;
-      color: #475569;
-      font-size: 14px;
-      line-height: 1.8;
-    }
-
-    .job-meta strong {
-      color: #0f172a;
-    }
-
-    .job-actions {
-      margin-top: auto;
-      padding-top: 8px;
-    }
-
-    .detail-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-weight: 700;
-      color: #0f172a;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       text-decoration: none;
     }
 
-    .detail-link:hover {
-      color: #16a34a;
+    .job-card-pro:hover {
+      transform: translateY(-6px);
+      border-color: var(--primary);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
     }
 
-    .state-message {
-      color: #64748b;
-      font-size: 16px;
+    .job-card-pro h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.3;
+      margin-bottom: 8px;
     }
 
-    @media (max-width: 960px) {
-      .job-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    .company-name {
+      color: var(--emerald-600);
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 16px;
+      display: block;
     }
 
-    @media (max-width: 720px) {
-      .job-grid {
-        grid-template-columns: 1fr;
-      }
+    .job-meta-list {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 24px;
+      color: var(--slate-500);
+      font-size: 14px;
+    }
+
+    .meta-item { display: flex; align-items: center; gap: 8px; font-weight: 500; }
+
+    .job-excerpt {
+      color: var(--slate-700);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* BADGE */
+    .badge-job {
+      display: inline-flex;
+      padding: 4px 12px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: var(--primary);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* ACTION */
+    .job-action-pro {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 15px;
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid #f1f5f9;
+    }
+
+    /* LOADING SPINNER */
+    .loader-container { grid-column: 1 / -1; text-align: center; padding: 100px 0; color: var(--slate-500); }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      .job-grid-pro { grid-template-columns: 1fr; }
+      .job-card-pro { padding: 24px; }
     }
   </style>
 
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
-    import { requireMahasiswa } from "../../lib/adminGuard.js"; // Import Satpam Mahasiswa
+    import { requireMahasiswa } from "../../lib/adminGuard.js";
 
     const jobList = document.getElementById("jobList");
 
@@ -221,53 +205,49 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         .order("created_at", { ascending: false });
 
       if (error) {
-        if (jobList) {
-          jobList.innerHTML = `<p class="state-message">Gagal memuat lowongan.</p>`;
-        }
+        jobList.innerHTML = `<p class="loader-container">Gagal memuat daftar lowongan.</p>`;
         return;
       }
 
       if (!data || !data.length) {
-        if (jobList) {
-          jobList.innerHTML = `<p class="state-message">Belum ada lowongan tersedia.</p>`;
-        }
+        jobList.innerHTML = `<p class="loader-container">Belum ada lowongan aktif saat ini.</p>`;
         return;
       }
 
-      jobList.innerHTML = data
-        .map(
-          (job) => `
-            <article class="job-card">
-              <div class="job-head">
-                <div>
-                  <div class="job-title">${job.title || "-"}</div>
-                  <div class="job-company">${job.company_name || "Perusahaan belum diisi"}</div>
-                </div>
-                <span class="badge">Aktif</span>
-              </div>
+      jobList.innerHTML = data.map(job => {
+        const excerpt = job.description 
+          ? job.description.substring(0, 100) + "..." 
+          : "Klik untuk melihat detail kualifikasi lowongan ini.";
 
-              <div class="job-meta">
-                <div><strong>Lokasi:</strong> ${job.location || "-"}</div>
-                <div><strong>Deskripsi:</strong> ${(job.description || "Belum ada deskripsi.").slice(0, 120)}${(job.description || "").length > 120 ? "..." : ""}</div>
+        return `
+          <a href="/lowongan/detail?id=${job.id}" class="job-card-pro">
+            <div class="badge-job">Hiring</div>
+            <h3>${job.title}</h3>
+            <span class="company-name">${job.company_name || 'Perusahaan Rahasia'}</span>
+            
+            <div class="job-meta-list">
+              <div class="meta-item">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                ${job.location || 'Remote'}
               </div>
+            </div>
 
-              <div class="job-actions">
-                <a class="detail-link" href="/lowongan/detail?id=${job.id}">
-                  Liat Detail →
-                </a>
-              </div>
-            </article>
-          `,
-        )
-        .join("");
+            <p class="job-excerpt">${excerpt}</p>
+
+            <div class="job-action-pro">
+              Lihat Detail Pekerjaan
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+              </svg>
+            </div>
+          </a>
+        `;
+      }).join("");
     }
 
-    // INI KUNCI UTAMANYA:
-    // Panggil satpam, kalau dia lolos (session ada dan valid), baru loadJobs() dijalanin
-    requireMahasiswa().then((session) => {
-      if (session) {
-        loadJobs(); 
-      }
+    // Jalankan Satpam Mahasiswa
+    requireMahasiswa().then(session => {
+      if (session) loadJobs();
     });
   </script>
 </BaseLayout>
