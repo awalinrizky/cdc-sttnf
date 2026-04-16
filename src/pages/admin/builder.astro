@@ -1,0 +1,205 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Survey Builder | Admin CDC">
+  <div class="builder-container">
+    <header class="builder-header">
+      <div>
+        <span class="badge">Survey Creator</span>
+        <h1 class="text-2xl font-bold mt-2">Buat Kuesioner Baru</h1>
+      </div>
+      <div class="header-actions">
+        <a href="/admin/manage-survey" class="btn-ghost">Batal</a>
+        <button id="saveSurveyBtn" class="btn-primary">Simpan & Publish</button>
+      </div>
+    </header>
+
+    <div class="builder-workspace">
+      <div class="card survey-head">
+        <input type="text" id="surveyTitle" class="input-title" placeholder="Judul Kuesioner (Cth: Tracer Study 2026)" required />
+        <textarea id="surveyDesc" class="input-desc" placeholder="Deskripsi kuesioner..." rows="2"></textarea>
+      </div>
+
+      <div id="questionsContainer" class="questions-list"></div>
+
+      <button id="addQuestionBtn" class="btn-add-question">
+        <span>+</span> Tambah Pertanyaan
+      </button>
+    </div>
+  </div>
+
+  <style>
+    /* Styling tetep sama mewahnya kayak tadi */
+    .builder-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .builder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #e2e8f0; }
+    .badge { background: #eef2ff; color: #4f46e5; padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
+    .header-actions { display: flex; gap: 12px; align-items: center;}
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; margin-bottom: 24px; transition: 0.3s; }
+    .card:focus-within { border-color: #4f46e5; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.1); }
+    .survey-head { border-top: 8px solid #4f46e5; }
+    .input-title { width: 100%; font-size: 32px; font-weight: 800; border: none; outline: none; color: #0f172a; margin-bottom: 12px; }
+    .input-title::placeholder { color: #cbd5e1; }
+    .input-desc { width: 100%; font-size: 15px; color: #64748b; border: none; outline: none; resize: none; font-family: inherit; }
+    .btn-add-question { width: 100%; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 20px; color: #64748b; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-add-question:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; }
+    .btn-primary { background: #0f172a; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
+    .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); }
+    .btn-ghost { color: #64748b; font-weight: 600; padding: 10px 20px; }
+
+    /* CSS Dinamis untuk Kartu Pertanyaan */
+    :global(.question-item) { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+    :global(.q-header) { display: flex; gap: 16px; margin-bottom: 16px; }
+    :global(.q-title-input) { flex: 1; font-size: 16px; font-weight: 600; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; background: #fafafa;}
+    :global(.q-title-input:focus) { border-color: #4f46e5; background: white;}
+    :global(.q-type-select) { padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 600; outline: none; background: #f8fafc; cursor: pointer; }
+    :global(.q-body) { padding: 8px 0; }
+    :global(.opt-row) { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    :global(.opt-input) { flex: 1; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; outline: none;}
+    :global(.opt-input:focus) { border-color: #4f46e5; }
+    :global(.btn-add-opt) { color: #4f46e5; background: none; border: none; font-weight: 700; font-size: 13px; cursor: pointer; padding: 8px 0; margin-top: 4px; }
+    :global(.q-footer) { display: flex; justify-content: flex-end; padding-top: 16px; border-top: 1px solid #f1f5f9; margin-top: 16px; }
+    :global(.btn-delete) { color: #ef4444; background: none; border: none; font-weight: 700; cursor: pointer; font-size: 14px; }
+  </style>
+
+  <script>
+    // @ts-nocheck
+    import { supabase } from "../../lib/supabase.js";
+
+    const container = document.getElementById('questionsContainer');
+    const addBtn = document.getElementById('addQuestionBtn');
+    const saveBtn = document.getElementById('saveSurveyBtn');
+
+    // 1. Fungsi Bikin Kartu Pertanyaan
+    function createQuestionCard() {
+      const qId = `q_${Date.now()}`;
+      const card = document.createElement('div');
+      card.className = 'question-item';
+      card.id = qId;
+
+      card.innerHTML = `
+        <div class="q-header">
+          <input type="text" class="q-title-input" placeholder="Pertanyaan Tanpa Judul" required />
+          <select class="q-type-select">
+            <option value="text">Jawaban Pendek</option>
+            <option value="textarea">Paragraf</option>
+            <option value="radio">Pilihan Ganda</option>
+            <option value="checkbox">Kotak Centang</option>
+          </select>
+        </div>
+        <div class="q-body">
+          <p style="color: #94a3b8; font-size: 14px;">Teks jawaban singkat akan muncul di sini</p>
+        </div>
+        <div class="q-footer">
+          <button type="button" class="btn-delete" onclick="document.getElementById('${qId}').remove()">Hapus Soal</button>
+        </div>
+      `;
+
+      // Logika kalau Tipe Soal Berubah
+      const selectType = card.querySelector('.q-type-select');
+      const qBody = card.querySelector('.q-body');
+
+      selectType.addEventListener('change', (e) => {
+        const type = e.target.value;
+        if (type === 'text' || type === 'textarea') {
+          qBody.innerHTML = `<p style="color: #94a3b8; font-size: 14px;">Teks jawaban akan muncul di sini</p>`;
+        } else {
+          // Render UI untuk Pilihan Ganda / Checkbox
+          qBody.innerHTML = `
+            <div class="options-container">
+              <div class="opt-row">
+                <div style="width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: ${type === 'radio' ? '50%' : '4px'};"></div>
+                <input type="text" class="opt-input" placeholder="Opsi 1" required />
+              </div>
+            </div>
+            <button type="button" class="btn-add-opt">+ Tambah Opsi</button>
+          `;
+
+          // Tombol Tambah Opsi
+          const addOptBtn = qBody.querySelector('.btn-add-opt');
+          const optsContainer = qBody.querySelector('.options-container');
+          
+          addOptBtn.addEventListener('click', () => {
+            const optCount = optsContainer.children.length + 1;
+            const newOpt = document.createElement('div');
+            newOpt.className = 'opt-row';
+            newOpt.innerHTML = `
+              <div style="width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: ${type === 'radio' ? '50%' : '4px'};"></div>
+              <input type="text" class="opt-input" placeholder="Opsi ${optCount}" required />
+            `;
+            optsContainer.appendChild(newOpt);
+          });
+        }
+      });
+
+      container.appendChild(card);
+    }
+
+    addBtn.addEventListener('click', createQuestionCard);
+
+    // 2. Fungsi SIMPAN KE SUPABASE (JSON Generator)
+    saveBtn.addEventListener('click', async () => {
+      const title = document.getElementById('surveyTitle').value;
+      const desc = document.getElementById('surveyDesc').value;
+      
+      if (!title) {
+        alert("Judul kuesioner wajib diisi ya!");
+        return;
+      }
+
+      // Mulai Rangkum Semua Pertanyaan Jadi JSON Array
+      const schema = [];
+      const questionItems = document.querySelectorAll('.question-item');
+
+      questionItems.forEach((item, index) => {
+        const qTitle = item.querySelector('.q-title-input').value || `Pertanyaan ${index + 1}`;
+        const qType = item.querySelector('.q-type-select').value;
+        
+        let options = [];
+        if (qType === 'radio' || qType === 'checkbox') {
+          const optInputs = item.querySelectorAll('.opt-input');
+          optInputs.forEach(opt => {
+            if (opt.value) options.push(opt.value);
+          });
+        }
+
+        schema.push({
+          id: `q_${index + 1}`,
+          question: qTitle,
+          type: qType,
+          options: options.length > 0 ? options : null,
+          required: true
+        });
+      });
+
+      // Ganti tulisan tombol biar kliatan lagi loading
+      saveBtn.textContent = "Menyimpan...";
+      saveBtn.disabled = true;
+
+      // Lempar ke tabel 'surveys' di Supabase
+      const { data, error } = await supabase
+        .from('surveys')
+        .insert([
+          { 
+            title: title, 
+            description: desc, 
+            schema: schema,
+            is_active: true
+          }
+        ]);
+
+      if (error) {
+        console.error("Error Supabase:", error);
+        alert("Gagal menyimpan kuesioner. Cek console log.");
+        saveBtn.textContent = "Simpan & Publish";
+        saveBtn.disabled = false;
+      } else {
+        alert("Kuesioner berhasil dipublish! 🚀");
+        window.location.href = "/admin/manage-survey"; // Balik ke dashboard
+      }
+    });
+
+    // Otomatis bikin 1 pertanyaan kosong pas halaman dibuka
+    createQuestionCard();
+  </script>
+</BaseLayout>

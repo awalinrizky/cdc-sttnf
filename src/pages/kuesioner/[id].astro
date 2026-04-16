@@ -1,0 +1,188 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+// Biar Astro tau ini halaman dinamis (SSR)
+export const prerender = false;
+const { id } = Astro.params;
+---
+
+<BaseLayout title="Isi Kuesioner | CDC STT-NF">
+  <div class="kuesioner-wrapper" id="appWrapper" data-id={id}>
+    
+    <div id="loadingState" class="loading-state">
+      <div class="spinner"></div>
+      <p>Memuat kuesioner...</p>
+    </div>
+
+    <div id="errorState" class="error-state" style="display: none;">
+      <h2>Kuesioner Tidak Tersedia</h2>
+      <p>Kuesioner yang Anda tuju mungkin sudah ditutup atau link tidak valid.</p>
+      <a href="/" class="btn-ghost">Kembali ke Beranda</a>
+    </div>
+
+    <div id="surveyContainer" class="survey-container" style="display: none;">
+      <div class="survey-header card">
+        <h1 id="surveyTitle" class="survey-title"></h1>
+        <p id="surveyDesc" class="survey-desc"></p>
+      </div>
+
+      <form id="surveyForm">
+        <div id="questionsContainer"></div>
+        
+        <div class="form-footer">
+          <button type="submit" id="submitBtn" class="btn-primary">Kirim Jawaban</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="successState" class="success-state card" style="display: none;">
+      <div class="icon-success">✅</div>
+      <h2>Terima Kasih!</h2>
+      <p>Jawaban Anda telah berhasil direkam.</p>
+      <a href="/" class="btn-ghost">Kembali ke Beranda</a>
+    </div>
+  </div>
+
+  <style>
+    /* CSS TETEP SAMA PERSIS */
+    .kuesioner-wrapper { max-width: 700px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, sans-serif; }
+    .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+    .survey-header { border-top: 8px solid #4f46e5; }
+    .survey-title { font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    .survey-desc { font-size: 15px; color: #64748b; line-height: 1.6; }
+    :global(.question-card) { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; margin-bottom: 24px; transition: 0.2s; }
+    :global(.question-card:focus-within) { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    :global(.q-title) { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
+    :global(.q-req) { color: #ef4444; margin-left: 4px; }
+    :global(.input-text) { width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid #cbd5e1; outline: none; font-size: 15px; transition: 0.2s; background: transparent; }
+    :global(.input-text:focus) { border-bottom-color: #4f46e5; }
+    :global(.opt-label) { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer; font-size: 15px; color: #334155; }
+    :global(.opt-radio), :global(.opt-check) { width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer; }
+    .form-footer { display: flex; justify-content: flex-end; margin-top: 32px; }
+    .btn-primary { background: #0f172a; color: white; padding: 12px 32px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 15px; }
+    .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost { display: inline-block; margin-top: 16px; color: #4f46e5; font-weight: 600; text-decoration: none; }
+    .loading-state, .error-state, .success-state { text-align: center; padding: 60px 20px; }
+    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .icon-success { font-size: 48px; margin-bottom: 16px; }
+  </style>
+
+  <script>
+    // @ts-nocheck
+    import { supabase } from "../../lib/supabase.js";
+
+    // KITA TARIK ID-NYA DARI HTML
+    const wrapper = document.getElementById('appWrapper');
+    const surveyId = wrapper.dataset.id;
+
+    // Elemen DOM
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const surveyContainer = document.getElementById('surveyContainer');
+    const successState = document.getElementById('successState');
+    const form = document.getElementById('surveyForm');
+    const questionsContainer = document.getElementById('questionsContainer');
+
+    async function fetchSurvey() {
+      if (!surveyId) return;
+
+      const { data, error } = await supabase
+        .from('surveys')
+        .select('*')
+        .eq('id', surveyId)
+        .eq('is_active', true)
+        .single();
+
+      if (error || !data) {
+        loadingState.style.display = 'none';
+        errorState.style.display = 'block';
+        return;
+      }
+
+      // Render Judul
+      document.getElementById('surveyTitle').textContent = data.title;
+      document.getElementById('surveyDesc').textContent = data.description || '';
+
+      // Render Pertanyaan
+      const schema = data.schema || [];
+      schema.forEach((q) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        
+        let inputHTML = '';
+
+        if (q.type === 'text') {
+          inputHTML = `<input type="text" name="${q.id}" class="input-text" placeholder="Jawaban Anda" required />`;
+        } else if (q.type === 'textarea') {
+          inputHTML = `<textarea name="${q.id}" class="input-text" rows="3" placeholder="Jawaban Anda" required></textarea>`;
+        } else if (q.type === 'radio') {
+          q.options.forEach(opt => {
+            inputHTML += `
+              <label class="opt-label">
+                <input type="radio" name="${q.id}" value="${opt}" class="opt-radio" required />
+                ${opt}
+              </label>
+            `;
+          });
+        } else if (q.type === 'checkbox') {
+          q.options.forEach(opt => {
+            inputHTML += `
+              <label class="opt-label">
+                <input type="checkbox" name="${q.id}[]" value="${opt}" class="opt-check" />
+                ${opt}
+              </label>
+            `;
+          });
+        }
+
+        card.innerHTML = `
+          <div class="q-title">${q.question} <span class="q-req">*</span></div>
+          <div class="q-input-group">${inputHTML}</div>
+        `;
+        questionsContainer.appendChild(card);
+      });
+
+      loadingState.style.display = 'none';
+      surveyContainer.style.display = 'block';
+    }
+
+    // Submit Handler
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.textContent = 'Mengirim...';
+      submitBtn.disabled = true;
+
+      const formData = new FormData(form);
+      const answers = {};
+      
+      for (let [key, value] of formData.entries()) {
+        if (key.endsWith('[]')) {
+          const cleanKey = key.replace('[]', '');
+          if (!answers[cleanKey]) answers[cleanKey] = [];
+          answers[cleanKey].push(value);
+        } else {
+          answers[key] = value;
+        }
+      }
+
+      const { error } = await supabase
+        .from('responses')
+        .insert([{ survey_id: surveyId, answers: answers }]);
+
+      if (error) {
+        alert('Gagal mengirim jawaban. Coba lagi.');
+        console.error(error);
+        submitBtn.textContent = 'Kirim Jawaban';
+        submitBtn.disabled = false;
+      } else {
+        surveyContainer.style.display = 'none';
+        successState.style.display = 'block';
+      }
+    });
+
+    fetchSurvey();
+  </script>
+</BaseLayout>
