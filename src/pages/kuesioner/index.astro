@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { supabase } from "../../lib/supabase.js";
+
+// Ambil semua survey yang aktif
+const { data: activeSurveys } = await supabase
+  .from('surveys')
+  .select('*')
+  .eq('is_active', true)
+  .order('created_at', { ascending: false });
+---
+
+<BaseLayout title="Daftar Kuesioner | CDC STT-NF">
+  <div class="container">
+    <header class="page-header">
+      <h1>Kuesioner & Tracer Study</h1>
+      <p>Silakan pilih kuesioner yang tersedia untuk Anda isi.</p>
+    </header>
+
+    <div class="survey-grid">
+      {activeSurveys && activeSurveys.length > 0 ? (
+        activeSurveys.map((s) => (
+          <div class="survey-card">
+            <div class="card-content">
+              <h3>{s.title}</h3>
+              <p>{s.description || 'Tidak ada deskripsi.'}</p>
+            </div>
+            <a href={`/kuesioner/${s.id}`} class="btn-fill">Isi Kuesioner Sekarang</a>
+          </div>
+        ))
+      ) : (
+        <div class="empty-state">
+          <p>Saat ini tidak ada kuesioner yang aktif.</p>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <style>
+    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+    .page-header { margin-bottom: 40px; text-align: center; }
+    .page-header h1 { font-size: 32px; font-weight: 800; color: #0f172a; }
+    .page-header p { color: #64748b; margin-top: 8px; }
+
+    .survey-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .survey-card { 
+      background: white; border: 1px solid #e2e8f0; border-radius: 16px; 
+      padding: 24px; display: flex; flex-direction: column; justify-content: space-between;
+      transition: 0.3s;
+    }
+    .survey-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.05); border-color: #4f46e5; }
+    .card-content h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+    .card-content p { font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 24px; }
+
+    .btn-fill { 
+      display: block; text-align: center; background: #0f172a; color: white; 
+      padding: 12px; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 14px;
+      transition: 0.2s;
+    }
+    .btn-fill:hover { background: #4f46e5; }
+    
+    .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px; color: #94a3b8; }
+  </style>
+</BaseLayout>
