@@ -1,14 +1,31 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { supabase } from "../../lib/supabase.js";
+import { createClient } from "@supabase/supabase-js";
 
-// NARIK DATA DARI SUPABASE
-// Kita sekalian ambil jumlah 'responses' biar tau udah berapa orang yang ngisi
-const { data: surveys, error } = await supabase
+export const prerender = false;
+
+// 1. Bikin koneksi khusus "Jalur VIP" pake Service Role Key
+// Kodingan ini di sisi server, aman dari intipan user.
+const supabaseAdmin = createClient(
+  import.meta.env.PUBLIC_SUPABASE_URL,
+  import.meta.env.SUPABASE_SERVICE_ROLE_KEY,
+);
+
+// 2. Tarik data pake supabaseAdmin (Si "Kunci Master")
+// Kita pake .select('*, responses(count)') buat dapet jumlah responden sekaligus
+const { data: surveys, error } = await supabaseAdmin
   .from("surveys")
   .select("*, responses(count)")
   .order("created_at", { ascending: false });
+
+if (error) {
+  console.error("Gagal tarik data:", error.message);
+}
+
+// Pastiin surveys selalu berupa array biar nggak error .map is not a function
+const safeSurveys = surveys || [];
 ---
+
 <BaseLayout title="Kelola Kuesioner | Admin CDC">
   <div class="admin-container" id="adminWrapper" style="display: none;">
     <header class="admin-header">
@@ -27,163 +44,167 @@ const { data: surveys, error } = await supabase
     </header>
 
     <div class="table-container card">
-      <table>
-        <thead>
-          <tr>
-            <th>Nama Kuesioner</th>
-            <th>Tipe Form</th>
-            <th>Responden</th>
-            <th>Status</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            surveys && surveys.length > 0 ? (
-              surveys.map((survey) => (
-                <tr id={`row-${survey.id}`}>
-                  <td>
-                    <div class="survey-info">
-                      <strong>{survey.title}</strong>
-                      <span>
-                        Dibuat:{" "}
-                        {new Date(survey.created_at).toLocaleDateString(
-                          "id-ID",
-                        )}
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nama Kuesioner</th>
+              <th>Tipe Form</th>
+              <th>Responden</th>
+              <th>Status</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              safeSurveys.length > 0 ? (
+                safeSurveys.map((survey) => (
+                  <tr id={`row-${survey.id}`}>
+                    <td>
+                      <div class="survey-info">
+                        <strong>{survey.title}</strong>
+                        <span>
+                          Dibuat:{" "}
+                          {new Date(survey.created_at).toLocaleDateString(
+                            "id-ID",
+                          )}
+                        </span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="tag">Kuesioner</span>
+                    </td>
+                    <td>
+                      <span style="font-weight: 700; color: #0f172a; font-size: 15px;">
+                        {/* Sabuk pengaman buat count responden */}
+                        {survey.responses?.[0]?.count || 0}
                       </span>
-                    </div>
-                  </td>
-                  <td>
-                    <span class="tag">Kuesioner</span>
-                  </td>
-                  <td>
-                    <span style="font-weight: 700; color: #0f172a; font-size: 15px;">
-                      {survey.responses[0]?.count || 0}
-                    </span>
-                    <span style="color: #64748b; font-size: 13px; margin-left: 4px;">
-                      orang
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      class={`status-toggle ${survey.is_active ? "active" : "draft"}`}
-                      data-id={survey.id}
-                      data-status={survey.is_active ? "true" : "false"}
-                      title="Klik untuk mengubah status (Buka/Tutup)"
-                    >
-                      <span class="dot" />
-                      <span class="status-text">
-                        {survey.is_active ? "Dibuka" : "Ditutup"}
+                      <span style="color: #64748b; font-size: 13px; margin-left: 4px;">
+                        orang
                       </span>
-                    </button>
-                  </td>
-                  <td class="actions">
-                    <button
-                      class="btn-icon copy-btn"
-                      data-id={survey.id}
-                      title="Salin Link"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    </td>
+                    <td>
+                      <button
+                        class={`status-toggle ${survey.is_active ? "active" : "draft"}`}
+                        data-id={survey.id}
+                        data-status={survey.is_active ? "true" : "false"}
+                        title="Klik untuk mengubah status (Buka/Tutup)"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                        />
-                      </svg>
-                    </button>
-                    <a
-                      href={`/admin/edit/${survey.id}`}
-                      class="btn-icon"
-                      title="Edit"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        <span class="dot" />
+                        <span class="status-text">
+                          {survey.is_active ? "Dibuka" : "Ditutup"}
+                        </span>
+                      </button>
+                    </td>
+                    <td class="actions">
+                      <button
+                        class="btn-icon copy-btn"
+                        data-id={survey.id}
+                        title="Salin Link"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        />
-                      </svg>
-                    </a>
-                    <a
-                      href={`/admin/hasil/${survey.id}`}
-                      class="btn-icon"
-                      title="Lihat Hasil Excel"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        <svg
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                          />
+                        </svg>
+                      </button>
+                      <a
+                        href={`/admin/edit/${survey.id}`}
+                        class="btn-icon"
+                        title="Edit"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                    </a>
-                    <button
-                      class="btn-icon danger delete-btn"
-                      data-id={survey.id}
-                      title="Hapus Kuesioner"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                        <svg
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
+                        </svg>
+                      </a>
+                      <a
+                        href={`/admin/hasil/${survey.id}`}
+                        class="btn-icon"
+                        title="Lihat Hasil"
                       >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
+                        <svg
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      </a>
+                      <button
+                        class="btn-icon danger delete-btn"
+                        data-id={survey.id}
+                        title="Hapus"
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colspan="5"
+                    style="text-align: center; padding: 60px 20px; color: #64748b;"
+                  >
+                    <div style="font-size: 40px; margin-bottom: 16px;">📋</div>
+                    <p style="font-size: 16px; font-weight: 600;">
+                      Belum ada kuesioner
+                    </p>
+                    <p style="font-size: 14px; margin-top: 4px;">
+                      Klik tombol "Buat Survey Baru" untuk memulai.
+                    </p>
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colspan="5"
-                  style="text-align: center; padding: 60px 20px; color: #64748b;"
-                >
-                  <div style="font-size: 40px; margin-bottom: 16px;">📋</div>
-                  <p style="font-size: 16px; font-weight: 600;">
-                    Belum ada kuesioner
-                  </p>
-                  <p style="font-size: 14px; margin-top: 4px;">
-                    Klik tombol "Buat Survey Baru" untuk memulai.
-                  </p>
-                </td>
-              </tr>
-            )
-          }
-        </tbody>
-      </table>
+              )
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
   <style>
+    /* CSS LO TETAP SAMA SEPERTI SEBELUMNYA */
     .admin-container {
       padding: 40px 0;
       max-width: 1000px;
@@ -224,10 +245,10 @@ const { data: surveys, error } = await supabase
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
       overflow: hidden;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 700px;
     }
     th {
       background: #f8fafc;
@@ -249,7 +270,6 @@ const { data: surveys, error } = await supabase
     tr:hover {
       background-color: #fafaf9;
     }
-
     .survey-info strong {
       display: block;
       color: #0f172a;
@@ -268,8 +288,6 @@ const { data: surveys, error } = await supabase
       font-size: 12px;
       font-weight: 700;
     }
-
-    /* TOMBOL STATUS (BUKA/TUTUP) */
     .status-toggle {
       display: inline-flex;
       align-items: center;
@@ -304,7 +322,6 @@ const { data: surveys, error } = await supabase
     .status-toggle:hover {
       transform: scale(1.05);
     }
-
     .actions {
       display: flex;
       gap: 8px;
@@ -333,7 +350,6 @@ const { data: surveys, error } = await supabase
       color: #ef4444;
       border-color: #fca5a5;
     }
-
     .btn-primary {
       background: #0f172a;
       color: white;
@@ -350,33 +366,21 @@ const { data: surveys, error } = await supabase
       box-shadow: 0 10px 20px rgba(15, 23, 42, 0.15);
       background: #4f46e5;
     }
-    /* =========================================
-       RESPONSIVE DESIGN (HP & TABLET)
-       ========================================= */
+
     @media (max-width: 768px) {
-      /* Header sama tombol buat survey dibikin numpuk atas bawah */
-      .page-header {
+      .admin-container {
+        padding: 20px 16px;
+      }
+      .admin-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;
       }
-      
-      .page-title {
-        font-size: 24px;
-      }
-
-      /* Tabel dikasih scroll ke samping biar nggak nabrak layar */
       .table-wrapper {
         overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
       }
-
-      /* Tombol aksi (Edit, Salin, dll) dibikin lebih rapet */
-      .action-buttons {
-        gap: 4px;
-      }
-      .btn-action {
-        padding: 6px;
+      .page-title {
+        font-size: 24px;
       }
     }
   </style>
@@ -385,54 +389,33 @@ const { data: surveys, error } = await supabase
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
 
-    // PROTEKSI HALAMAN (Hanya Admin yang bisa masuk)
-    // PROTEKSI HALAMAN (Cek Role dari Database Kelola Pengguna)
     // PROTEKSI HALAMAN
     async function checkAdmin() {
       const { data: authData } = await supabase.auth.getUser();
-
       if (!authData?.user) {
-        alert("Akses Ditolak! Silakan login terlebih dahulu.");
         window.location.href = "/login";
         return;
       }
 
       const userEmail = authData.user.email;
-
-      // Ambil role dari Supabase
-      const { data: userData, error: dbError } = await supabase
-        .from("profiles") // Pastikan nama tabelnya beneran 'profiles'
+      const { data: userData } = await supabase
+        .from("profiles")
         .select("role")
         .eq("email", userEmail)
         .maybeSingle();
 
-      // BERSIHIN TEKS: Ubah jadi huruf kecil semua dan hapus spasi nyangkut
       const role = userData?.role?.toLowerCase().trim() || "";
-
-      // Kunci darurat
       const isAbsoluteSuperAdmin =
         userEmail === "email_superadmin_lo@gmail.com";
-
-      const isAllowed =
-        role === "superadmin" || role === "admin" || role === "dosen";
-
-      // // --- BAGIAN DETEKTIF ---
-      // // Buka Inspect Element (F12) > Console buat liat ini pas lo login error
-      // console.log("Email yang login:", userEmail);
-      // console.log("Data dari database:", userData);
-      // console.log("Error dari database:", dbError);
-      // // -----------------------
+      const isAllowed = ["superadmin", "admin", "dosen"].includes(role);
 
       if (isAllowed || isAbsoluteSuperAdmin) {
         document.getElementById("adminWrapper").style.display = "block";
       } else {
-        alert(
-          `Akses Ditolak! Email ${userEmail} terbaca sebagai role: "${role}"`,
-        );
+        alert("Akses Ditolak!");
         window.location.href = "/";
       }
     }
-
     checkAdmin();
 
     // 1. FITUR HAPUS KUESIONER
@@ -440,56 +423,41 @@ const { data: surveys, error } = await supabase
       btn.addEventListener("click", async (e) => {
         const btnEl = e.currentTarget;
         const surveyId = btnEl.getAttribute("data-id");
-
-        const isConfirm = confirm(
-          "Yakin mau hapus permanen kuesioner ini beserta seluruh datanya?",
-        );
-        if (isConfirm) {
+        if (confirm("Yakin mau hapus permanen kuesioner ini?")) {
           btnEl.style.opacity = "0.5";
           const { error } = await supabase
             .from("surveys")
             .delete()
             .eq("id", surveyId);
-          if (error) {
-            alert("Gagal menghapus kuesioner.");
-            btnEl.style.opacity = "1";
-          } else {
-            document.getElementById(`row-${surveyId}`).remove();
-          }
+          if (error) alert("Gagal menghapus.");
+          else document.getElementById(`row-${surveyId}`).remove();
         }
       });
     });
 
-    // 2. FITUR SALIN LINK MAHASISWA
+    // 2. FITUR SALIN LINK
     document.querySelectorAll(".copy-btn").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const btnEl = e.currentTarget;
         const surveyId = btnEl.getAttribute("data-id");
         const link = `${window.location.origin}/kuesioner/${surveyId}`;
-
         navigator.clipboard.writeText(link).then(() => {
-          btnEl.style.background = "#dcfce7";
-          btnEl.style.color = "#166534";
-          btnEl.style.borderColor = "#bbf7d0";
-          setTimeout(() => {
-            btnEl.style.background = "";
-            btnEl.style.color = "";
-            btnEl.style.borderColor = "";
-          }, 2000);
+          const originalHTML = btnEl.innerHTML;
+          btnEl.innerHTML = "✅";
+          setTimeout(() => (btnEl.innerHTML = originalHTML), 2000);
         });
       });
     });
 
-    // 3. FITUR TUTUP/BUKA KUESIONER (Toggle Status)
+    // 3. FITUR TUTUP/BUKA KUESIONER
     document.querySelectorAll(".status-toggle").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
         const btnEl = e.currentTarget;
         const surveyId = btnEl.getAttribute("data-id");
         const currentStatus = btnEl.getAttribute("data-status") === "true";
-        const newStatus = !currentStatus; // Balik statusnya
+        const newStatus = !currentStatus;
 
         btnEl.style.opacity = "0.5";
-
         const { error } = await supabase
           .from("surveys")
           .update({ is_active: newStatus })
@@ -498,15 +466,11 @@ const { data: surveys, error } = await supabase
         if (error) {
           alert("Gagal merubah status.");
         } else {
-          // Update tampilan tombol secara real-time
           btnEl.setAttribute("data-status", newStatus.toString());
-          if (newStatus) {
-            btnEl.className = "status-toggle active";
-            btnEl.querySelector(".status-text").textContent = "Dibuka";
-          } else {
-            btnEl.className = "status-toggle draft";
-            btnEl.querySelector(".status-text").textContent = "Ditutup";
-          }
+          btnEl.className = `status-toggle ${newStatus ? "active" : "draft"}`;
+          btnEl.querySelector(".status-text").textContent = newStatus
+            ? "Dibuka"
+            : "Ditutup";
         }
         btnEl.style.opacity = "1";
       });
