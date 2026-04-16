@@ -9,7 +9,6 @@ const { data: surveys, error } = await supabase
   .select("*, responses(count)")
   .order("created_at", { ascending: false });
 ---
-
 <BaseLayout title="Kelola Kuesioner | Admin CDC">
   <div class="admin-container" id="adminWrapper" style="display: none;">
     <header class="admin-header">
