@@ -1,26 +1,30 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-// Biar Astro tau ini halaman dinamis (SSR)
+// Wajib buat halaman dinamis SSR
 export const prerender = false;
 const { id } = Astro.params;
 ---
 
 <BaseLayout title="Isi Kuesioner | CDC STT-NF">
-  <div class="kuesioner-wrapper" id="appWrapper" data-id={id}>
-    
-    <div id="loadingState" class="loading-state">
+  <div class="kuesioner-wrapper" id="appWrapper" data-id={id || ""}>
+    <div id="loadingState" class="state-container">
       <div class="spinner"></div>
-      <p>Memuat kuesioner...</p>
+      <p>Mempersiapkan kuesioner...</p>
     </div>
 
-    <div id="errorState" class="error-state" style="display: none;">
+    <div id="errorState" class="state-container card" style="display: none;">
+      <div class="icon-error">⚠️</div>
       <h2>Kuesioner Tidak Tersedia</h2>
-      <p>Kuesioner yang Anda tuju mungkin sudah ditutup atau link tidak valid.</p>
-      <a href="/" class="btn-ghost">Kembali ke Beranda</a>
+      <p>
+        Kuesioner yang Anda tuju mungkin sudah ditutup atau tautan tidak valid.
+      </p>
+      <a href="/" class="btn-ghost" style="margin-top: 16px;"
+        >Kembali ke Beranda</a
+      >
     </div>
 
-    <div id="surveyContainer" class="survey-container" style="display: none;">
+    <div id="surveyContainer" style="display: none;">
       <div class="survey-header card">
         <h1 id="surveyTitle" class="survey-title"></h1>
         <p id="surveyDesc" class="survey-desc"></p>
@@ -28,139 +32,393 @@ const { id } = Astro.params;
 
       <form id="surveyForm">
         <div id="questionsContainer"></div>
-        
-        <div class="form-footer">
-          <button type="submit" id="submitBtn" class="btn-primary">Kirim Jawaban</button>
+
+        <div
+          class="form-footer card"
+          style="padding: 24px; display: flex; justify-content: flex-end; background: #f8fafc;"
+        >
+          <button type="submit" id="submitBtn" class="btn-primary"
+            >Kirim Jawaban Anda</button
+          >
         </div>
       </form>
     </div>
 
-    <div id="successState" class="success-state card" style="display: none;">
+    <div id="successState" class="state-container card" style="display: none;">
       <div class="icon-success">✅</div>
-      <h2>Terima Kasih!</h2>
-      <p>Jawaban Anda telah berhasil direkam.</p>
-      <a href="/" class="btn-ghost">Kembali ke Beranda</a>
+      <h2 style="font-size: 28px; color: #0f172a; margin-bottom: 8px;">
+        Terima Kasih!
+      </h2>
+      <p style="color: #64748b; margin-bottom: 24px;">
+        Jawaban Anda telah berhasil direkam ke dalam sistem.
+      </p>
+      <a href="/" class="btn-outline">Kembali ke Beranda</a>
     </div>
   </div>
 
   <style>
-    /* CSS TETEP SAMA PERSIS */
-    .kuesioner-wrapper { max-width: 700px; margin: 40px auto; padding: 0 20px; font-family: system-ui, -apple-system, sans-serif; }
-    .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; margin-bottom: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-    .survey-header { border-top: 8px solid #4f46e5; }
-    .survey-title { font-size: 32px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
-    .survey-desc { font-size: 15px; color: #64748b; line-height: 1.6; }
-    :global(.question-card) { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; margin-bottom: 24px; transition: 0.2s; }
-    :global(.question-card:focus-within) { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-    :global(.q-title) { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px; }
-    :global(.q-req) { color: #ef4444; margin-left: 4px; }
-    :global(.input-text) { width: 100%; padding: 12px 0; border: none; border-bottom: 1px solid #cbd5e1; outline: none; font-size: 15px; transition: 0.2s; background: transparent; }
-    :global(.input-text:focus) { border-bottom-color: #4f46e5; }
-    :global(.opt-label) { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; cursor: pointer; font-size: 15px; color: #334155; }
-    :global(.opt-radio), :global(.opt-check) { width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer; }
-    .form-footer { display: flex; justify-content: flex-end; margin-top: 32px; }
-    .btn-primary { background: #0f172a; color: white; padding: 12px 32px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; font-size: 15px; }
-    .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    .btn-primary:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; box-shadow: none; }
-    .btn-ghost { display: inline-block; margin-top: 16px; color: #4f46e5; font-weight: 600; text-decoration: none; }
-    .loading-state, .error-state, .success-state { text-align: center; padding: 60px 20px; }
-    .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: #4f46e5; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .icon-success { font-size: 48px; margin-bottom: 16px; }
+    /* CSS Layout & Typography */
+    .kuesioner-wrapper {
+      max-width: 760px;
+      margin: 40px auto;
+      padding: 0 20px;
+      font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    }
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Header */
+    .survey-header {
+      border-top: 8px solid #4f46e5;
+    }
+    .survey-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    .survey-desc {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    /* Question Card */
+    :global(.question-card) {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      transition: 0.3s;
+    }
+    :global(.question-card:focus-within) {
+      border-color: #4f46e5;
+      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.08);
+    }
+    :global(.q-title) {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    :global(.q-req) {
+      color: #ef4444;
+      margin-left: 4px;
+      font-weight: 800;
+    }
+
+    /* Inputs */
+    :global(.input-text) {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+      font-size: 15px;
+      transition: 0.2s;
+      background: #f8fafc;
+      font-family: inherit;
+    }
+    :global(.input-text:focus) {
+      border-color: #4f46e5;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    :global(.opt-label) {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      font-size: 15px;
+      color: #334155;
+      line-height: 1.4;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      transition: 0.2s;
+    }
+    :global(.opt-label:hover) {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    :global(.opt-radio),
+    :global(.opt-check) {
+      margin-top: 2px;
+      width: 18px;
+      height: 18px;
+      accent-color: #4f46e5;
+      cursor: pointer;
+    }
+
+    /* Helper Button (Download) */
+    :global(.btn-helper) {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 12px 20px;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px dashed #93c5fd;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+      transition: 0.2s;
+    }
+    :global(.btn-helper:hover) {
+      background: #dbeafe;
+      transform: translateY(-2px);
+      border-style: solid;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Buttons & States */
+    .btn-primary {
+      background: #0f172a;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 16px;
+    }
+    .btn-primary:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+    }
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .btn-outline {
+      display: inline-block;
+      border: 2px solid #e2e8f0;
+      color: #0f172a;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+    .btn-outline:hover {
+      border-color: #0f172a;
+    }
+    .btn-ghost {
+      color: #4f46e5;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .state-container {
+      text-align: center;
+      padding: 80px 20px;
+    }
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #4f46e5;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .icon-error {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+    .icon-success {
+      font-size: 72px;
+      margin-bottom: 24px;
+    }
+    /* =========================================
+       RESPONSIVE DESIGN (HP & TABLET)
+       ========================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 12px;
+      }
+
+      .survey-container {
+        padding: 24px 16px;
+        border-radius: 12px;
+      }
+
+      .survey-title {
+        font-size: 24px;
+      }
+
+      .question-card {
+        padding: 16px;
+        border-radius: 10px;
+      }
+
+      /* Input teks sama textarea dibikin full mentok kiri-kanan */
+      .input-text, .input-textarea {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .btn-submit {
+        width: 100%; /* Tombol submit jadi segede layar HP */
+        padding: 14px;
+        font-size: 16px;
+      }
+    }
   </style>
 
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
 
-    // KITA TARIK ID-NYA DARI HTML
-    const wrapper = document.getElementById('appWrapper');
+    const wrapper = document.getElementById("appWrapper");
     const surveyId = wrapper.dataset.id;
 
-    // Elemen DOM
-    const loadingState = document.getElementById('loadingState');
-    const errorState = document.getElementById('errorState');
-    const surveyContainer = document.getElementById('surveyContainer');
-    const successState = document.getElementById('successState');
-    const form = document.getElementById('surveyForm');
-    const questionsContainer = document.getElementById('questionsContainer');
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const surveyContainer = document.getElementById("surveyContainer");
+    const successState = document.getElementById("successState");
+    const form = document.getElementById("surveyForm");
+    const questionsContainer = document.getElementById("questionsContainer");
 
     async function fetchSurvey() {
       if (!surveyId) return;
 
       const { data, error } = await supabase
-        .from('surveys')
-        .select('*')
-        .eq('id', surveyId)
-        .eq('is_active', true)
+        .from("surveys")
+        .select("*")
+        .eq("id", surveyId)
+        .eq("is_active", true)
         .single();
 
       if (error || !data) {
-        loadingState.style.display = 'none';
-        errorState.style.display = 'block';
+        loadingState.style.display = "none";
+        errorState.style.display = "block";
         return;
       }
 
-      // Render Judul
-      document.getElementById('surveyTitle').textContent = data.title;
-      document.getElementById('surveyDesc').textContent = data.description || '';
+      document.getElementById("surveyTitle").textContent = data.title;
+      document.getElementById("surveyDesc").textContent =
+        data.description || "";
 
-      // Render Pertanyaan
       const schema = data.schema || [];
-      schema.forEach((q) => {
-        const card = document.createElement('div');
-        card.className = 'question-card';
-        
-        let inputHTML = '';
+      questionsContainer.innerHTML = "";
 
-        if (q.type === 'text') {
-          inputHTML = `<input type="text" name="${q.id}" class="input-text" placeholder="Jawaban Anda" required />`;
-        } else if (q.type === 'textarea') {
-          inputHTML = `<textarea name="${q.id}" class="input-text" rows="3" placeholder="Jawaban Anda" required></textarea>`;
-        } else if (q.type === 'radio') {
-          q.options.forEach(opt => {
+      schema.forEach((q, index) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+
+        // Cek Required
+        const isRequired = q.required ? "required" : "";
+        const star = q.required ? '<span class="q-req">*</span>' : "";
+
+        // Tipe Input (Perhatikan name="${q.id}" ini yang ngirim Kode f5a1)
+        let inputHTML = "";
+        if (q.type === "text") {
+          inputHTML = `<input type="text" name="${q.id}" class="input-text" placeholder="Ketik jawaban Anda..." ${isRequired} />`;
+        } else if (q.type === "number") {
+          // TAMBAHAN: Validasi khusus tipe Angka
+          inputHTML = `<input type="number" name="${q.id}" class="input-text" placeholder="Contoh: 08123456789 (Hanya angka)" ${isRequired} />`;
+        } else if (q.type === "textarea") {
+          inputHTML = `<textarea name="${q.id}" class="input-text" rows="4" placeholder="Ketik jawaban Anda..." ${isRequired}></textarea>`;
+        } else if (q.type === "radio") {
+          q.options.forEach((opt, i) => {
+            const uniqueId = `radio_${q.id}_${i}`;
             inputHTML += `
-              <label class="opt-label">
-                <input type="radio" name="${q.id}" value="${opt}" class="opt-radio" required />
-                ${opt}
+              <label class="opt-label" for="${uniqueId}">
+                <input type="radio" id="${uniqueId}" name="${q.id}" value="${opt}" class="opt-radio" ${isRequired} />
+                <span>${opt}</span>
               </label>
             `;
           });
-        } else if (q.type === 'checkbox') {
-          q.options.forEach(opt => {
+        } else if (q.type === "checkbox") {
+          q.options.forEach((opt, i) => {
+            const uniqueId = `check_${q.id}_${i}`;
             inputHTML += `
-              <label class="opt-label">
-                <input type="checkbox" name="${q.id}[]" value="${opt}" class="opt-check" />
-                ${opt}
+              <label class="opt-label" for="${uniqueId}">
+                <input type="checkbox" id="${uniqueId}" name="${q.id}[]" value="${opt}" class="opt-check" />
+                <span>${opt}</span>
               </label>
             `;
           });
         }
 
+        // Tampilkan Link Helper/File jika ada
+        let helperBtn = "";
+        if (q.helperLink && q.helperLink !== "") {
+          helperBtn = `
+            <div>
+              <a href="${q.helperLink}" target="_blank" class="btn-helper">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                Unduh Master Kode / Dokumen
+              </a>
+            </div>
+          `;
+        }
+
         card.innerHTML = `
-          <div class="q-title">${q.question} <span class="q-req">*</span></div>
+          <div class="q-title">${index + 1}. ${q.question} ${star}</div>
           <div class="q-input-group">${inputHTML}</div>
+          ${helperBtn}
         `;
         questionsContainer.appendChild(card);
       });
 
-      loadingState.style.display = 'none';
-      surveyContainer.style.display = 'block';
+      loadingState.style.display = "none";
+      surveyContainer.style.display = "block";
     }
 
-    // Submit Handler
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.textContent = 'Mengirim...';
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.textContent = "Mengirim Jawaban...";
       submitBtn.disabled = true;
+
+      // 1. CEK IDENTITAS MAHASISWA YANG LAGI LOGIN
+      const { data: authData, error: authError } =
+        await supabase.auth.getUser();
+      const user = authData?.user;
+
+      if (!user) {
+        alert(
+          "Sesi Anda telah habis. Silakan login kembali untuk mengirim jawaban.",
+        );
+        window.location.href = "/login"; // Arahin ke halaman login lo
+        return;
+      }
 
       const formData = new FormData(form);
       const answers = {};
-      
+
+      // 2. KUMPULIN JAWABAN (Sama kayak sebelumnya)
       for (let [key, value] of formData.entries()) {
-        if (key.endsWith('[]')) {
-          const cleanKey = key.replace('[]', '');
+        if (key.endsWith("[]")) {
+          const cleanKey = key.replace("[]", "");
           if (!answers[cleanKey]) answers[cleanKey] = [];
           answers[cleanKey].push(value);
         } else {
@@ -168,18 +426,31 @@ const { id } = Astro.params;
         }
       }
 
-      const { error } = await supabase
-        .from('responses')
-        .insert([{ survey_id: surveyId, answers: answers }]);
+      if (Object.keys(answers).length === 0) {
+        alert("Mohon isi form sebelum mengirim.");
+        submitBtn.textContent = "Kirim Jawaban Anda";
+        submitBtn.disabled = false;
+        return;
+      }
+
+      // 3. SIMPAN KE DATABASE (Sekarang bawa user_email)
+      const { error } = await supabase.from("responses").insert([
+        {
+          survey_id: surveyId,
+          answers: answers,
+          user_email: user.email, // <--- INI KUNCI UTAMANYA
+        },
+      ]);
 
       if (error) {
-        alert('Gagal mengirim jawaban. Coba lagi.');
-        console.error(error);
-        submitBtn.textContent = 'Kirim Jawaban';
+        console.error("Submit Error:", error);
+        alert("Gagal mengirim jawaban. Coba periksa koneksi Anda.");
+        submitBtn.textContent = "Kirim Jawaban Anda";
         submitBtn.disabled = false;
       } else {
-        surveyContainer.style.display = 'none';
-        successState.style.display = 'block';
+        surveyContainer.style.display = "none";
+        successState.style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     });
 

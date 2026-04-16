@@ -1,114 +1,458 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { supabase } from "../../../lib/supabase.js";
 
 export const prerender = false;
 const { id } = Astro.params;
-
-// 1. Tarik detail survey-nya (buat tau apa aja pertanyaannya)
-const { data: survey, error: surveyError } = await supabase
-  .from('surveys')
-  .select('*')
-  .eq('id', id)
-  .single();
-
-// 2. Tarik semua jawaban responden yang masuk ke survey ini
-const { data: responses, error: responseError } = await supabase
-  .from('responses')
-  .select('*')
-  .eq('survey_id', id)
-  .order('submitted_at', { ascending: false });
-
-// Kalau survey gak ketemu, tendang balik ke dashboard
-if (surveyError || !survey) {
-  return Astro.redirect('/admin/manage-survey');
-}
-
-const schema = survey.schema || [];
 ---
 
-<BaseLayout title={`Hasil: ${survey.title} | Admin CDC`}>
-  <div class="result-container">
-    <header class="result-header">
-      <div>
-        <a href="/admin/manage-survey" class="back-link">← Kembali ke Kelola Survey</a>
-        <h1 class="title">Hasil: {survey.title}</h1>
-        <p class="subtitle">Total Responden: <strong>{responses?.length || 0}</strong> orang</p>
-      </div>
-      <button class="btn-primary" onclick="window.print()">🖨️ Cetak / PDF</button>
-    </header>
+<BaseLayout title="Laporan Kuesioner | Admin CDC">
+  <div class="result-container" id="appWrapper" data-id={id || ""}>
+    
+    <div class="top-bar">
+      <a href="/admin/manage-survey" class="back-link">
+        <div class="back-icon">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </div>
+        <span>Kelola Kuesioner</span>
+      </a>
 
-    <div class="table-wrapper card">
-      {responses && responses.length > 0 ? (
-        <div class="scroll-table">
-          <table>
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Tanggal Submit</th>
-                {/* Bikin Judul Kolom otomatis dari JSON Schema */}
-                {schema.map((q : any) => (
-                  <th>{q.question}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {/* Looping semua jawaban responden */}
-              {responses.map((res, index) => {
-                const answers = res.answers || {};
-                return (
-                  <tr>
-                    <td>{index + 1}</td>
-                    <td>{new Date(res.submitted_at).toLocaleString('id-ID')}</td>
-                    
-                    {/* Cocokin ID pertanyaan sama ID Jawaban */}
-                    {schema.map((q : any) => {
-                      const answerValue = answers[q.id];
-                      // Kalau bentuknya array (checkbox), kita gabungin pake koma
-                      const displayValue = Array.isArray(answerValue) 
-                        ? answerValue.join(', ') 
-                        : (answerValue || '-');
-                      
-                      return <td>{displayValue}</td>;
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+      <button id="exportBtn" class="btn-export">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+        Unduh Excel (CSV)
+      </button>
+    </div>
+
+    <div class="dashboard-header">
+      <div class="title-area">
+        <span class="eyebrow">Laporan Analitik</span>
+        <h1 id="surveyTitle">Memuat Kuesioner...</h1>
+      </div>
+      
+      <div class="metric-card">
+        <div class="metric-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
         </div>
-      ) : (
-        <div class="empty-state">
-          <div class="icon">📊</div>
-          <h3>Belum Ada Data</h3>
-          <p>Belum ada alumni/mahasiswa yang mengisi kuesioner ini.</p>
+        <div class="metric-info">
+          <p class="metric-label">Total Responden</p>
+          <div class="metric-value-wrapper">
+            <span id="totalResponses" class="metric-value">0</span>
+            <span class="metric-unit">Orang</span>
+          </div>
         </div>
-      )}
+      </div>
+    </div>
+
+    <div id="loadingState" class="state-container">
+      <div class="spinner"></div>
+      <p>Mengsinkronisasi data jawaban...</p>
+    </div>
+
+    <div class="table-wrapper" id="tableContainer" style="display: none;">
+      <table id="resultTable" class="modern-table">
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
     </div>
   </div>
 
   <style>
-    .result-container { padding: 40px 0; max-width: 1200px; margin: 0 auto; font-family: system-ui, -apple-system, sans-serif;}
-    .result-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; border-bottom: 1px solid #e2e8f0; padding-bottom: 24px; }
-    .back-link { color: #64748b; text-decoration: none; font-size: 14px; font-weight: 600; margin-bottom: 12px; display: inline-block; transition: 0.2s;}
-    .back-link:hover { color: #0f172a; }
-    .title { font-size: 32px; font-weight: 800; color: #0f172a; margin-top: 8px;}
-    .subtitle { color: #64748b; margin-top: 8px; font-size: 15px;}
-    .subtitle strong { color: #0f172a; }
+    /* VARIABLES & SETUP */
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --success: #10b981;
+      --success-hover: #059669;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-500: #64748b;
+      --slate-800: #1e293b;
+      --slate-900: #0f172a;
+    }
 
-    .card { background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); overflow: hidden;}
-    .scroll-table { overflow-x: auto; } /* Biar tabel bisa digeser ke kanan kalo soalnya banyak */
-    
-    table { width: 100%; border-collapse: collapse; min-width: 800px;}
-    th { background: #f8fafc; text-align: left; padding: 16px 24px; font-size: 13px; color: #475569; font-weight: 700; border-bottom: 1px solid #e2e8f0; white-space: nowrap;}
-    td { padding: 16px 24px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155;}
-    
-    .empty-state { text-align: center; padding: 60px 20px; }
-    .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
-    .empty-state h3 { color: #0f172a; margin-bottom: 8px; }
-    .empty-state p { color: #64748b; }
+    .result-container {
+      max-width: 1280px;
+      margin: 40px auto;
+      padding: 0 24px;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
 
-    .btn-primary { background: #0f172a; color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-    .btn-primary:hover { background: #4f46e5; }
+    /* TOP BAR & BACK BUTTON */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--slate-500);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+    .back-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: white;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+    .back-link:hover { color: var(--slate-900); }
+    .back-link:hover .back-icon {
+      background: var(--slate-50);
+      border-color: #cbd5e1;
+      transform: translateX(-4px);
+    }
+
+    /* EXPORT BUTTON */
+    .btn-export {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+    .btn-export:hover {
+      background: var(--success-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    }
+
+    /* DASHBOARD HEADER & STATS */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      background: white;
+      padding: 32px;
+      border-radius: 20px;
+      border: 1px solid var(--slate-200);
+      margin-bottom: 32px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      flex-wrap: wrap;
+      gap: 24px;
+    }
+    .title-area { flex: 1; }
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 8px;
+      background: #eef2ff;
+      padding: 4px 12px;
+      border-radius: 99px;
+    }
+    .title-area h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin: 0;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .metric-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: var(--slate-50);
+      padding: 20px 24px;
+      border-radius: 16px;
+      border: 1px solid var(--slate-200);
+      min-width: 240px;
+    }
+    .metric-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: #eef2ff;
+      color: var(--primary);
+      border-radius: 12px;
+    }
+    .metric-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--slate-500);
+      margin: 0 0 4px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .metric-value-wrapper { display: flex; align-items: baseline; gap: 6px; }
+    .metric-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1;
+    }
+    .metric-unit {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--slate-500);
+    }
+
+    /* TABLE STYLING (MODERN SaaS LOOK) */
+    .table-wrapper {
+      background: white;
+      border-radius: 20px;
+      border: 1px solid var(--slate-200);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      overflow-x: auto;
+      overflow-y: hidden;
+      /* Custom Scrollbar for horizontal scrolling */
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+    .table-wrapper::-webkit-scrollbar { height: 8px; }
+    .table-wrapper::-webkit-scrollbar-track { background: transparent; }
+    .table-wrapper::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 20px; }
+    
+    .modern-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .modern-table th {
+      background: var(--slate-50);
+      padding: 18px 24px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--slate-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--slate-200);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .modern-table td {
+      padding: 16px 24px;
+      font-size: 14px;
+      color: var(--slate-800);
+      border-bottom: 1px solid var(--slate-100);
+      vertical-align: middle;
+    }
+    .modern-table tbody tr { transition: background-color 0.2s ease; }
+    .modern-table tbody tr:hover { background: #f8fafc; }
+    .modern-table tbody tr:last-child td { border-bottom: none; }
+
+    /* BADGES & EMPTY STATE */
+    :global(.email-badge) {
+      display: inline-block;
+      background: #eef2ff;
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    :global(.empty-ans) { color: #cbd5e1; font-weight: 600; }
+    
+    .state-container {
+      text-align: center;
+      padding: 80px 20px;
+      background: white;
+      border-radius: 20px;
+      border: 1px dashed var(--slate-200);
+    }
+    .state-container p { color: var(--slate-500); font-weight: 500; font-size: 15px; }
+    
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid var(--slate-100);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .dashboard-header { flex-direction: column; align-items: flex-start; }
+      .metric-card { width: 100%; }
+    }
   </style>
+
+  <script>
+    // @ts-nocheck
+    import { supabase } from "../../../lib/supabase.js";
+
+    const wrapper = document.getElementById("appWrapper");
+    const surveyId = wrapper.dataset.id;
+
+    let globalResponses = [];
+    let globalSchema = [];
+    let globalSurveyTitle = "Kuesioner"; 
+
+    async function loadResults() {
+      if (!surveyId) return;
+
+      const { data: survey, error: surveyErr } = await supabase
+        .from("surveys")
+        .select("title, schema")
+        .eq("id", surveyId)
+        .single();
+      
+      if (surveyErr || !survey) return alert("Gagal memuat detail kuesioner.");
+
+      document.getElementById("surveyTitle").textContent = survey.title;
+      globalSurveyTitle = survey.title;
+      globalSchema = survey.schema || [];
+
+      const { data: responses, error: respErr } = await supabase
+        .from("responses")
+        .select("*")
+        .eq("survey_id", surveyId);
+      
+      if (respErr) return alert("Gagal memuat jawaban responden. Cek RLS!");
+
+      globalResponses = responses;
+      
+      // Animasi angka count biar keren
+      const totalEl = document.getElementById("totalResponses");
+      let currentCount = 0;
+      const targetCount = responses.length;
+      if (targetCount > 0) {
+        const interval = setInterval(() => {
+          if (currentCount >= targetCount) clearInterval(interval);
+          else { currentCount++; totalEl.textContent = currentCount; }
+        }, Math.min(50, 1000/targetCount));
+      } else {
+        totalEl.textContent = "0";
+      }
+
+      // === RENDER TABEL WEB ===
+      const thead = document.getElementById("tableHead");
+      const trHead = document.createElement("tr");
+      trHead.innerHTML = `
+        <th style="min-width: 60px;">No</th>
+        <th style="min-width: 240px;">Identitas (Email)</th>
+        <th style="min-width: 200px;">Waktu Kirim</th>
+      `;
+
+      globalSchema.forEach((q) => {
+        const th = document.createElement("th");
+        th.textContent = `${q.id} — ${q.question.substring(0, 35)}${q.question.length > 35 ? "..." : ""}`;
+        trHead.appendChild(th);
+      });
+      thead.appendChild(trHead);
+
+      const tbody = document.getElementById("tableBody");
+      if (responses.length === 0) {
+        // Empty state table yang modern
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="${globalSchema.length + 3}" style="text-align: center; padding: 64px 20px;">
+              <div style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">📭</div>
+              <p style="font-size: 16px; font-weight: 600; color: #1e293b; margin: 0 0 8px 0;">Belum ada data masuk</p>
+              <p style="font-size: 14px; color: #64748b; margin: 0;">Silakan bagikan link kuesioner ini ke responden Anda.</p>
+            </td>
+          </tr>`;
+      } else {
+        responses.forEach((resp, index) => {
+          const tr = document.createElement("tr");
+          const date = resp.created_at ? new Date(resp.created_at) : new Date();
+          const formattedDate = date.toLocaleString("id-ID", {
+            day: "numeric", month: "long", year: "numeric",
+            hour: "2-digit", minute: "2-digit",
+          });
+          const emailDisplay = resp.user_email
+            ? `<span class="email-badge">${resp.user_email}</span>`
+            : '<span style="color: #94a3b8; font-style: italic;">Anonim</span>';
+
+          let rowHTML = `
+            <td><strong style="color: #64748b;">#${index + 1}</strong></td>
+            <td>${emailDisplay}</td>
+            <td><span style="color: #64748b;">${formattedDate} WIB</span></td>
+          `;
+
+          globalSchema.forEach((q) => {
+            let answer = resp.answers[q.id];
+            if (Array.isArray(answer)) answer = answer.join(", ");
+            rowHTML += `<td>${answer || '<span class="empty-ans">—</span>'}</td>`;
+          });
+          tr.innerHTML = rowHTML;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("tableContainer").style.display = "block";
+    }
+
+    // === FITUR EXPORT EXCEL ===
+    document.getElementById("exportBtn").addEventListener("click", () => {
+      if (globalResponses.length === 0) return alert("Belum ada data untuk di-export!");
+
+      const standardHeaders = ["No", "Email Mahasiswa", "Waktu Submit"];
+      const questionHeaders = globalSchema.map((q) => q.id);
+      const finalHeaders = [...standardHeaders, ...questionHeaders];
+      let csvData = [];
+
+      csvData.push(finalHeaders.map((header) => `"${header}"`).join(","));
+
+      globalResponses.forEach((resp, index) => {
+        let row = [];
+        const date = resp.created_at ? new Date(resp.created_at) : new Date();
+        const formattedDate = date.toLocaleString("id-ID", {
+          day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit",
+        });
+
+        row.push(`"${index + 1}"`);
+        row.push(`"${resp.user_email || "Anonim"}"`);
+        row.push(`"${formattedDate}"`);
+
+        questionHeaders.forEach((qId) => {
+          let val = resp.answers && resp.answers[qId] ? resp.answers[qId] : "";
+          if (Array.isArray(val)) val = val.join(", ");
+          if (val) {
+            val = val.toString().replace(/"/g, '""');
+            val = val.replace(/\n/g, " ");
+            row.push(`"${val}"`);
+          } else {
+            row.push(`""`);
+          }
+        });
+        csvData.push(row.join(","));
+      });
+
+      const csvContent = "\uFEFF" + csvData.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      const safeTitle = globalSurveyTitle.replace(/[/\\?%*:|"<>]/g, "-");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Data - ${safeTitle}.csv`);
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    loadResults();
+  </script>
 </BaseLayout>

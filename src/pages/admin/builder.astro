@@ -1,13 +1,17 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const { id } = Astro.params;
 ---
 
 <BaseLayout title="Survey Builder | Admin CDC">
-  <div class="builder-container">
+  <div class="builder-container" id="appWrapper" data-id={id || ""}>
     <header class="builder-header">
       <div>
-        <span class="badge">Survey Creator</span>
-        <h1 class="text-2xl font-bold mt-2">Buat Kuesioner Baru</h1>
+        <span class="badge" id="modeBadge">Pembuat Kuesioner</span>
+        <h1 class="text-2xl font-bold mt-2" id="pageTitle">
+          Buat Kuesioner Baru
+        </h1>
       </div>
       <div class="header-actions">
         <a href="/admin/manage-survey" class="btn-ghost">Batal</a>
@@ -15,191 +19,628 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
     </header>
 
-    <div class="builder-workspace">
+    <div
+      id="loadingState"
+      style="text-align: center; padding: 40px; color: #64748b; display: none;"
+    >
+      Memuat data kuesioner...
+    </div>
+
+    <div class="builder-workspace" id="workspace">
       <div class="card survey-head">
-        <input type="text" id="surveyTitle" class="input-title" placeholder="Judul Kuesioner (Cth: Tracer Study 2026)" required />
-        <textarea id="surveyDesc" class="input-desc" placeholder="Deskripsi kuesioner..." rows="2"></textarea>
+        <input
+          type="text"
+          id="surveyTitle"
+          class="input-title"
+          placeholder="Judul Kuesioner (Cth: Tracer Study 2026)"
+          required
+        />
+        <textarea
+          id="surveyDesc"
+          class="input-desc"
+          placeholder="Deskripsi kuesioner..."
+          rows="2"></textarea>
       </div>
 
       <div id="questionsContainer" class="questions-list"></div>
 
       <button id="addQuestionBtn" class="btn-add-question">
-        <span>+</span> Tambah Pertanyaan
+        <span>+</span> Tambah Pertanyaan Baru
       </button>
     </div>
   </div>
 
   <style>
-    /* Styling tetep sama mewahnya kayak tadi */
-    .builder-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
-    .builder-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid #e2e8f0; }
-    .badge { background: #eef2ff; color: #4f46e5; padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; }
-    .header-actions { display: flex; gap: 12px; align-items: center;}
-    .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; margin-bottom: 24px; transition: 0.3s; }
-    .card:focus-within { border-color: #4f46e5; box-shadow: 0 10px 25px rgba(79, 70, 229, 0.1); }
-    .survey-head { border-top: 8px solid #4f46e5; }
-    .input-title { width: 100%; font-size: 32px; font-weight: 800; border: none; outline: none; color: #0f172a; margin-bottom: 12px; }
-    .input-title::placeholder { color: #cbd5e1; }
-    .input-desc { width: 100%; font-size: 15px; color: #64748b; border: none; outline: none; resize: none; font-family: inherit; }
-    .btn-add-question { width: 100%; background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 20px; color: #64748b; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-add-question:hover { background: #f1f5f9; border-color: #94a3b8; color: #0f172a; }
-    .btn-primary { background: #0f172a; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
-    .btn-primary:hover { background: #4f46e5; transform: translateY(-2px); }
-    .btn-ghost { color: #64748b; font-weight: 600; padding: 10px 20px; }
+    /* BASIC LAYOUT & TYPOGRAPHY */
+    .builder-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    }
+    .builder-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .badge {
+      background: #eef2ff;
+      color: #4f46e5;
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
 
-    /* CSS Dinamis untuk Kartu Pertanyaan */
-    :global(.question-item) { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 24px; margin-bottom: 24px; }
-    :global(.q-header) { display: flex; gap: 16px; margin-bottom: 16px; }
-    :global(.q-title-input) { flex: 1; font-size: 16px; font-weight: 600; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; background: #fafafa;}
-    :global(.q-title-input:focus) { border-color: #4f46e5; background: white;}
-    :global(.q-type-select) { padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 600; outline: none; background: #f8fafc; cursor: pointer; }
-    :global(.q-body) { padding: 8px 0; }
-    :global(.opt-row) { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-    :global(.opt-input) { flex: 1; padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 14px; outline: none;}
-    :global(.opt-input:focus) { border-color: #4f46e5; }
-    :global(.btn-add-opt) { color: #4f46e5; background: none; border: none; font-weight: 700; font-size: 13px; cursor: pointer; padding: 8px 0; margin-top: 4px; }
-    :global(.q-footer) { display: flex; justify-content: flex-end; padding-top: 16px; border-top: 1px solid #f1f5f9; margin-top: 16px; }
-    :global(.btn-delete) { color: #ef4444; background: none; border: none; font-weight: 700; cursor: pointer; font-size: 14px; }
+    /* CARD STYLE */
+    .card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 24px;
+      transition: 0.3s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+    .card:focus-within {
+      border-color: #4f46e5;
+      box-shadow: 0 10px 25px rgba(79, 70, 229, 0.1);
+    }
+    .survey-head {
+      border-top: 8px solid #4f46e5;
+    }
+
+    /* INPUT STYLE */
+    .input-title {
+      width: 100%;
+      font-size: 32px;
+      font-weight: 800;
+      border: none;
+      outline: none;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .input-title::placeholder {
+      color: #cbd5e1;
+    }
+    .input-desc {
+      width: 100%;
+      font-size: 15px;
+      color: #64748b;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+      line-height: 1.6;
+    }
+
+    /* BUTTONS */
+    .btn-add-question {
+      width: 100%;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 16px;
+      padding: 20px;
+      color: #64748b;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-add-question:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: #0f172a;
+    }
+    .btn-primary {
+      background: #0f172a;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
+    }
+    .btn-primary:hover {
+      background: #4f46e5;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .btn-ghost {
+      color: #64748b;
+      font-weight: 600;
+      padding: 10px 20px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .btn-ghost:hover {
+      color: #0f172a;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+
+    /* KARTU SOAL (MODERN GRID) */
+    :global(.question-item) {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      transition: 0.3s;
+    }
+    :global(.question-item:focus-within) {
+      border-color: #4f46e5;
+      box-shadow: 0 4px 15px rgba(79, 70, 229, 0.05);
+    }
+    :global(.q-header-grid) {
+      display: grid;
+      grid-template-columns: 100px 1fr 160px;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 640px) {
+      :global(.q-header-grid) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    :global(.input-label) {
+      font-size: 12px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 6px;
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    :global(.q-base-input) {
+      width: 100%;
+      font-size: 14px;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+      transition: 0.2s;
+      font-family: inherit;
+    }
+    :global(.q-base-input:focus) {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    :global(.q-title-input) {
+      font-size: 15px;
+      font-weight: 600;
+    }
+    :global(.q-code-input) {
+      font-family: monospace;
+      font-size: 15px;
+      font-weight: bold;
+      color: #0f172a;
+      background: #f8fafc;
+    }
+
+    /* BAGIAN OPSI JAWABAN */
+    :global(.q-body) {
+      padding: 8px 0 16px 0;
+    }
+    :global(.opt-row) {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    :global(.btn-add-opt) {
+      color: #4f46e5;
+      background: none;
+      border: none;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 8px 0;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: 0.2s;
+    }
+    :global(.btn-add-opt:hover) {
+      color: #3730a3;
+    }
+
+    /* AREA EXTRAS (FILE & REQUIRED) - MODERN FLEXBOX */
+    :global(.q-extras) {
+      margin-top: 16px;
+      padding: 20px;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px dashed #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    :global(.link-input-group) {
+      flex: 1;
+      min-width: 200px;
+    }
+    :global(.q-file-input) {
+      font-size: 13px;
+      color: #475569;
+      background: white;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      width: 100%;
+      cursor: pointer;
+    }
+    :global(.q-file-input::file-selector-button) {
+      background: #e2e8f0;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      color: #0f172a;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 12px;
+      transition: 0.2s;
+    }
+    :global(.q-file-input::file-selector-button:hover) {
+      background: #cbd5e1;
+    }
+
+    /* TOGGLE REQUIRED MODERN */
+    :global(.req-toggle) {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      user-select: none;
+    }
+    :global(.req-toggle input[type="checkbox"]) {
+      width: 18px;
+      height: 18px;
+      accent-color: #4f46e5;
+      cursor: pointer;
+    }
+
+    /* FOOTER KARTU */
+    :global(.q-footer) {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+    :global(.btn-delete) {
+      color: #ef4444;
+      background: #fef2f2;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.2s;
+    }
+    :global(.btn-delete:hover) {
+      background: #fee2e2;
+      color: #dc2626;
+    }
   </style>
 
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
 
-    const container = document.getElementById('questionsContainer');
-    const addBtn = document.getElementById('addQuestionBtn');
-    const saveBtn = document.getElementById('saveSurveyBtn');
+    const wrapper = document.getElementById("appWrapper");
+    const surveyId = wrapper ? wrapper.dataset.id : null; // Tangkap ID jika mode Edit
 
-    // 1. Fungsi Bikin Kartu Pertanyaan
-    function createQuestionCard() {
-      const qId = `q_${Date.now()}`;
-      const card = document.createElement('div');
-      card.className = 'question-item';
+    // Objek untuk menyimpan link file lama agar tidak hilang saat Edit tanpa upload ulang
+    let existingHelperLinks = {};
+
+    const container = document.getElementById("questionsContainer");
+    const addBtn = document.getElementById("addQuestionBtn");
+    const saveBtn = document.getElementById("saveSurveyBtn");
+    const workspace = document.getElementById("workspace");
+    const loadingState = document.getElementById("loadingState");
+
+    // 1. FUNGSI UTAMA: BUAT KARTU SOAL
+    function createQuestionCard(data = null, index = 0) {
+      // Bikin ID unik untuk internal tracking DOM
+      const qId = `q_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const card = document.createElement("div");
+      card.className = "question-item";
       card.id = qId;
 
+      // Nilai Default atau Data dari Database
+      const codeVal = data ? data.id : `f${index + 1}`; // KODE SOAL (f5a1, dll)
+      const titleVal = data ? data.question : "";
+      const typeVal = data ? data.type : "text";
+      // Default true jika buat baru, atau ambil dari data lama
+      const isReq = data ? data.required : true;
+      const helperLink = data ? data.helperLink : "";
+
+      // Jika data punya link file, simpan di memori berdasarkan qId
+      if (helperLink) {
+        existingHelperLinks[qId] = helperLink;
+      }
+
+      // Tampilan Info File Lama
+      const fileStatusHTML = helperLink
+        ? `<div style="font-size: 12px; color: #10b981; margin-top: 8px; font-weight: 600;">
+             ✅ File saat ini: <a href="${helperLink}" target="_blank" style="color: #4f46e5; text-decoration: underline;">Lihat Dokumen</a>
+             <br/><span style="color: #64748b; font-weight: normal;">(Biarkan kosong jika tidak ingin mengganti file)</span>
+           </div>`
+        : "";
+
       card.innerHTML = `
-        <div class="q-header">
-          <input type="text" class="q-title-input" placeholder="Pertanyaan Tanpa Judul" required />
-          <select class="q-type-select">
-            <option value="text">Jawaban Pendek</option>
-            <option value="textarea">Paragraf</option>
+        <div class="q-header-grid">
+          <div>
+            <label class="input-label">Kode Soal</label>
+            <input type="text" class="q-base-input q-code-input" placeholder="Cth: f1" value="${codeVal}" required />
+          </div>
+          <div>
+            <label class="input-label">Pertanyaan</label>
+            <input type="text" class="q-base-input q-title-input" placeholder="Ketik pertanyaan di sini..." value="${titleVal}" required />
+          </div>
+          <div>
+            <label class="input-label">Tipe Jawaban</label>
+            <select class="q-base-input q-type-select">
+            <option value="text">Teks Singkat</option>
+            <option value="textarea">Teks Panjang</option>
+            <option value="number">Angka / Nomor HP</option>
             <option value="radio">Pilihan Ganda</option>
             <option value="checkbox">Kotak Centang</option>
           </select>
+          </div>
         </div>
-        <div class="q-body">
-          <p style="color: #94a3b8; font-size: 14px;">Teks jawaban singkat akan muncul di sini</p>
+
+        <div class="q-body"></div>
+        
+        <div class="q-extras">
+          <div class="link-input-group">
+            <label class="input-label">Dokumen Pendukung (Opsional):</label>
+            <input type="file" class="q-file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip" />
+            ${fileStatusHTML}
+          </div>
+          <label class="req-toggle">
+            <input type="checkbox" class="q-req-check" ${isReq ? "checked" : ""} /> Wajib Diisi
+          </label>
         </div>
+
         <div class="q-footer">
-          <button type="button" class="btn-delete" onclick="document.getElementById('${qId}').remove()">Hapus Soal</button>
+          <button type="button" class="btn-delete" onclick="document.getElementById('${qId}').remove()">Hapus Pertanyaan</button>
         </div>
       `;
 
-      // Logika kalau Tipe Soal Berubah
-      const selectType = card.querySelector('.q-type-select');
-      const qBody = card.querySelector('.q-body');
+      // LOGIKA RENDER TIPE JAWABAN
+      const selectType = card.querySelector(".q-type-select");
+      const qBody = card.querySelector(".q-body");
 
-      selectType.addEventListener('change', (e) => {
-        const type = e.target.value;
-        if (type === 'text' || type === 'textarea') {
-          qBody.innerHTML = `<p style="color: #94a3b8; font-size: 14px;">Teks jawaban akan muncul di sini</p>`;
+      const renderOptions = (type) => {
+        if (type === "text" || type === "textarea" || type === "number") {
+          const hint = type === "number" ? "angka (nomor)" : "teks";
+          qBody.innerHTML = `<p style="color: #94a3b8; font-size: 13px; font-style: italic;">Responden akan mengisi ${hint} di sini.</p>`;
         } else {
-          // Render UI untuk Pilihan Ganda / Checkbox
+          // ... kebawahnya sama
           qBody.innerHTML = `
-            <div class="options-container">
-              <div class="opt-row">
-                <div style="width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: ${type === 'radio' ? '50%' : '4px'};"></div>
-                <input type="text" class="opt-input" placeholder="Opsi 1" required />
-              </div>
-            </div>
-            <button type="button" class="btn-add-opt">+ Tambah Opsi</button>
+            <div class="options-container"></div>
+            <button type="button" class="btn-add-opt">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+              Tambah Opsi
+            </button>
           `;
 
-          // Tombol Tambah Opsi
-          const addOptBtn = qBody.querySelector('.btn-add-opt');
-          const optsContainer = qBody.querySelector('.options-container');
-          
-          addOptBtn.addEventListener('click', () => {
-            const optCount = optsContainer.children.length + 1;
-            const newOpt = document.createElement('div');
-            newOpt.className = 'opt-row';
-            newOpt.innerHTML = `
-              <div style="width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: ${type === 'radio' ? '50%' : '4px'};"></div>
-              <input type="text" class="opt-input" placeholder="Opsi ${optCount}" required />
+          const optsContainer = qBody.querySelector(".options-container");
+          const addOptBtn = qBody.querySelector(".btn-add-opt");
+
+          const addRow = (val = "") => {
+            const row = document.createElement("div");
+            row.className = "opt-row";
+            row.innerHTML = `
+              <div style="width: 16px; height: 16px; border: 2px solid #cbd5e1; border-radius: ${type === "radio" ? "50%" : "4px"};"></div>
+              <input type="text" class="q-base-input opt-input" placeholder="Opsi jawaban..." value="${val}" required />
+              <button type="button" class="btn-delete" style="padding: 6px 10px; margin-left: 4px;" onclick="this.parentElement.remove()">X</button>
             `;
-            optsContainer.appendChild(newOpt);
-          });
+            optsContainer.appendChild(row);
+          };
+
+          if (existingOptions && existingOptions.length > 0) {
+            existingOptions.forEach((opt) => addRow(opt));
+          } else {
+            addRow(""); // Opsi pertama default
+          }
+
+          addOptBtn.addEventListener("click", () => addRow(""));
         }
-      });
+      };
+
+      selectType.addEventListener("change", (e) =>
+        renderOptions(e.target.value),
+      );
+      renderOptions(typeVal, data ? data.options : null);
 
       container.appendChild(card);
     }
 
-    addBtn.addEventListener('click', createQuestionCard);
-
-    // 2. Fungsi SIMPAN KE SUPABASE (JSON Generator)
-    saveBtn.addEventListener('click', async () => {
-      const title = document.getElementById('surveyTitle').value;
-      const desc = document.getElementById('surveyDesc').value;
-      
-      if (!title) {
-        alert("Judul kuesioner wajib diisi ya!");
+    // 2. CEK MODE EDIT ATAU BUAT BARU
+    async function initBuilder() {
+      if (!surveyId) {
+        // Mode Buat Baru
+        createQuestionCard();
         return;
       }
 
-      // Mulai Rangkum Semua Pertanyaan Jadi JSON Array
-      const schema = [];
-      const questionItems = document.querySelectorAll('.question-item');
+      // Mode Edit
+      document.getElementById("modeBadge").textContent = "Mode Edit";
+      document.getElementById("pageTitle").textContent = "Edit Kuesioner";
+      workspace.style.display = "none";
+      loadingState.style.display = "block";
 
-      questionItems.forEach((item, index) => {
-        const qTitle = item.querySelector('.q-title-input').value || `Pertanyaan ${index + 1}`;
-        const qType = item.querySelector('.q-type-select').value;
-        
+      const { data, error } = await supabase
+        .from("surveys")
+        .select("*")
+        .eq("id", surveyId)
+        .single();
+
+      if (data) {
+        document.getElementById("surveyTitle").value = data.title;
+        document.getElementById("surveyDesc").value = data.description || "";
+        const schema = data.schema || [];
+        schema.forEach((q, index) => createQuestionCard(q, index));
+      } else {
+        alert("Gagal memuat kuesioner.");
+      }
+
+      loadingState.style.display = "none";
+      workspace.style.display = "block";
+    }
+
+    addBtn.addEventListener("click", () => {
+      const currentCount = document.querySelectorAll(".question-item").length;
+      createQuestionCard(null, currentCount);
+    });
+
+    // 3. PROSES SIMPAN KE SUPABASE
+    saveBtn.addEventListener("click", async () => {
+      const title = document.getElementById("surveyTitle").value.trim();
+      const desc = document.getElementById("surveyDesc").value.trim();
+
+      if (!title) return alert("Judul kuesioner wajib diisi!");
+
+      saveBtn.textContent = "Menyimpan Data...";
+      saveBtn.disabled = true;
+
+      const schema = [];
+      const questionItems = document.querySelectorAll(".question-item");
+
+      // Validasi & Loop semua soal
+      for (const item of questionItems) {
+        const qIdEl = item.id; // ID internal DOM
+        const qCode = item.querySelector(".q-code-input").value.trim(); // KODE SOAL (f5a1)
+        const qTitle = item.querySelector(".q-title-input").value.trim();
+        const qType = item.querySelector(".q-type-select").value;
+        const isReq = item.querySelector(".q-req-check").checked;
+        const fileInput = item.querySelector(".q-file-input");
+
+        if (!qCode || !qTitle) {
+          alert(
+            "Gagal menyimpan: Pastikan semua Kode Soal dan Pertanyaan telah diisi!",
+          );
+          saveBtn.textContent = "Simpan & Publish";
+          saveBtn.disabled = false;
+          return;
+        }
+
+        // Default: Gunakan link lama jika ada (dari mode edit)
+        let finalHelperLink = existingHelperLinks[qIdEl] || "";
+
+        // UPLOAD FILE JIKA ADMIN MEMILIH FILE BARU
+        if (fileInput.files.length > 0) {
+          saveBtn.textContent = "Mengunggah Dokumen...";
+          const file = fileInput.files[0];
+          const fileExt = file.name.split(".").pop();
+          const fileName = `doc_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+          const filePath = `helpers/${fileName}`;
+
+          const { data: upData, error: upError } = await supabase.storage
+            .from("survey-assets")
+            .upload(filePath, file);
+
+          if (!upError) {
+            const { data: publicURL } = supabase.storage
+              .from("survey-assets")
+              .getPublicUrl(filePath);
+            finalHelperLink = publicURL.publicUrl; // Ganti dengan link baru
+          } else {
+            console.error("Upload error pada soal", qCode, upError);
+            alert(`Gagal upload dokumen untuk soal ${qCode}. Coba lagi.`);
+          }
+        }
+
         let options = [];
-        if (qType === 'radio' || qType === 'checkbox') {
-          const optInputs = item.querySelectorAll('.opt-input');
-          optInputs.forEach(opt => {
-            if (opt.value) options.push(opt.value);
+        if (qType === "radio" || qType === "checkbox") {
+          item.querySelectorAll(".opt-input").forEach((opt) => {
+            if (opt.value.trim()) options.push(opt.value.trim());
           });
         }
 
+        // Struktur JSON Final
         schema.push({
-          id: `q_${index + 1}`,
+          id: qCode, // KODE SOAL JADI KEY UTAMA
           question: qTitle,
           type: qType,
           options: options.length > 0 ? options : null,
-          required: true
+          required: isReq,
+          helperLink: finalHelperLink,
         });
-      });
+      }
 
-      // Ganti tulisan tombol biar kliatan lagi loading
-      saveBtn.textContent = "Menyimpan...";
-      saveBtn.disabled = true;
+      // PAYLOAD SUPABASE
+      saveBtn.textContent = "Menyelesaikan...";
+      const payload = {
+        title: title,
+        description: desc,
+        schema: schema,
+        is_active: true,
+      };
 
-      // Lempar ke tabel 'surveys' di Supabase
-      const { data, error } = await supabase
-        .from('surveys')
-        .insert([
-          { 
-            title: title, 
-            description: desc, 
-            schema: schema,
-            is_active: true
-          }
-        ]);
+      let response;
+      if (surveyId) {
+        // Mode Update (Edit)
+        response = await supabase
+          .from("surveys")
+          .update(payload)
+          .eq("id", surveyId);
+      } else {
+        // Mode Insert (Baru)
+        response = await supabase.from("surveys").insert([payload]);
+      }
 
-      if (error) {
-        console.error("Error Supabase:", error);
-        alert("Gagal menyimpan kuesioner. Cek console log.");
+      if (response.error) {
+        alert("Gagal menyimpan. Cek koneksi internet atau Supabase.");
+        console.error(response.error);
         saveBtn.textContent = "Simpan & Publish";
         saveBtn.disabled = false;
       } else {
-        alert("Kuesioner berhasil dipublish! 🚀");
-        window.location.href = "/admin/manage-survey"; // Balik ke dashboard
+        alert("✅ Kuesioner berhasil disimpan & dipublish!");
+        window.location.href = "/admin/manage-survey";
       }
     });
 
-    // Otomatis bikin 1 pertanyaan kosong pas halaman dibuka
-    createQuestionCard();
+    // Jalankan inisialisasi
+    initBuilder();
   </script>
 </BaseLayout>
