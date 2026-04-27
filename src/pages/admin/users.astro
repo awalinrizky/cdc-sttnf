@@ -5,18 +5,48 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 <BaseLayout title="CDC STT-NF | Manajemen Akses Pengguna">
   <section class="admin-manage-page">
     <div class="container">
-      
       <header class="manage-header">
         <div class="header-info">
-          <span class="eyebrow" style="background: #fee2e2; color: #991b1b;">Eksklusif Superadmin</span>
+          <span class="eyebrow" style="background: #fee2e2; color: #991b1b;"
+            >Eksklusif Superadmin</span
+          >
           <h1>Kelola Pengguna</h1>
-          <p>Daftarkan administrator baru atau kelola akses alumni ke sistem CDC.</p>
+          <p>
+            Daftarkan administrator baru atau sinkronisasi data mahasiswa secara
+            masal.
+          </p>
         </div>
-        <div class="header-btns">
-          <a href="/admin" class="btn-back">
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Dashboard
-          </a>
+
+        <div class="header-actions">
+          <a href="/admin" class="btn-back">← Dashboard</a>
+
+          <div class="import-wrapper">
+            <input
+              type="file"
+              id="csvFile"
+              accept=".csv"
+              style="display:none"
+            />
+            <button
+              onclick="document.getElementById('csvFile').click()"
+              class="btn-import"
+            >
+              <svg
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                ></path></svg
+              >
+              Sinkronisasi CSV
+            </button>
+          </div>
         </div>
       </header>
 
@@ -24,17 +54,29 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         <aside class="sidebar-form">
           <div class="glass-card">
             <h2 id="formTitle">Tambah Akun Baru</h2>
-            <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">Pastikan alamat email valid dan berikan password awal yang aman.</p>
-            
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 24px;">
+              Pastikan alamat email valid dan berikan password awal yang aman.
+            </p>
+
             <form id="userForm" class="modern-form">
               <div class="input-group">
                 <label>Alamat Email</label>
-                <input type="email" id="email" required placeholder="Cth: dosen@nurulfikri.ac.id" />
+                <input
+                  type="email"
+                  id="email"
+                  required
+                  placeholder="Cth: dosen@nurulfikri.ac.id"
+                />
               </div>
 
               <div class="input-group">
                 <label>Password Awal</label>
-                <input type="password" id="password" required placeholder="Minimal 6 karakter" />
+                <input
+                  type="password"
+                  id="password"
+                  required
+                  placeholder="Minimal 6 karakter"
+                />
               </div>
 
               <div class="input-group">
@@ -46,7 +88,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                 </select>
               </div>
 
-              <button type="submit" id="submitBtn" class="btn-main">Buat Akun Sekarang</button>
+              <button type="submit" id="submitBtn" class="btn-main"
+                >Buat Akun Sekarang</button
+              >
               <p id="msg" class="msg-box"></p>
             </form>
           </div>
@@ -58,7 +102,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               <h2>Daftar Pengguna Sistem</h2>
               <span id="userCount" class="count-badge">... Users</span>
             </div>
-            
+
             <div id="userList" class="table-responsive">
               <div class="loading-state">Menarik data kredensial...</div>
             </div>
@@ -68,6 +112,42 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     </div>
 
     <style is:global>
+      .header-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .btn-import {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #0f172a;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        border: none;
+        transition: 0.2s;
+      }
+      .btn-import:hover {
+        background: #334155;
+        transform: translateY(-1px);
+      }
+
+      .import-status {
+        background: #dcfce7;
+        color: #166534;
+        padding: 10px;
+        border-radius: 8px;
+        text-align: center;
+        font-weight: 700;
+        font-size: 14px;
+        margin-bottom: 20px;
+        display: none;
+      }
       :root {
         --brand: #4f46e5;
         --brand-dark: #3730a3;
@@ -77,57 +157,249 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         --border-color: #cbd5e1;
       }
 
-      .admin-manage-page { background: var(--bg-main); min-height: 100vh; padding: 40px 0; font-family: 'Inter', sans-serif; color: var(--text-dark); }
-      .container { width: min(100% - 32px, 1200px); margin-inline: auto; }
+      .admin-manage-page {
+        background: var(--bg-main);
+        min-height: 100vh;
+        padding: 40px 0;
+        font-family: "Inter", sans-serif;
+        color: var(--text-dark);
+      }
+      .container {
+        width: min(100% - 32px, 1200px);
+        margin-inline: auto;
+      }
 
       /* Header */
-      .manage-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--border-color); }
-      .header-info h1 { font-size: 32px; font-weight: 800; color: var(--text-dark); margin: 8px 0; letter-spacing: -0.02em; }
-      .header-info p { color: var(--text-muted); font-size: 16px; font-weight: 500; }
-      .eyebrow { padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+      .manage-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 32px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--border-color);
+      }
+      .header-info h1 {
+        font-size: 32px;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin: 8px 0;
+        letter-spacing: -0.02em;
+      }
+      .header-info p {
+        color: var(--text-muted);
+        font-size: 16px;
+        font-weight: 500;
+      }
+      .eyebrow {
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
 
       /* Layout */
-      .manage-grid { display: grid; grid-template-columns: 380px 1fr; gap: 32px; align-items: start; }
-      .sidebar-form { position: sticky; top: 20px; }
-      .glass-card { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+      .manage-grid {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 32px;
+        align-items: start;
+      }
+      .sidebar-form {
+        position: sticky;
+        top: 20px;
+      }
+      .glass-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
 
       /* Form */
-      .modern-form { display: grid; gap: 20px; }
-      .input-group { display: grid; gap: 8px; }
-      .input-group label { font-size: 14px; font-weight: 700; color: var(--text-dark); }
-      .input-group input, .custom-select { width: 100%; padding: 12px; border-radius: 10px; border: 1.5px solid var(--border-color); font-family: inherit; font-size: 14px; color: var(--text-dark); background: #f8fafc; transition: 0.2s; }
-      .input-group input:focus, .custom-select:focus { border-color: var(--brand); outline: none; background: white; box-shadow: 0 0 0 4px rgba(79, 102, 241, 0.1); }
+      .modern-form {
+        display: grid;
+        gap: 20px;
+      }
+      .input-group {
+        display: grid;
+        gap: 8px;
+      }
+      .input-group label {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-dark);
+      }
+      .input-group input,
+      .custom-select {
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1.5px solid var(--border-color);
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--text-dark);
+        background: #f8fafc;
+        transition: 0.2s;
+      }
+      .input-group input:focus,
+      .custom-select:focus {
+        border-color: var(--brand);
+        outline: none;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(79, 102, 241, 0.1);
+      }
 
       /* Buttons */
-      .btn-main { background: var(--brand); color: white; border: none; padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; width: 100%; font-size: 15px; }
-      .btn-main:hover { background: var(--brand-dark); transform: translateY(-1px); }
-      .btn-back { display: flex; align-items: center; gap: 8px; background: white; color: var(--text-dark); padding: 10px 18px; border: 1.5px solid var(--border-color); border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 14px; transition: 0.2s; }
-      .btn-back:hover { border-color: var(--text-dark); background: #f8fafc; }
+      .btn-main {
+        background: var(--brand);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        width: 100%;
+        font-size: 15px;
+      }
+      .btn-main:hover {
+        background: var(--brand-dark);
+        transform: translateY(-1px);
+      }
+      .btn-back {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        color: var(--text-dark);
+        padding: 10px 18px;
+        border: 1.5px solid var(--border-color);
+        border-radius: 10px;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 14px;
+        transition: 0.2s;
+      }
+      .btn-back:hover {
+        border-color: var(--text-dark);
+        background: #f8fafc;
+      }
 
       /* Table Pro */
-      .list-header-pro { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-      .count-badge { background: #f1f5f9; color: var(--slate-700); padding: 4px 12px; border-radius: 99px; font-size: 13px; font-weight: 700; }
-      
-      .table-responsive { overflow-x: auto; }
-      .user-table { width: 100%; border-collapse: collapse; text-align: left; }
-      .user-table th { padding: 12px; border-bottom: 2px solid #f1f5f9; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 800; }
-      .user-table td { padding: 16px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-      
-      .user-identity { display: flex; align-items: center; gap: 12px; }
-      .user-avatar { width: 36px; height: 36px; background: #e0e7ff; color: var(--brand); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; }
-      
-      .badge-role { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; }
-      .role-superadmin { background: #fee2e2; color: #991b1b; }
-      .role-admin { background: #e0f2fe; color: #075985; }
-      .role-alumni { background: #fef3c7; color: #92400e; }
+      .list-header-pro {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .count-badge {
+        background: #f1f5f9;
+        color: var(--slate-700);
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 13px;
+        font-weight: 700;
+      }
 
-      .btn-delete-link { color: #ef4444; background: none; border: none; font-weight: 700; font-size: 13px; cursor: pointer; padding: 6px; border-radius: 6px; }
-      .btn-delete-link:hover { background: #fee2e2; }
+      .table-responsive {
+        overflow-x: auto;
+      }
+      .user-table {
+        width: 100%;
+        border-collapse: collapse;
+        text-align: left;
+      }
+      .user-table th {
+        padding: 12px;
+        border-bottom: 2px solid #f1f5f9;
+        color: var(--text-muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 800;
+      }
+      .user-table td {
+        padding: 16px 12px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+      }
 
-      .loading-state { text-align: center; padding: 40px; color: var(--text-muted); font-weight: 600; }
-      .msg-box { font-size: 13px; font-weight: 700; text-align: center; margin-top: 12px; }
+      .user-identity {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .user-avatar {
+        width: 36px;
+        height: 36px;
+        background: #e0e7ff;
+        color: var(--brand);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 14px;
+      }
 
-      @media (max-width: 1024px) { .manage-grid { grid-template-columns: 1fr; } .sidebar-form { position: static; } }
+      .badge-role {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      .role-superadmin {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      .role-admin {
+        background: #e0f2fe;
+        color: #075985;
+      }
+      .role-alumni {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .btn-delete-link {
+        color: #ef4444;
+        background: none;
+        border: none;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+      }
+      .btn-delete-link:hover {
+        background: #fee2e2;
+      }
+
+      .loading-state {
+        text-align: center;
+        padding: 40px;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      .msg-box {
+        font-size: 13px;
+        font-weight: 700;
+        text-align: center;
+        margin-top: 12px;
+      }
+
+      @media (max-width: 1024px) {
+        .manage-grid {
+          grid-template-columns: 1fr;
+        }
+        .sidebar-form {
+          position: static;
+        }
+      }
     </style>
 
     <script>
@@ -143,7 +415,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       let currentAdminId = "";
 
       async function loadUsers() {
-        const { data, error } = await supabase.from("profiles").select("*").order("role");
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .order("role");
 
         if (error) {
           userList.innerHTML = `<p class="loading-state">Gagal memuat data pengguna.</p>`;
@@ -162,9 +437,10 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
               </tr>
             </thead>
             <tbody>
-              ${data.map(u => {
-                const initial = u.email ? u.email[0].toUpperCase() : '?';
-                return `
+              ${data
+                .map((u) => {
+                  const initial = u.email ? u.email[0].toUpperCase() : "?";
+                  return `
                   <tr>
                     <td>
                       <div class="user-identity">
@@ -174,23 +450,89 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
                     </td>
                     <td><span class="badge-role role-${u.role}">${u.role.toUpperCase()}</span></td>
                     <td style="text-align: right;">
-                      ${u.role !== 'superadmin' ? 
-                        `<button onclick="hapusUser('${u.id}', '${u.email}')" class="btn-delete-link">Hapus</button>` : 
-                        `<span style="color: #cbd5e1; font-size: 11px; font-weight: 700;">SYSTEM</span>`}
+                      ${
+                        u.role !== "superadmin"
+                          ? `<button onclick="hapusUser('${u.id}', '${u.email}')" class="btn-delete-link">Hapus</button>`
+                          : `<span style="color: #cbd5e1; font-size: 11px; font-weight: 700;">SYSTEM</span>`
+                      }
                     </td>
                   </tr>
                 `;
-              }).join("")}
+                })
+                .join("")}
             </tbody>
           </table>
         `;
       }
+      document
+        .getElementById("csvFile")
+        .addEventListener("change", async (e) => {
+          const file = e.target.files[0];
+          if (!file) return;
 
+          const statusText = document.getElementById("importStatus");
+          statusText.style.display = "block"; // Tunjukin tulisan loading
+          statusText.innerText = "Sedang memproses... jangan tutup halaman.";
+
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            const text = event.target.result;
+            // Potong baris pertama (header), ambil isinya
+            const rows = text
+              .split("\n")
+              .slice(1)
+              .filter((row) => row.trim() !== "");
+
+            // Ubah CSV jadi bentuk JSON
+            const usersData = rows.map((row) => {
+              // Asumsi format: email, full_name, password
+              const [email, full_name, password] = row.split(",");
+              return {
+                email: email.trim(),
+                full_name: full_name.trim(),
+                password: password.trim(),
+              };
+            });
+
+            // Kirim data ke API rahasia yang kita bikin di Step 2
+            try {
+              const response = await fetch("/api/import-users", {
+                method: "POST",
+                body: JSON.stringify(usersData),
+                headers: { "Content-Type": "application/json" },
+              });
+
+              const result = await response.json();
+
+              if (result.errors.length > 0) {
+                alert(
+                  `Berhasil import: ${result.successCount} akun.\nGagal: ${result.errors.join(", ")}`,
+                );
+              } else {
+                alert(
+                  `Sukses! ${result.successCount} akun mahasiswa berhasil dibuat dan siap login.`,
+                );
+              }
+            } catch (err) {
+              alert("Terjadi kesalahan sistem saat import.");
+              console.error(err);
+            } finally {
+              statusText.style.display = "none"; // Sembunyiin tulisan loading
+              e.target.value = ""; // Reset input file
+            }
+          };
+          reader.readAsText(file);
+        });
       window.hapusUser = async function (id, email) {
-        if (!confirm(`Hapus permanen akses akun ${email}? Tindakan ini tidak bisa dibatalkan.`)) return;
-        
+        if (
+          !confirm(
+            `Hapus permanen akses akun ${email}? Tindakan ini tidak bisa dibatalkan.`,
+          )
+        )
+          return;
+
         userList.innerHTML = `<div class="loading-state">Menghapus ${email}...</div>`;
-        
+
         try {
           const res = await fetch("/api/delete-user", {
             method: "POST",
@@ -220,7 +562,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           const response = await fetch("/api/create-user", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password, role, adminId: currentAdminId }),
+            body: JSON.stringify({
+              email,
+              password,
+              role,
+              adminId: currentAdminId,
+            }),
           });
           const result = await response.json();
 
