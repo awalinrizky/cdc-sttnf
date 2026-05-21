@@ -1,63 +1,50 @@
-# Astro Starter Kit: Blog
+CDC STT-NF Web Portal
+Selamat datang di repositori kode untuk website Career Development Center (CDC) STT-NF. Sistem portal web ini dibangun menggunakan framework Astro.js untuk antarmuka pengguna dan Supabase (PostgreSQL) untuk basis data serta sistem autentikasi.
 
-```sh
-npm create astro@latest -- --template blog
-```
+Persyaratan Sistem
+Sebelum melakukan instalasi di server, pastikan lingkungan server Anda telah memenuhi spesifikasi berikut:
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Node.js: Versi 18.x atau yang lebih baru.
 
-Features:
+Package Manager: NPM atau Yarn.
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+Database: Instance Supabase (PostgreSQL) yang sudah aktif.
 
-## 🚀 Project Structure
+    Panduan Instalasi dan Deployment (Server)
+Silakan ikuti langkah-langkah di bawah ini untuk mengonfigurasi dan menjalankan sistem pada server production:
 
-Inside of your Astro project, you'll see the following folders and files:
+1. Clone Repositori dan Instalasi Dependensi
+Tarik kode terbaru dari repositori ke dalam server Anda, lalu jalankan perintah berikut untuk menginstal seluruh library yang dibutuhkan:
 
-```text
-├── public/
-├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
-```
+npm install
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+2. Konfigurasi Environment Variables
+Buat sebuah file baru bernama .env di dalam direktori utama (root) project. Salin format di bawah ini dan sesuaikan nilainya dengan kredensial dari dashboard Supabase Anda:
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+PUBLIC_SUPABASE_URL="masukkan_url_supabase_di_sini"
+PUBLIC_SUPABASE_ANON_KEY="masukkan_anon_key_di_sini"
+SUPABASE_SERVICE_ROLE_KEY="masukkan_service_role_key_di_sini"
+(Catatan Penting: Variabel SUPABASE_SERVICE_ROLE_KEY wajib diisi agar fitur manajemen Admin dan Sinkronisasi CSV akun mahasiswa secara masal dapat berjalan tanpa kendala).
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+3. Migrasi dan Pengaturan Database
+Seluruh struktur database (tabel, relasi, dan Row Level Security) telah kami sediakan untuk mempermudah konfigurasi.
 
-Any static assets, like images, can be placed in the `public/` directory.
+Buka file database.sql yang berada di dalam folder utama project ini.
 
-## 🧞 Commands
+Salin seluruh isi kode SQL tersebut, kemudian jalankan (Execute) melalui menu SQL Editor pada dashboard Supabase server Anda.
 
-All commands are run from the root of the project, from a terminal:
+Proses ini akan secara otomatis membentuk seluruh tabel yang diperlukan (seperti profiles, jobs, events, posts, roadmaps, surveys, responses, dll) beserta aturan keamanannya.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+4. Build Project
+Setelah seluruh konfigurasi selesai, jalankan perintah build untuk mengompilasi kode program menjadi file statis/server yang siap rilis:
 
-## 👀 Want to learn more?
+npm run build
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+5. Menjalankan Aplikasi di Production
+Gunakan PM2 atau Node process manager lainnya untuk menjalankan server build secara terus-menerus:
 
-## Credit
+node ./dist/server/entry.mjs
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
-# cdc-sttnf
+Alternatif jika Anda ingin menjalankan mode preview untuk pengujian jaringan lokal:
+
+npm run preview -- --host
