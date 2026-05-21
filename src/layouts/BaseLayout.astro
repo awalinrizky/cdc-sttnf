@@ -419,3 +419,12 @@ const pathname = Astro.url.pathname;
     </script>
   </body>
 </html>
+<style is:global>
+  /* Import font secara global biar semua halaman pasti kebagian */
+  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+  /* Paksa semua elemen di website pakai font ini */
+  :root, html, body, h1, h2, h3, h4, h5, h6, p, a, span, div, button, input, textarea {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
+  }
+</style>

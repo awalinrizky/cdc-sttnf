@@ -399,21 +399,21 @@ const { id } = Astro.params;
       submitBtn.textContent = "Mengirim Jawaban...";
       submitBtn.disabled = true;
 
-      // 1. CEK IDENTITAS MAHASISWA YANG LAGI LOGIN
-      const { data: authData, error: authError } =
-        await supabase.auth.getUser();
-      const user = authData?.user;
+      // // 1. CEK IDENTITAS MAHASISWA YANG LAGI LOGIN
+      // const { data: authData, error: authError } =
+      //   await supabase.auth.getUser();
+      // const user = authData?.user;
 
-      if (!user) {
-        alert(
-          "Sesi Anda telah habis. Silakan login kembali untuk mengirim jawaban.",
-        );
-        window.location.href = "/login"; // Arahin ke halaman login lo
-        return;
-      }
+      // // if (!user) {
+      // //   alert(
+      // //     "Sesi Anda telah habis. Silakan login kembali untuk mengirim jawaban.",
+      // //   );
+      // //   window.location.href = "/login"; // Arahin ke halaman login lo
+      // //   return;
+      // // }
 
-      const formData = new FormData(form);
-      const answers = {};
+      // const formData = new FormData(form);
+      // const answers = {};
 
       // 2. KUMPULIN JAWABAN (Sama kayak sebelumnya)
       for (let [key, value] of formData.entries()) {

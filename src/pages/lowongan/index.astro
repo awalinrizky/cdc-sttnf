@@ -193,7 +193,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
   <script>
     // @ts-nocheck
     import { supabase } from "../../lib/supabase.js";
-    import { requireMahasiswa } from "../../lib/adminGuard.js";
 
     const jobList = document.getElementById("jobList");
 
@@ -244,10 +243,6 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         `;
       }).join("");
     }
-
-    // Jalankan Satpam Mahasiswa
-    requireMahasiswa().then(session => {
-      if (session) loadJobs();
-    });
+    loadJobs();
   </script>
 </BaseLayout>

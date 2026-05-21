@@ -11,54 +11,257 @@ const { data: activeSurveys } = await supabase
 ---
 
 <BaseLayout title="Daftar Kuesioner | CDC STT-NF">
-  <div class="container">
-    <header class="page-header">
-      <h1>Kuesioner & Tracer Study</h1>
-      <p>Silakan pilih kuesioner yang tersedia untuk Anda isi.</p>
-    </header>
-
-    <div class="survey-grid">
-      {activeSurveys && activeSurveys.length > 0 ? (
-        activeSurveys.map((s) => (
-          <div class="survey-card">
-            <div class="card-content">
-              <h3>{s.title}</h3>
-              <p>{s.description || 'Tidak ada deskripsi.'}</p>
-            </div>
-            <a href={`/kuesioner/${s.id}`} class="btn-fill">Isi Kuesioner Sekarang</a>
-          </div>
-        ))
-      ) : (
-        <div class="empty-state">
-          <p>Saat ini tidak ada kuesioner yang aktif.</p>
-        </div>
-      )}
+  <section class="hero-section">
+    <div class="container hero-wrap">
+      <span class="eyebrow">Tracer Study & Evaluasi</span>
+      <h1>Suara Anda, Kemajuan Bersama</h1>
+      <p>
+        Partisipasi Anda dalam mengisi kuesioner ini sangat berarti untuk peningkatan kualitas akademik dan layanan karier di lingkungan STT-NF.
+      </p>
     </div>
-  </div>
+  </section>
 
-  <style>
-    .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
-    .page-header { margin-bottom: 40px; text-align: center; }
-    .page-header h1 { font-size: 32px; font-weight: 800; color: #0f172a; }
-    .page-header p { color: #64748b; margin-top: 8px; }
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2 class="section-title">Kuesioner Tersedia</h2>
+        <p class="section-subtitle">
+          Silakan pilih dan lengkapi kuesioner di bawah ini. Waktu Anda sangat berharga bagi kami.
+        </p>
+      </div>
 
-    .survey-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
-    .survey-card { 
-      background: white; border: 1px solid #e2e8f0; border-radius: 16px; 
-      padding: 24px; display: flex; flex-direction: column; justify-content: space-between;
-      transition: 0.3s;
-    }
-    .survey-card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px rgba(0,0,0,0.05); border-color: #4f46e5; }
-    .card-content h3 { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
-    .card-content p { font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 24px; }
-
-    .btn-fill { 
-      display: block; text-align: center; background: #0f172a; color: white; 
-      padding: 12px; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 14px;
-      transition: 0.2s;
-    }
-    .btn-fill:hover { background: #4f46e5; }
-    
-    .empty-state { grid-column: 1 / -1; text-align: center; padding: 60px; color: #94a3b8; }
-  </style>
+      <div class="survey-grid">
+        {activeSurveys && activeSurveys.length > 0 ? (
+          activeSurveys.map((s) => (
+            <div class="survey-card">
+              <div class="card-icon">
+                <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+              </div>
+              
+              <div class="card-content">
+                <div class="card-badge">Aktif</div>
+                <h3>{s.title}</h3>
+                <p>{s.description || 'Tidak ada deskripsi spesifik untuk kuesioner ini. Silakan langsung mengisi melalui tombol di bawah.'}</p>
+              </div>
+              
+              <div class="card-footer">
+                <a href={`/kuesioner/${s.id}`} class="btn-fill">
+                  Mulai Mengisi
+                  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div class="empty-state">
+            <div class="empty-icon">
+              <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+            </div>
+            <h3>Belum Ada Kuesioner</h3>
+            <p>Saat ini tidak ada kuesioner atau tracer study yang sedang aktif.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .container { width: min(100% - 40px, 1100px); margin-inline: auto; }
+  
+  /* HERO SECTION */
+  .hero-section {
+    background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+    color: white; 
+    padding: 100px 0 80px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  .hero-wrap { max-width: 800px; text-align: center; margin-inline: auto; }
+  
+  .eyebrow {
+    display: inline-flex; 
+    align-items: center; 
+    padding: 6px 14px;
+    border-radius: 99px; 
+    background: rgba(255, 255, 255, 0.1); 
+    color: #cbd5e1;
+    font-size: 13px; 
+    font-weight: 700; 
+    letter-spacing: 0.05em;
+    text-transform: uppercase; 
+    margin-bottom: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .hero-wrap h1 {
+    font-size: clamp(34px, 5vw, 52px); 
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.03em; 
+    margin-bottom: 20px;
+  }
+  
+  .hero-wrap p {
+    color: #94a3b8; 
+    font-size: 17px; 
+    line-height: 1.7; 
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  /* MAIN CONTENT */
+  .section { 
+    padding: 80px 0 120px; 
+    background-color: #fcfdfe;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  
+  .section-head { margin-bottom: 48px; }
+  
+  .section-title {
+    font-size: clamp(28px, 4vw, 36px); 
+    font-weight: 800;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em; 
+    color: #0f172a;
+  }
+  
+  .section-subtitle {
+    color: #64748b; 
+    line-height: 1.7; 
+    font-size: 16px;
+    max-width: 600px;
+  }
+
+  /* GRID & CARDS */
+  .survey-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+    gap: 32px; 
+  }
+  
+  .survey-card { 
+    background: white; 
+    border: 1px solid #e2e8f0; 
+    border-radius: 24px; 
+    padding: 32px; 
+    display: flex; 
+    flex-direction: column; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .survey-card:hover { 
+    transform: translateY(-6px); 
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05); 
+    border-color: #4f46e5; 
+  }
+
+  .card-icon {
+    width: 56px;
+    height: 56px;
+    background: #eef2ff;
+    color: #4f46e5;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .card-content { flex: 1; }
+  
+  .card-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 12px;
+    font-weight: 800;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+
+  .card-content h3 { 
+    font-size: 20px; 
+    font-weight: 800; 
+    color: #0f172a; 
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  
+  .card-content p { 
+    font-size: 15px; 
+    color: #475569; 
+    line-height: 1.7; 
+    margin-bottom: 32px; 
+  }
+
+  .card-footer {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 24px;
+  }
+
+  .btn-fill { 
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #0f172a; 
+    color: white; 
+    padding: 14px 20px; 
+    border-radius: 14px; 
+    font-weight: 700; 
+    text-decoration: none; 
+    font-size: 15px;
+    transition: all 0.2s;
+  }
+  
+  .btn-fill:hover { 
+    background: #4f46e5;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(79, 70, 229, 0.25);
+  }
+  
+  /* EMPTY STATE */
+  .empty-state { 
+    grid-column: 1 / -1; 
+    text-align: center; 
+    padding: 80px 20px; 
+    background: #f8fafc;
+    border: 1px dashed #e2e8f0;
+    border-radius: 24px;
+  }
+
+  .empty-icon {
+    color: #94a3b8;
+    margin-bottom: 16px;
+  }
+
+  .empty-state h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #334155;
+    margin-bottom: 8px;
+  }
+
+  .empty-state p {
+    color: #64748b;
+    font-size: 15px;
+  }
+
+  @media (max-width: 640px) {
+    .survey-grid { grid-template-columns: 1fr; }
+    .survey-card { padding: 24px; }
+  }
+</style>
